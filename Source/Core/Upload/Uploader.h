@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -35,16 +35,16 @@ class CUploader {
     public:
         explicit CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory);
         ~CUploader();
-        
+
         bool setUploadEngine(CAbstractUploadEngine* UploadEngine);
         CAbstractUploadEngine * getUploadEngine();
-        
+
         bool UploadFile(const std::string& FileName, const std::string& displayFileName, int maxRetries);
         bool Upload(std::shared_ptr<UploadTask> task, int maxRetries);
         void stop();
         bool needStop();
         std::shared_ptr<UploadTask> currentTask() const;
-       
+
         void setOnNeedStopCallback(std::function<bool()> cb);
         void setOnProgress(std::function<void(CUploader*, InfoProgress)> cb);
         void setOnStatusChanged(std::function<void(CUploader*, StatusType, int, std::string)> cb);
@@ -66,7 +66,7 @@ class CUploader {
         std::string m_displayFileName;
         std::string m_ErrorReason;
         bool isFatalServerError_;
-        
+
         void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1, UploadTask* uploadTask = nullptr, const std::string& topLevelFileName = std::string());
         void ErrorMessage(const ErrorInfo&);
         std::unique_ptr<INetworkClient> m_NetworkClient;

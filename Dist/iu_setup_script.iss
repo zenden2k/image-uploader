@@ -5,11 +5,11 @@
 #define IU_ARCH ""
 #endif
 ;#expr Exec(SourcePath + "signcode.bat")
-#define MyAppName "Image Uploader"
+#define MyAppName "Uptooda"
 #define MyAppVersion IU_APP_VER
 #define MyAppPublisher "Sergey Svistunov"
-#define MyAppURL "https://svistunov.dev/imageuploader"
-#define MyAppExeName "Image Uploader.exe"
+#define MyAppURL "https://svistunov.dev/uptooda"
+#define MyAppExeName "uptooda.exe"
 ;#include ReadReg(HKEY_LOCAL_MACHINE,'Software\Sherlock Software\InnoTools\Downloader','ScriptPath','')
 
 
@@ -17,11 +17,12 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{24F211C6-2732-4564-B602-CDA2DE2A13FC}
+AppId={{44F06965-E6A9-4147-A44A-E78403428560}
+; Old AppId: {24F211C6-2732-4564-B602-CDA2DE2A13FC}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-AppVerName=Image Uploader {#MyAppVersion} Build {#IU_BUILD_NUMBER}
-UninstallDisplayName=Image Uploader {#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion} Build {#IU_BUILD_NUMBER}
+UninstallDisplayName={#MyAppName} {#MyAppVersion}
 UninstallDisplayIcon="{app}\{#MyAppExeName}"
 VersionInfoVersion={#IU_APP_VER_CLEAN}.{#IU_BUILD_NUMBER}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -33,7 +34,7 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=output\
-OutputBaseFilename=image-uploader-{#IU_APP_VER}-build-{#IU_BUILD_NUMBER}-setup
+OutputBaseFilename=uptooda-{#IU_APP_VER}-build-{#IU_BUILD_NUMBER}-setup
 Compression=lzma/max 
 SolidCompression=yes
 ;SignTool=zenden2k
@@ -64,56 +65,62 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 [CustomMessages]
 InstallFFmpeg=Install FFmpeg library (for better video formats support)
 Additional=Additional
+ImportIUSettings=Import settings from Image Uploader
 ru.InstallFFmpeg=Установить библиотеку FFmpeg для лучшей поддержки форматов видео
 ru.Additional=Дополнительно
+ru.ImportIUSettings=Импортировать настройки из Image Uploader
 [Registry]
-Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Image Uploader\"; 
+Root: HKLM; Subkey: "Software\Uptooda"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Uptooda\"; 
 ;Tasks: common;  ;
-;Root: HKCU; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Image Uploader"; Tasks: installuser; 
+;Root: HKCU; Subkey: "Software\Zenden.ws\Uptooda"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Uptooda"; Tasks: installuser; 
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked
-
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 #ifdef IU_FFMPEG_STANDALONE
 Name: "installffmpeg"; Description: "{cm:InstallFFmpeg}"; GroupDescription: "{cm:Additional}"; Flags: unchecked 
 #endif
+Name: "importiusettings"; Description: "{cm:ImportIUSettings}"; GroupDescription: "{cm:Additional}"; Check: IsIUInstalled
+
 ;Name: common; Description: All users; GroupDescription: Install for:; Flags: exclusive
 ;Name: installuser; Description: The current user only; GroupDescription: Install for:; Flags: exclusive unchecked
 [Dirs]
-Name: "{code:GetDataFolder}\Image Uploader"; Permissions: users-modify
-Name: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Permissions: users-modify
-Name: "{code:GetDataFolder}\Image Uploader\Servers"; Permissions: users-modify
-Name: "{code:GetDataFolder}\Image Uploader\Scripts"; Permissions: users-modify
-Name: "{code:GetDataFolder}\Image Uploader\Favicons"; Permissions: users-modify
-Name: "{code:GetDataFolder}\Image Uploader\Update"; Permissions: users-modify
+Name: "{code:GetDataFolder}\Uptooda"; Permissions: users-modify
+Name: "{code:GetDataFolder}\Uptooda\Thumbnails"; Permissions: users-modify
+Name: "{code:GetDataFolder}\Uptooda\Servers"; Permissions: users-modify
+Name: "{code:GetDataFolder}\Uptooda\Scripts"; Permissions: users-modify
+Name: "{code:GetDataFolder}\Uptooda\Favicons"; Permissions: users-modify
+Name: "{code:GetDataFolder}\Uptooda\Update"; Permissions: users-modify
 [Files]
-Source: "..\Build\Gui\Release\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\Gui\Release\uptooda.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\locale\*"; Excludes: "*.po"; DestDir: "{app}\Lang\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Docs\*"; DestDir: "{app}\Docs"; Excludes: ".gitignore"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\Data\servers.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
-Source: "..\Data\servers.xsd"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
-Source: "..\Data\template.txt"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
-Source: "..\Data\templates.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
-Source: "..\Data\mime.cache"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
-Source: "..\Data\.env"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
-Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Image Uploader\Favicons"; Flags: ignoreversion
-Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts"; Flags: ignoreversion  
-Source: "..\Data\Scripts\Utils\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\Utils"; Flags: ignoreversion  
-Source: "..\Data\Scripts\UploadFilters\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\UploadFilters"; Flags: ignoreversion  
-Source: "..\Data\Scripts\ImageSearch\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\ImageSearch"; Flags: ignoreversion  
-Source: "..\Data\Scripts\Lang\*.json"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\Lang"; Flags: ignoreversion
-Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
-Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
-Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
-Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Image Uploader\Utils"; Flags: ignoreversion
+Source: "..\Data\servers.xml"; DestDir: "{code:GetDataFolder}\Uptooda\"; Flags: ignoreversion
+Source: "..\Data\servers.xsd"; DestDir: "{code:GetDataFolder}\Uptooda\"; Flags: ignoreversion
+Source: "..\Data\template.txt"; DestDir: "{code:GetDataFolder}\Uptooda\"; Flags: ignoreversion
+Source: "..\Data\templates.xml"; DestDir: "{code:GetDataFolder}\Uptooda\"; Flags: ignoreversion
+Source: "..\Data\mime.cache"; DestDir: "{code:GetDataFolder}\Uptooda\"; Flags: ignoreversion
+Source: "..\Data\.env"; DestDir: "{code:GetDataFolder}\Uptooda\"; Flags: ignoreversion
+Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Uptooda\Favicons"; Flags: ignoreversion
+Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Uptooda\Scripts"; Flags: ignoreversion  
+Source: "..\Data\Scripts\Utils\*.nut"; DestDir: "{code:GetDataFolder}\Uptooda\Scripts\Utils"; Flags: ignoreversion  
+Source: "..\Data\Scripts\UploadFilters\*.nut"; DestDir: "{code:GetDataFolder}\Uptooda\Scripts\UploadFilters"; Flags: ignoreversion  
+Source: "..\Data\Scripts\ImageSearch\*.nut"; DestDir: "{code:GetDataFolder}\Uptooda\Scripts\ImageSearch"; Flags: ignoreversion  
+Source: "..\Data\Scripts\Lang\*.json"; DestDir: "{code:GetDataFolder}\Uptooda\Scripts\Lang"; Flags: ignoreversion
+Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Uptooda\Update"; Flags: ignoreversion
+Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Uptooda\Update"; Flags: ignoreversion
+Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Uptooda\Thumbnails"; Flags: ignoreversion
+Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Uptooda\Utils"; Flags: ignoreversion
+Source: "{userappdata}\Image Uploader\Settings.xml"; DestDir: "{userappdata}\Uptooda"; Tasks: importiusettings; Flags: external onlyifdoesntexist 
+Source: "{userappdata}\Image Uploader\Servers\*.xml"; DestDir: "{userappdata}\Uptooda\Servers"; Tasks: importiusettings; Flags: external onlyifdoesntexist
+
 ;Source: "{tmp}\gdiplus.dll"; DestDir: "{app}"; Flags: external; 
 
 ;Flags: deleteafterinstall
-;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
+;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Uptooda\Servers"; Flags: ignoreversion
 ;Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
 ;Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
 #if IU_ARCH != "arm64"
@@ -131,22 +138,22 @@ Source: "..\Build\Gui\Release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}";
 
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; AppUserModelID: "Zenden2k.ImageUploader"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; WorkingDir: "{app}"; AppUserModelID: "Zenden2k.ImageUploader"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; AppUserModelID: "SergeySvistunov.Uptooda"
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; WorkingDir: "{app}"; AppUserModelID: "SergeySvistunov.Uptooda"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon; WorkingDir: "{app}"
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Parameters: "/afterinstall /language={language} {code:GetAdditionalRunParameters}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
-Filename: "{app}\image uploader.exe"; Parameters: "/uninstall"; Flags: runascurrentuser
+;Filename: "{app}\uptooda.exe"; Parameters: "{code:GetUninstallParameters}"; Flags: runascurrentuser
 
 [UninstallDelete]
 Type: files; Name: "{app}\av*.dll"
 Type: files; Name: "{app}\sw*.dll"
 Type: files; Name: "{app}\*.old"
-Type: files; Name: "{code:GetDataFolder}\Image Uploader\Update\*.xml"
-Type: files; Name: "{code:GetDataFolder}\Image Uploader\Favicons\*"
-Type: files; Name: "{code:GetDataFolder}\Image Uploader\Scripts\*"
+Type: files; Name: "{code:GetDataFolder}\Uptooda\Update\*.xml"
+Type: files; Name: "{code:GetDataFolder}\Uptooda\Favicons\*"
+Type: files; Name: "{code:GetDataFolder}\Uptooda\Scripts\*"
 
 [Code]
 var
@@ -175,7 +182,7 @@ end;
 
 function GetIconFileName(Param: String): String;
 begin
-  Result := ExpandConstant('{app}') + '\Image Uploader.exe'; 
+  Result := ExpandConstant('{app}') + '\Uptooda.exe'; 
 end;
 
 function GetAdditionalRunParameters(Param: String): String;
@@ -232,6 +239,108 @@ begin
     Result := True;
 end;
 
+function GetUninstallString: String;
+var
+  sUnInstPath: String;
+  sUnInstallString: String;
+begin
+  sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#emit SetupSetting("AppId")}_is1');
+  sUnInstallString := '';
+  
+  if IsWin64 then
+  begin
+    if not RegQueryStringValue(HKLM64, sUnInstPath, 'UninstallString', sUnInstallString) then
+
+      if not RegQueryStringValue(HKLM32, sUnInstPath, 'UninstallString', sUnInstallString) then
+      begin
+        if not RegQueryStringValue(HKCU64, sUnInstPath, 'UninstallString', sUnInstallString) then
+          RegQueryStringValue(HKCU32, sUnInstPath, 'UninstallString', sUnInstallString);
+      end;
+  end
+  else 
+  begin
+    if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstallString) then
+      RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
+  end;
+  
+  Result := sUnInstallString;
+end;
+
+function UnInstallOldVersion: Integer;
+var
+  sUnInstallString: String;
+  iResultCode: Integer;
+begin
+  Result := 0;
+  sUnInstallString := GetUninstallString();
+  if sUnInstallString <> '' then begin
+    sUnInstallString := RemoveQuotes(sUnInstallString);
+    if Exec(sUnInstallString, '/SILENT /NORESTART /SUPPRESSMSGBOXES /BEFOREINSTALL=1','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
+      Result := 3
+    else
+      Result := 2;
+  end else
+    Result := 1;
+end;
+
+function ShouldRegisterShellExt: Boolean;
+var
+  RegValue: DWORD;
+begin
+  Result := False;
+  
+  // Check registry setting
+  if IsWin64 then
+  begin
+    // On 64-bit system check 64-bit registry first, then 32-bit
+    if RegQueryDWordValue(HKLM64, 'SOFTWARE\Zenden.ws\Image Uploader', 'ExplorerContextMenu', RegValue) then
+      Result := (RegValue = 1)
+    else if RegQueryDWordValue(HKLM32, 'SOFTWARE\Zenden.ws\Image Uploader', 'ExplorerContextMenu', RegValue) then
+      Result := (RegValue = 1);
+  end
+  else
+  begin
+    // On 32-bit system check only regular registry
+    if RegQueryDWordValue(HKLM, 'SOFTWARE\Zenden.ws\Image Uploader', 'ExplorerContextMenu', RegValue) then
+      Result := (RegValue = 1);
+  end;
+end;
+
+function GetShellExtDllPath: String;
+begin
+  if IsWin64 then
+  begin
+    // On 64-bit system use 64-bit DLL
+    Result := ExpandConstant('{app}\ExplorerIntegration64.dll');
+  end
+  else
+  begin
+    // On 32-bit system use 32-bit DLL
+    Result := ExpandConstant('{app}\ExplorerIntegration.dll');
+  end;
+end;
+
+procedure RegisterShellExtension;
+var
+  DllPath: String;
+  ResultCode: Integer;
+begin
+  if not ShouldRegisterShellExt then
+    Exit;
+    
+  DllPath := GetShellExtDllPath;
+  
+  if not FileExists(DllPath) then
+  begin
+    Log('DLL file not found: ' + DllPath);
+    Exit;
+  end;
+  
+  Log('Registering Shell Extension: ' + DllPath);
+  
+  RegisterServer(Is64BitInstallMode, DllPath, False);
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
   var 
     Version: TWindowsVersion;
@@ -247,5 +356,47 @@ begin
       RegWriteStringValue(HKEY_CURRENT_USER, 'Software\Wine\DllOverrides',
                           'gdiplus', 'native, builtin');
     end;
+    //else
+    //  RegisterShellExtension;
+  end
+  else if (CurStep=ssInstall) then
+  begin
+    if (UnInstallOldVersion() = 2) then
+    begin
+      //MsgBox('Error during uninstallation of the old version', mbError, MB_OK);
+      //Abort;
+    end;
   end;
 end;
+
+function GetUninstallParameters: String;
+var
+  Parameters: String;
+begin
+  Parameters := '/uninstall';
+  
+  if ExpandConstant('{param:BEFOREINSTALL}') = '1' then
+    Parameters := Parameters + ' /beforeinstall';
+    
+  Result := Parameters;
+end;
+
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  Parameters: String;
+  ResultCode: Integer;
+begin
+  if CurUninstallStep = usUninstall then
+  begin
+    Parameters := GetUninstallParameters;
+    
+    Exec(ExpandConstant('{app}\uptooda.exe'), Parameters, '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+  end;
+end;
+
+function IsIUInstalled: Boolean;
+begin
+  Result := FileExists(ExpandConstant('{userappdata}\Image Uploader\Settings.xml')) and not FileExists(ExpandConstant('{userappdata}\Uptooda\Settings.xml'));
+end;
+

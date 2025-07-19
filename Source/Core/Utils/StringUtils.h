@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ namespace IuStringUtils
     std::string ToLower(const std::string& str);
     std::string ToUpper(const std::string& str);
 
-    //  The stricmp() function compares the two strings s1 and s2, 
-    //  ignoring the case of the characters. It returns an integer less than, 
-    //     equal to, or greater than zero if s1 is found, respectively, to be less than, 
+    //  The stricmp() function compares the two strings s1 and s2,
+    //  ignoring the case of the characters. It returns an integer less than,
+    //     equal to, or greater than zero if s1 is found, respectively, to be less than,
     //     to match, or be greater than s2.
     // IT WORKS ONLY WITH ANSI STRINGS!
     int stricmp(const char *s1, const char *s2);
@@ -54,10 +54,10 @@ namespace IuStringUtils
     boost::wformat FormatWideNoExcept(const wchar_t* str);
     boost::wformat FormatWideNoExcept(const std::wstring& str);
 
-    constexpr auto NoMatch = 1; 
-    constexpr auto FileName = 0x1; 
-    constexpr auto NoEscape = 0x2; 
-    constexpr auto Period = 0x4; 
+    constexpr auto NoMatch = 1;
+    constexpr auto FileName = 0x1;
+    constexpr auto NoEscape = 0x2;
+    constexpr auto Period = 0x4;
     constexpr auto LeadingDir = 0x8;
     constexpr auto FoldCase = 0x10;
 

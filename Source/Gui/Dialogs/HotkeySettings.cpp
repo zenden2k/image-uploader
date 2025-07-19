@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     for(int i=0; i < int(hotkeyList.size())-1; i++)
     {
-        m_HotkeyList.AddItem(i, 0, hotkeyList[i+1].GetDisplayName());        
+        m_HotkeyList.AddItem(i, 0, hotkeyList[i+1].GetDisplayName());
         m_HotkeyList.AddItem(i, 1, hotkeyList[i+1].localKey.toString());
         m_HotkeyList.AddItem(i, 2, hotkeyList[i+1].globalKey.toString());
     }
@@ -124,16 +124,16 @@ LRESULT CHotkeySettingsPage::OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, H
     } else {
         EditHotkey(index);
     }
-        
+
     return 0;
 }
 
 LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND hwnd = reinterpret_cast<HWND>(wParam);  
+    HWND hwnd = reinterpret_cast<HWND>(wParam);
     POINT ClientPoint, ScreenPoint;
 
-    if(lParam == -1) 
+    if(lParam == -1)
     {
         ClientPoint.x = 0;
         ClientPoint.y = 0;
@@ -159,8 +159,8 @@ LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     contextMenu.CreatePopupMenu();
     GuiTools::InsertMenu(contextMenu, 0, IDC_EDITHOTKEY, TR("Change"));
     contextMenu.SetMenuDefaultItem(IDC_EDITHOTKEY, FALSE);
-    GuiTools::InsertMenu(contextMenu, 1, IDM_CLEARHOTKEY, TR("Clear")); 
-    GuiTools::InsertMenu(contextMenu, 2, IDM_CLEARALLHOTKEYS, TR("Clear all")); 
+    GuiTools::InsertMenu(contextMenu, 1, IDM_CLEARHOTKEY, TR("Clear"));
+    GuiTools::InsertMenu(contextMenu, 2, IDM_CLEARALLHOTKEYS, TR("Clear all"));
     contextMenu.TrackPopupMenu( TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     return 0;
 }
@@ -217,10 +217,10 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Open screenshots folder"), _T("open_screenshot_folder"), IDM_OPENSCREENSHOTSFOLDER);
     AddItem(TR("Settings"),_T("settings"), IDM_SETTINGS);
     AddItem(TR("Paste"),_T("paste"), IDM_PASTEFROMCLIPBOARD,true,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
-    AddItem(TR("Images from web"),_T("downloadimages"), IDM_PASTEFROMWEB); 
+    AddItem(TR("Images from web"),_T("downloadimages"), IDM_PASTEFROMWEB);
     AddItem(TR("View Media File Information"),_T("mediainfo"), IDM_MEDIAINFO);
     AddItem(TR("Quick upload image from clipboard"), _T("uploadfromclipboard"), IDM_QUICKUPLOADFROMCLIPBOARD);
-    AddItem(TR("Shorten a link"),_T("shortenurl"), IDM_SHORTENURL);
+    AddItem(TR("Shorten a Link"),_T("shortenurl"), IDM_SHORTENURL);
     AddItem(TR("Shorten a link from the clipboard"),_T("shortenurlclipboard"), IDM_SHORTENURLCLIPBOARD);
     AddItem(TR("Reupload images"),_T("reuploadimages"), IDM_REUPLOADIMAGES);
     AddItem(TR("Exit"), _T("exit"), IDM_EXIT);
@@ -301,7 +301,7 @@ bool CHotkeyList::DeSerialize(const CString &data)
 {
     TCHAR hotkey[200];
     int i =0;
-    
+
     while(WinUtils::ExtractStrFromList(
            data /* Source string */,
             i++, /* Zero based item index */
@@ -318,7 +318,7 @@ bool CHotkeyList::DeSerialize(const CString &data)
 
         int cur = getFuncIndex(funcName);
         if(cur<0) continue;
-        
+
         //(*this)[i].func = funcName;
 
         WinUtils::ExtractStrFromList(hotkey , 1, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
@@ -329,7 +329,7 @@ bool CHotkeyList::DeSerialize(const CString &data)
 
         WinUtils::ExtractStrFromList(funcName ,1, globalKeyStr ,sizeof(globalKeyStr)/sizeof(TCHAR),_T(""),_T(','));
         (*this)[cur].globalKey.DeSerialize(globalKeyStr);
-        
+
     }
 
     return true;

@@ -6,7 +6,7 @@
 
 #include "AbstractOutputGenerator.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 struct ResultTemplate {
     std::string Name, Items, LineSep, LineStart, ItemSep, LineEnd, TemplateText;

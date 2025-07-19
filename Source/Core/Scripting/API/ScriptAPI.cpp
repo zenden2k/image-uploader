@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -258,7 +258,7 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
 
 #ifdef _MSC_VER
 #ifndef IU_TESTS // to avoid vld memory leaks messages; We use just one thread in test cases
-__declspec(thread) 
+__declspec(thread)
 #endif
 HSQUIRRELVM threadVm;
 #else
@@ -279,7 +279,7 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterSimpleXmlClass(vm);
     RegisterGumboClasses(vm);
     RegisterWebServerClass(vm);
-	
+
 //#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
 #ifdef _WIN32
     RegisterWebBrowserClass(vm);
@@ -388,7 +388,7 @@ void FlushSquirrelOutput(HSQUIRRELVM vm) {
     std::lock_guard<std::mutex> guard(squirrelOutputMutex);
     std::string& output = squirrelOutput[vm];
     std::lock_guard<std::mutex> guard2(printCallbacksMutex);
-    
+
     if (!output.empty())
     {
         auto it = printCallbacks.find(vm);
@@ -399,7 +399,7 @@ void FlushSquirrelOutput(HSQUIRRELVM vm) {
             {
                 callback(output);
             }
-            
+
         }
         output.clear();
     }

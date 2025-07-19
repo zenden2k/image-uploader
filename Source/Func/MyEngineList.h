@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class CMyEngineList: public CUploadEngineList
             ServerIconCacheItem() = default;
 
             ServerIconCacheItem(HICON i, HBITMAP b): icon(i), bm(b) {
-                
+
             }
         };
         CMyEngineList();
@@ -51,7 +51,7 @@ class CMyEngineList: public CUploadEngineList
 
         int getUploadEngineIndex(const CString& Name) const;
         bool loadFromFile(const CString& filename);
-      
+
         static char DefaultServer[];
         static char RandomServer[];
     private:

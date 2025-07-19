@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ limitations under the License.
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
 #include "Core/Settings/WtlGuiSettings.h"
-#include <winsock2.h> 
+#include <winsock2.h>
 #include <iphlpapi.h>
-#define SECURITY_WIN32 
+#define SECURITY_WIN32
 #include <security.h>
 #include "Core/CommonDefs.h"
 #include <Lm.h>
@@ -78,7 +78,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
         LONG style = ::GetWindowLong(exampleUrlLabel, GWL_STYLE);
         ::SetWindowLong(exampleUrlLabel, GWL_STYLE, style | SS_RIGHT);
     }
-    
+
     CenterWindow(GetParent());
     return 0;  // Let the system set the focus
 }
@@ -119,7 +119,7 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
             errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
         }
         LocalizedMessageBox(errorMessage, TR("Error"), MB_ICONERROR);
-    }    
+    }
     return 0;
 }
 
@@ -134,7 +134,7 @@ LRESULT CAddDirectoryServerDialog::OnConnectionNameEditChange(WORD wNotifyCode, 
         connectionNameEdited = !GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT).IsEmpty();
     }
 
-    return 0; 
+    return 0;
 }
 
 LRESULT CAddDirectoryServerDialog::OnPresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -206,12 +206,12 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
             //
             NetApiBufferFree(BufPtr);
         }
-        else 
+        else
             printf("Error: %ld\n",(int)res);
     }
-    // Continue to call NetShareEnum while 
-    // there are more entries. 
-    // 
+    // Continue to call NetShareEnum while
+    // there are more entries.
+    //
     while (res==ERROR_MORE_DATA); // end do
 
     return 0;
@@ -223,7 +223,7 @@ LRESULT CAddDirectoryServerDialog::OnDownloadUrlEditChange(WORD wNotifyCode, WOR
         GenerateExampleUrl();
     }
     CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
-    GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, downloadUrl.Left(2) == _T("\\\\") ); 
+    GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, downloadUrl.Left(2) == _T("\\\\") );
     return 0;
 }
 
@@ -237,9 +237,9 @@ void CAddDirectoryServerDialog::GenerateDownloadLink()
     if ( !downloadUrlEdited ) {
         CString serverName;
         CString generatedDownloadUrl;
-        
+
         if ( !serverName.IsEmpty() ) {
-            SetDlgItemText(IDC_DOWNLOADURLEDIT, generatedDownloadUrl); 
+            SetDlgItemText(IDC_DOWNLOADURLEDIT, generatedDownloadUrl);
         }
     }
     GenerateExampleUrl();
@@ -376,7 +376,7 @@ LRESULT CAddDirectoryServerDialog::OnBnClickedBrowsebutton(WORD /*wNotifyCode*/,
 {
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_DIRECTORYEDIT));
     CNewStyleFolderDialog fd(m_hWnd, path, TR("Select folder"));
-  
+
     if(fd.DoModal(m_hWnd) == IDOK)
     {
         path = fd.GetFolderPath();
@@ -419,7 +419,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
         }
         popupMenu.AppendMenu(MF_STRING, id++, itemTitle);
     }
-     
+
     popupMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
 
     return 0;

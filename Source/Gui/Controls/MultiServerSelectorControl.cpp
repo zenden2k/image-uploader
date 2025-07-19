@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -44,13 +44,13 @@ CMultiServerSelectorControl::~CMultiServerSelectorControl() {
 void CMultiServerSelectorControl::TranslateUI() {
     TRC(IDC_CHOOSESERVERS, "Choose...");
 }
-    
+
 LRESULT CMultiServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     TranslateUI();
     serverGroupboxFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SERVERGROUPBOX));
     updateInfoLabel();
-    return FALSE;  
+    return FALSE;
 }
 
 LRESULT CMultiServerSelectorControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -92,7 +92,7 @@ LRESULT CMultiServerSelectorControl::OnClickedChoose(WORD wNotifyCode, WORD wID,
 }
 
 void CMultiServerSelectorControl::serverChanged() {
-    
+
 }
 
 void CMultiServerSelectorControl::setServersMask(int mask) {
@@ -125,5 +125,5 @@ void CMultiServerSelectorControl::profileListChanged(BasicSettings* settings, co
             }
         }
     }
-    
+
 }

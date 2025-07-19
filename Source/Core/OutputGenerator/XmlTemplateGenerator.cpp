@@ -5,7 +5,7 @@
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Core/Utils/StringUtils.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 XmlTemplateGenerator::XmlTemplateGenerator(XmlTemplateList* templateList): templateList_(templateList) {
 

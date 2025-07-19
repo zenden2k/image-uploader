@@ -1,6 +1,6 @@
 #include "MarkdownGenerator.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 GeneratorID MarkdownGenerator::id() const
 {

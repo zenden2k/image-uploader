@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ limitations under the License.
 #ifndef IU_FUNC_LIBRARY_H
 #define IU_FUNC_LIBRARY_H
 
-#pragma once 
+#pragma once
 
 #include "Core/Utils/CoreTypes.h"
 #include <windows.h>
@@ -46,7 +46,7 @@ public:
         return reinterpret_cast<T>(::GetProcAddress(dll_, func));
     }
 private:
-    HMODULE dll_; 
+    HMODULE dll_;
     DISALLOW_COPY_AND_ASSIGN(Library);
 };
 

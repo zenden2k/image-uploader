@@ -609,8 +609,10 @@ void ScreenRecorderWindow::createTrayIcon() {
     // trayIconGuid_ = WinUtils::GenerateFakeUUIDv4();
     // guid = &trayIconGuid_;
 
-    CString iconTitle = TR("Image Uploader (screen recording)");
-    if (!InstallIcon(iconTitle, iconSmall_, NULL, guid)) {
+
+    std::wstring title = str(IuStringUtils::FormatWideNoExcept(TR("%s (screen recording)")) % APP_NAME);
+
+    if (!InstallIcon(title.c_str(), iconSmall_, NULL, guid)) {
         LOG(WARNING) << "Failed to create tray icon!";
         /*guid = nullptr;
         if (!InstallIcon(iconTitle, icon_, NULL)) {

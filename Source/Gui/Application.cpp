@@ -1,7 +1,7 @@
 /*
-     Image Uploader - program for uploading images/files to the Internet
+     Uptooda - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
      limitations under the License.
 */
 
-#include "atlheaders.h" 
+#include "atlheaders.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
- 
+
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Dialogs/FloatingWindow.h"
@@ -59,7 +59,7 @@
 
 CAppModule _Module;
 
-// If oleInitializer is destroyed before the WinToast singleton, this will cause an application crash. 
+// If oleInitializer is destroyed before the WinToast singleton, this will cause an application crash.
 // The linking order in C++ does NOT guarantee the destruction order of static objects across
 // different translation units. So we need to call WinToast::instance()->clear() before exit and
 // disable 'clear' function call in the WinToast destructor.
@@ -211,7 +211,7 @@ public:
         urlShorteningFilter_ = std::make_shared<UrlShorteningFilter>();
         imageSearchFilter_ = std::make_shared<ImageSearchFilter>();
         userFilter_ = std::make_unique<UserFilter>(scriptsManager_.get());
-        
+
         uploadManager_->addUploadFilter(imageConverterFilter_.get());
         uploadManager_->addUploadFilter(userFilter_.get());
         uploadManager_->addUploadFilter(sizeExceedFilter_.get());
@@ -280,7 +280,7 @@ public:
 
         GdiPlusInitializer gdiPlusInitializer;
         initServices();
-        
+
         CWizardDlg  dlgMain(logger_, engineList_.get(), uploadEngineManager_.get(), uploadManager_.get(), scriptsManager_.get(), &settings_);
         auto* serviceLocator = ServiceLocator::instance();
         serviceLocator->setProgramWindow(&dlgMain);
@@ -332,8 +332,8 @@ public:
                 if (it != languageList.end()) {
                     settings_.Language = U2W(it->first);
                 }
-                
-                
+
+
                 /*CString foundName = lang_.getLanguageFileNameForLocale(shortLanguageName);
                 if (!foundName.IsEmpty()) {
                     settings_.Language = foundName;
@@ -348,7 +348,7 @@ public:
                 return 0;
             }
             settings_.Language = LS.getLanguage();
-            
+
             lang_.LoadLanguage(settings_.Language);
             settings_.SaveSettings();
         }

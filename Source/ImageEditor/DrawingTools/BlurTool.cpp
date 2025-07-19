@@ -1,7 +1,7 @@
 /*
-     Image Uploader - program for uploading images/files to the Internet
+     Uptooda - free application for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
 
 namespace ImageEditor {
 
-#if GDIPVER >= 0x0110 
+#if GDIPVER >= 0x0110
 BlurTool::BlurTool(Canvas* canvas) : BrushTool(canvas)
 {
 
@@ -54,7 +54,7 @@ void BlurTool::drawLine(int x0, int y0, int x1, int y1)
     int yEnd   = max( y0, y1 );
 
 
-    
+
 
     Gdiplus::Bitmap * background =  canvas_->currentDocument()->getBitmap();
 
@@ -73,7 +73,7 @@ void BlurTool::drawLine(int x0, int y0, int x1, int y1)
     blur.SetParameters(&blurParams);
     Matrix matrix;
     Status st ;
-    
+
 
 
     SolidBrush br( foregroundColor_ );
@@ -87,7 +87,7 @@ void BlurTool::drawLine(int x0, int y0, int x1, int y1)
         gr->SetClip(&reg);
         st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
         affectedRegion_.Union(&reg);*/
-        
+
         for( int y = yStart; y <= yEnd; y++ ) {
             x = x0;
             RectF sourceRect(x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2);
@@ -98,11 +98,11 @@ void BlurTool::drawLine(int x0, int y0, int x1, int y1)
             Gdiplus::Region reg(&path);
             //reg.Exclude(&affectedRegion_);
             gr->SetClip(&reg, CombineModeIntersect);
-            
+
             segments_.markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
             st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
             affectedRegion_.Union(&reg);
-        } 
+        }
     } else if ( y1 == y0 ) {
         for( int x = xStart; x <= xEnd; x++ ) {
             int y = y0;
@@ -118,7 +118,7 @@ void BlurTool::drawLine(int x0, int y0, int x1, int y1)
             segments_.markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
             st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
             affectedRegion_.Union(&reg);
-        } 
+        }
     } else {
         // Why not simple draw line ? O_o
         for( int a = 0; a <= len; a++ ) {
@@ -137,8 +137,8 @@ void BlurTool::drawLine(int x0, int y0, int x1, int y1)
             st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
             segments_.markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
             affectedRegion_.Union(&reg);
-        } 
-    }  
+        }
+    }
 }
 
 void BlurTool::endDraw(int x, int y)

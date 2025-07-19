@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -52,7 +52,9 @@ LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     // FIXME
     DlgResize_Init();
     m_UpdateEvent.Create();
-    SetWindowText(TR("Image Uploader Updates"));
+    std::wstring title = str(IuStringUtils::FormatWideNoExcept(TR("%s Updates")) % APP_NAME);
+
+    SetWindowText(title.c_str());
     m_listView.AttachToDlgItem(m_hWnd, IDC_UPDATELISTVIEW);
     m_listView.AddColumn(TR("Component name"), 0);
     m_listView.AddColumn( TR("Status"), 1);
@@ -66,7 +68,7 @@ LRESULT CUpdateDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_DOWNLOADBUTTON, "Open download page");
     TRC(IDC_COMPONENTSLABEL, "Components:");
-   
+
     if (!m_Modal)
         Start();  // Beginning update process
     return 1;  // Let the system set the focus
@@ -123,7 +125,7 @@ LRESULT CUpdateDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 LRESULT CUpdateDlg::OnDownloadButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     for (const auto& upd : m_UpdateManager.m_manualUpdatesList) {
         if (upd.isManualUpdate() && !upd.downloadPage().IsEmpty()) {
-           
+
             /*if (MessageBox(message, APP_NAME, MB_ICONINFORMATION | MB_YESNO) == IDYES)*/ {
                 HINSTANCE hinst = ShellExecute(0, L"open", upd.downloadPage(), NULL, NULL, SW_SHOWNORMAL);
                 if (reinterpret_cast<INT_PTR>(hinst) <= 32) {
@@ -166,7 +168,8 @@ void CUpdateDlg::CheckUpdates()
             SetDlgItemText(IDC_MANUALUPDATEINFO, message + _T("\r\n") + text2);
             ::ShowWindow(GetDlgItem(IDC_DOWNLOADBUTTON), SW_SHOW);
         } else {
-            SetDlgItemText(IDC_MANUALUPDATEINFO, TR("You are using the latest Image Uploader version."));
+            std::wstring title = str(IuStringUtils::FormatWideNoExcept(TR("You are using the latest %s version.")) % APP_NAME);
+            SetDlgItemText(IDC_MANUALUPDATEINFO, title.c_str());
         }
     });
 
@@ -203,8 +206,8 @@ void CUpdateDlg::CheckUpdates()
     else {
         ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
             TRC(IDCANCEL, "Close");
-            CString text = TR("No updates for Image Uploader's components are available");
-            SetDlgItemText(IDC_UPDATEINFO, text);
+            std::wstring text = str(IuStringUtils::FormatWideNoExcept(TR("No updates for %s components are available")) % APP_NAME);
+            SetDlgItemText(IDC_UPDATEINFO, text.c_str());
         });
     }
 }

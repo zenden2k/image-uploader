@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class NetworkClient: public INetworkClient
 
         NetworkClient(NetworkClient const&) = delete;
         void operator=(NetworkClient const&) = delete;
-        
+
         /*! @endcond */
 
         NetworkClient();
@@ -70,26 +70,26 @@ class NetworkClient: public INetworkClient
          */
         [[deprecated("Use addPostFieldFile() instead")]]
         void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType) override;
-        
+
         /**
          * Adds a parameter to the POST request with the name and value
          */
         void addPostField(const std::string& name, const std::string& value) override;
 
         /**
-         * Adds a file parameter to the MULTIPART/DATA POST request. 
-         * 
+         * Adds a file parameter to the MULTIPART/DATA POST request.
+         *
          * @param name is the name of the request parameter
-         *  
+         *
          * @param fileName is the physical path to the file
-         * 
+         *
          * @param displayName is the display name (the name that is transferred to the server does not contain a path),
-         * 
-         * @param contentType is the mime file type, can be an empty string or obtained using the GetFileMimeType function). 
+         *
+         * @param contentType is the mime file type, can be an empty string or obtained using the GetFileMimeType function).
          * The method is similar to the HTML form element - <input type = "file">.
          */
         void addPostFieldFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType) override;
-        
+
         /**
          * Sets the value of the HTTP request header. To delete a header, pass in an empty string. To set an empty value, pass "\n".
         Example:
@@ -102,10 +102,10 @@ class NetworkClient: public INetworkClient
          */
         void setUrl(const std::string& url) override;
         /**
-         * Performs a POST request. 
+         * Performs a POST request.
          * @param data - the request body (for example, "param1 = value & param2 = value2").
          *  If data is an empty string, the parameters previously set using the addQueryParam() function are used.
-         *  
+         *
         Example 1
         @include networkclient_post.nut
         Example 2
@@ -114,9 +114,9 @@ class NetworkClient: public INetworkClient
         bool doPost(const std::string& data) override;
 
         /**
-         * Sends a request to the address set by the function setUrl as parameters and files encoded in the 
+         * Sends a request to the address set by the function setUrl as parameters and files encoded in the
          * MULTIPART/FORM-DATA format. Similar to sending a form with a file from a web page.
-         * 
+         *
         Example
         @include networkclient_upload.nut
         */
@@ -124,7 +124,7 @@ class NetworkClient: public INetworkClient
 
         /**
          * Sending a file or data directly in the body of a PUT request
-         * 
+         *
         Example 1
         @include networkclient_put.nut
         Example 2
@@ -135,7 +135,7 @@ class NetworkClient: public INetworkClient
         /**
         Example 1
         @include networkclient_get.nut
-        Example 2 
+        Example 2
         @include networkclient_get_file.nut
         */
         bool doGet(const std::string &url) override;
@@ -176,18 +176,18 @@ class NetworkClient: public INetworkClient
         std::string getCurlResultString() override;
 
         /**
-         * Sets the string value for an option of the CURL object. Equivalent to calling the <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html">curl_easy_setopt</a> function. 
-         * Note that option is a number. A list of the numerical values of the option can be found <a href="../curl_constants.txt">here</a>. 
+         * Sets the string value for an option of the CURL object. Equivalent to calling the <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html">curl_easy_setopt</a> function.
+         * Note that option is a number. A list of the numerical values of the option can be found <a href="../curl_constants.txt">here</a>.
          */
         void setCurlOption(int option, const std::string &value) override;
 
         /**
-         * Sets the numeric value for an option of the CURL object 
+         * Sets the numeric value for an option of the CURL object
          */
         void setCurlOptionInt(int option, long value) override;
 
         /**
-         * Get information from curl. <a href="http://curl.haxx.se/libcurl/c/curl_easy_getinfo.html">curl_easy_getinfo</a>. 
+         * Get information from curl. <a href="http://curl.haxx.se/libcurl/c/curl_easy_getinfo.html">curl_easy_getinfo</a>.
          * Numeric values of CURLINFO_* constants you can find <a href="../curl_constants.txt">here</a>.
          */
         std::string getCurlInfoString(int option) override;
@@ -207,7 +207,7 @@ class NetworkClient: public INetworkClient
         */
         void setChunkOffset(int64_t offset) override;
 
-	
+
         /**
         Sets size of current chunk.
         @since 1.3.0
@@ -272,7 +272,7 @@ class NetworkClient: public INetworkClient
             bool isFile;
             std::string name;
             std::string value; // also filename
-            std::string displayName; 
+            std::string displayName;
             std::string contentType;
         };
 
@@ -291,7 +291,7 @@ class NetworkClient: public INetworkClient
         bool private_on_finish_request();
         void private_init_transfer();
         void private_check_response();
-        
+
         public:
         /*! @cond PRIVATE */
         static void closeFileList(std::vector<FILE *>& files);

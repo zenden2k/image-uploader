@@ -16,7 +16,7 @@ GdiPlusImage::GdiPlusImage()
     init();
 }
 
-GdiPlusImage::GdiPlusImage(Gdiplus::Bitmap* bm, bool takeOwnership)
+GdiPlusImage::GdiPlusImage(Gdiplus::Image* bm, bool takeOwnership)
 {
     init();
     bm_ = bm;
@@ -38,7 +38,7 @@ GdiPlusImage::~GdiPlusImage() {
 }
 
 bool GdiPlusImage::loadFromFile(const std::string& fileName) {
-    bm_ = new Gdiplus::Bitmap(U2W(fileName));
+    bm_ = new Gdiplus::Image(U2W(fileName));
 
     if (bm_->GetLastStatus() == Ok) {
         width_ = bm_->GetWidth();
@@ -139,7 +139,7 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
 
 Gdiplus::Bitmap* GdiPlusImage::getBitmap() const
 {
-    return bm_;
+    return dynamic_cast<Gdiplus::Bitmap*>(bm_);
 }
 
 int GdiPlusImage::getWidth() const
@@ -171,7 +171,7 @@ bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t data
     //bm_.reset(new Gdiplus::Bitmap(width, height, newLineSize, PixelFormat24bppRGB, data));*/
     bm_ = new Gdiplus::Bitmap(&bi, data);
 
-    if ( bm_->GetLastStatus() == Ok ) {
+    if (bm_->GetLastStatus() == Ok) {
         width_ = width;
         height_ = height;
         return true;
@@ -181,6 +181,11 @@ bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t data
 }
 
 Gdiplus::Bitmap* GdiPlusImage::releaseBitmap() {
+    takeOwnership_ = false;
+    return getBitmap();
+}
+
+Gdiplus::Image* GdiPlusImage::releaseImage() {
     takeOwnership_ = false;
     return bm_;
 }

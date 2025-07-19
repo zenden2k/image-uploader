@@ -1,7 +1,7 @@
 /*
-     Image Uploader - program for uploading images/files to the Internet
+     Uptooda - free application for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ void MovableElement::renderGrips(Painter* gr)
         pen.SetColor(Color( 255, 255, 255) );
         pen.SetDashOffset(3);
         REAL dashValues2[2] = {4, 4};
-        pen.SetDashPattern(dashValues2, 2);    
+        pen.SetDashPattern(dashValues2, 2);
         gr->DrawRectangle( &pen, x, y, width, height );
     }
 
@@ -87,7 +87,7 @@ void MovableElement::renderGrips(Painter* gr)
 
         createGrips();
 
-        
+
         for (size_t i = 0; i < grips_.size(); i++) {
             int x = grips_[i].pt.x;
             int y = grips_[i].pt.y;
@@ -138,12 +138,12 @@ void MovableElement::setDrawDashedRectangle(bool draw)
     drawDashedRectangle_ = draw;
 }
 
-int MovableElement::getX() 
+int MovableElement::getX()
 {
     return getMinPoint(axisX)->x;
 }
 
-int MovableElement::getY() 
+int MovableElement::getY()
 {
     return getMinPoint(axisY)->y;
 }
@@ -165,7 +165,7 @@ void MovableElement::setPos(int x, int y) {
     int height = getHeight();
     int canvasWidth = canvas_->getWidth();
     int canvasHeight = canvas_->getHeigth();
-   
+
 
     if (x <= 0) {
         x = 0;
@@ -207,7 +207,7 @@ bool MovableElement::move(int offsetX, int offsetY, bool checkBounds) {
             offsetY = 0;
         }
     }
-    
+
     if (offsetX == 0 && offsetY == 0) {
         return false;
     }
@@ -235,7 +235,7 @@ void MovableElement::resize(int width, int height)
     if ( height < 1 ) {
         height  = 1;
     }
-    getMaxPoint(axisX)->x = width-1 + getX();    
+    getMaxPoint(axisX)->x = width-1 + getX();
     getMaxPoint(axisY)->y = height-1 + getY();
 }
 
@@ -246,9 +246,9 @@ void MovableElement::createGrips()
     int width = getWidth()-1;
     int height = getHeight()-1;
 
-    // item order is important!!!! 
+    // item order is important!!!!
     POINT pts[8] = {
-    {x+width,y+height},  {x+width/2, y+height}, {x,y+height},{x+width,y+height/2}, {x,y+height/2}, {x,y}, {x + width / 2, y}, {x+width,y}, 
+    {x+width,y+height},  {x+width/2, y+height}, {x,y+height},{x+width,y+height/2}, {x,y+height/2}, {x,y}, {x + width / 2, y}, {x+width,y},
     };
 
     for( int i = 0; i < 8; i++ ) {

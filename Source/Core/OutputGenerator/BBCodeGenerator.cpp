@@ -1,6 +1,6 @@
 #include "BBCodeGenerator.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 GeneratorID BBCodeGenerator::id() const
 {

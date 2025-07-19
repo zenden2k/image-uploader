@@ -10,7 +10,7 @@
 
 class UploadTask;
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 struct UploadObject {
     UploadResult uploadResult;

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -96,22 +96,22 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     bool IsLastVideo = false;
 #ifdef IU_ENABLE_MEDIAINFO
     if (MediaInfoHelper::IsMediaInfoAvailable()) {
-        IsLastVideo = !WizardDlg->getLastVideoFile().IsEmpty(); 
+        IsLastVideo = !WizardDlg->getLastVideoFile().IsEmpty();
     }
 #endif
 	resultsWindow_->EnableMediaInfo(IsLastVideo);
 
     SetDlgItemInt(IDC_THUMBSPERLINE, 4);
     SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
-    
+
     commonProgressLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
     commonPercentLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
     PageWnd = m_hWnd;
-    using namespace ImageUploader::Core::OutputGenerator;
+    using namespace Uptooda::Core::OutputGenerator;
     resultsWindow_->SetPage(static_cast<CodeLang>(Settings.CodeLang));
     resultsWindow_->SetCodeType(Settings.CodeType);
     showUploadProgressTab();
-    return FALSE;  
+    return FALSE;
 }
 
 bool CUploadDlg::startUpload() {
@@ -136,8 +136,8 @@ bool CUploadDlg::startUpload() {
     uploadListView_.DeleteAllItems();
 
     urlList_.clear();
-   
-    
+
+
     uploadSession_ = std::make_shared<UploadSession>();
 
     //serverProfileGroup.addItem(settings->quickScreenshotServer);
@@ -154,17 +154,17 @@ bool CUploadDlg::startUpload() {
 
         bool isImage = IuCommonFunctions::IsImage(FileName);
         bool isVideo = !isImage && IuCoreUtils::GetFileMimeType(fileNameUtf8).find("video/") != std::string::npos;
-        
+
         ServerProfileGroup& serverProfileGroup = isImage ? sessionImageServer_ : sessionFileServer_;
         //serverProfileGroup.addItem();
         for (const auto& item: serverProfileGroup.getItems()) {
-            
+
             auto task = std::make_shared<FileUploadTask>(fileNameUtf8, displayName);
             task->setIndex(/*rowIndex++*/i);
             //task->setFileIndex(i);
             task->setIsImage(isImage);
             task->setIsVideo(isVideo);
-            
+
             task->setServerProfile(/*isImage ? sessionImageServer_ : sessionFileServer_*/item);
             task->setUrlShorteningServer(settings->urlShorteningServer);
             using namespace std::placeholders;
@@ -334,7 +334,7 @@ bool CUploadDlg::OnShow()
 #ifdef IU_ENABLE_MEDIAINFO
     if ( MediaInfoHelper::IsMediaInfoAvailable()) {
         CVideoGrabberPage *vg = WizardDlg->getPage<CVideoGrabberPage>(CWizardDlg::wpVideoGrabberPage);
-        
+
         if(vg && !vg->fileName_.IsEmpty())
             IsLastVideo=true;
     }
@@ -342,7 +342,7 @@ bool CUploadDlg::OnShow()
     resultsWindow_->InitUpload();
     resultsWindow_->EnableMediaInfo(IsLastVideo);
     CancelByUser = false;
-   
+
     isEnableNextButtonTimerRunning_ = true;
     SetTimer(kEnableNextButtonTimer, 1000);
     MainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
@@ -361,7 +361,7 @@ bool CUploadDlg::OnShow()
             newcode = 0;
     }
     else
-    {    
+    {
         if(code<2)
             newcode=2;
     }
@@ -403,7 +403,7 @@ bool CUploadDlg::OnHide()
     settings->UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
     settings->CodeType = resultsWindow_->GetCodeType();
     settings->CodeLang = resultsWindow_->GetPage();
-    return true; 
+    return true;
 }
 
 void CUploadDlg::GenerateOutput(bool immediately)
@@ -445,7 +445,7 @@ void CUploadDlg::OnFolderUsed(UploadTask* task) {
 void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
     if ( !alreadyShortened_ && shortenUrl ) {
         GenerateOutput();
-        
+
         uploadManager_->shortenLinksInSession(uploadSession_, ServiceLocator::instance()->urlShorteningFilter().get());
     } else {
         GenerateOutput(true);
@@ -667,7 +667,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         {
             return;
         }
-        ImageUploader::Core::OutputGenerator::UploadObject item;
+        Uptooda::Core::OutputGenerator::UploadObject item;
         item.fillFromUploadResult(task->uploadResult(), task);
 
         item.fileIndex = task->index();
@@ -685,10 +685,10 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         }
         {
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
-            auto& row = urlList_[fps->tableRow]; 
+            auto& row = urlList_[fps->tableRow];
             row.uploadResult.directUrlShortened = parentTask->uploadResult()->getDirectUrlShortened();
             row.uploadResult.downloadUrlShortened = parentTask->uploadResult()->getDownloadUrlShortened();
-        }   
+        }
     }
 
     // No need to use runInGuiThread() here because update of the output is postponed and triggers by timer
@@ -707,7 +707,7 @@ void CUploadDlg::onChildTaskAdded(UploadTask* child)
             }
         }, true);
     }
-   
+
 }
 
 void CUploadDlg::backgroundThreadStarted()
@@ -723,7 +723,7 @@ void CUploadDlg::backgroundThreadStarted()
     {
         EnableNext();
     }
-    
+
     EnableExit(false);
     SetNextCaption(TR("Stop"));
 }

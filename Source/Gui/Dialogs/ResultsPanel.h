@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -51,16 +51,16 @@ class CWizardDlg;
 
 class CWebViewWindow;
 
-namespace ImageUploader::Core::OutputGenerator{
+namespace Uptooda::Core::OutputGenerator{
     class XmlTemplateList;
     class XmlTemplateGenerator;
 }
 
-class CResultsPanel : 
-    public CDialogImpl<CResultsPanel>    
+class CResultsPanel :
+    public CDialogImpl<CResultsPanel>
 {
     public:
-        CResultsPanel(CWizardDlg *dlg, std::vector<ImageUploader::Core::OutputGenerator::UploadObject>& urlList, bool openedFromHistory = false);
+        CResultsPanel(CWizardDlg *dlg, std::vector<Uptooda::Core::OutputGenerator::UploadObject>& urlList, bool openedFromHistory = false);
         virtual ~CResultsPanel();
         enum { IDD = IDD_RESULTSPANEL};
 
@@ -84,7 +84,7 @@ class CResultsPanel :
         END_MSG_MAP()
     using ShortenUrlChangedCallback = std::function<void(bool)>;
 
-    using TabPage = ImageUploader::Core::OutputGenerator::CodeLang;
+    using TabPage = Uptooda::Core::OutputGenerator::CodeLang;
     //enum TabPage { kBbCode = 0, kHtml, kPlainText, kMarkdown };
     enum CodeType { ctTableOfThumbnails = 0, ctClickableThumbnails, ctImages, ctLinks };
     enum { kOutputTimer = 1};
@@ -131,22 +131,22 @@ class CResultsPanel :
     void setShortenUrls(bool shorten);
     void setOnShortenUrlChanged(ShortenUrlChangedCallback callback);
     void setGroupByFilename(bool enable);
-    ImageUploader::Core::OutputGenerator::AbstractOutputGenerator* createOrGetGenerator(ImageUploader::Core::OutputGenerator::GeneratorID gid, ImageUploader::Core::OutputGenerator::CodeLang lang,
-        ImageUploader::Core::OutputGenerator::CodeType);
+    Uptooda::Core::OutputGenerator::AbstractOutputGenerator* createOrGetGenerator(Uptooda::Core::OutputGenerator::GeneratorID gid, Uptooda::Core::OutputGenerator::CodeLang lang,
+        Uptooda::Core::OutputGenerator::CodeType);
 protected:
     CToolBarCtrl Toolbar;
     CComboBox codeTypeComboBox;
     TabPage m_Page;
     std::map<std::string, std::string> m_Vars;
     std::vector<ServerProfile> m_Servers;
-    std::vector<ImageUploader::Core::OutputGenerator::UploadObject>  &UrlList;
+    std::vector<Uptooda::Core::OutputGenerator::UploadObject>  &UrlList;
     std::mutex urlListMutex_;
-    std::unordered_map<ImageUploader::Core::OutputGenerator::GeneratorID, std::unique_ptr<ImageUploader::Core::OutputGenerator::AbstractOutputGenerator>> outputGenerators_;
+    std::unordered_map<Uptooda::Core::OutputGenerator::GeneratorID, std::unique_ptr<Uptooda::Core::OutputGenerator::AbstractOutputGenerator>> outputGenerators_;
     int m_nImgServer, m_nFileServer;
     CWizardDlg *WizardDlg;
     CMyEngineList *m_EngineList;
-    std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateList> templateList_;
-    std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateGenerator> xmlTemplateGenerator_;
+    std::unique_ptr<Uptooda::Core::OutputGenerator::XmlTemplateList> templateList_;
+    std::unique_ptr<Uptooda::Core::OutputGenerator::XmlTemplateGenerator> xmlTemplateGenerator_;
     bool outputChanged_;
     RECT rectNeeded;
     bool shortenUrl_;
@@ -155,7 +155,7 @@ protected:
     ShortenUrlChangedCallback onShortenUrlChanged_;
     CImageListManaged toolbarImageList_;
     bool isMediaInfoEnabled_ = false;
-   
+
     void onCodeTypeChanged();
     void createToolbar();
 };

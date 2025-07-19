@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -58,13 +58,13 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     menuItemsListBox_.m_hWnd = GetDlgItem(IDC_CONTEXTMENUITEMSLIST);
 
     SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, settings->ExplorerContextMenu);
-    
+
     bool shellIntegrationAvailable = WinUtils::FileExists(settings->getShellExtensionFileName())!=0;
 
     SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_SETCHECK, settings->ExplorerVideoContextMenu);
     SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_SETCHECK, settings->SendToContextMenu);
     SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_SETCHECK, settings->ExplorerCascadedMenu);
-    
+
     SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_SETCHECK, settings->QuickUpload);
 
     toolTipCtrl_ = GuiTools::CreateToolTipForWindow(addItemButton_, TR("Add Item"));
@@ -82,7 +82,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 
     serverProfiles_.clear();
     std::vector<CString> keyNames;
-    CString keyPath = "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems";
+    CString keyPath = "Software\\Uptooda\\ContextMenuItems";
     Reg.GetChildKeysNames(keyPath,keyNames);
     for (size_t i =0; i < keyNames.size(); i++) {
         if ( Reg.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
@@ -105,7 +105,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     ::EnableWindow(GetDlgItem(IDC_CASCADEDCONTEXTMENU), shellIntegrationAvailable);
     ::EnableWindow(GetDlgItem(IDC_SHELLIMGCONTEXTMENUITEM), shellIntegrationAvailable);
     ShellIntegrationChanged();
-    
+
     return 1;  // Let the system set the focus
 }
 
@@ -117,10 +117,10 @@ LRESULT CIntegrationSettings::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lPar
 bool CIntegrationSettings::apply()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 
+    Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu;
     Settings.ExplorerContextMenu = SendDlgItemMessage(IDC_SHELLINTEGRATION, BM_GETCHECK)==BST_CHECKED;
     Settings.ExplorerContextMenu_changed ^= (Settings.ExplorerContextMenu);
-    
+
     bool Temp = Settings.ExplorerVideoContextMenu;
     Settings.ExplorerVideoContextMenu = SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED;
     Temp ^= Settings.ExplorerVideoContextMenu;
@@ -141,9 +141,9 @@ bool CIntegrationSettings::apply()
         Reg.SetRootKey( HKEY_CURRENT_USER );
 
         serverProfiles_.clear();
-        Reg.DeleteWithSubkeys("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
+        Reg.DeleteWithSubkeys("Software\\Uptooda\\ContextMenuItems");
         CString itemId;
-        if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems", true ) ) {
+        if ( Reg.SetKey( "Software\\Uptooda\\ContextMenuItems", true ) ) {
             std::mt19937 mt{ std::random_device{}() };
             std::uniform_int_distribution<int> dist(0, 999999);
                 for( int i = 0; i< menuItemCount; i++ ){
@@ -151,8 +151,8 @@ bool CIntegrationSettings::apply()
                     if ( lid->invalid ) {
                         continue;
                     }
-                    // V1002 The 'CRegistry' class, containing pointers, constructor and destructor, 
-                    // is copied by the automatically generated copy constructor. 
+                    // V1002 The 'CRegistry' class, containing pointers, constructor and destructor,
+                    // is copied by the automatically generated copy constructor.
                     CRegistry Reg2 = Reg;
                     CString itemNumber;
                     itemNumber.Format(_T("%04d"), i);
@@ -163,7 +163,7 @@ bool CIntegrationSettings::apply()
                     itemId.Replace(L"\\",L"_");
                     itemId.Replace(L"//",L"_");
                     auto iconCache = ServiceLocator::instance()->serverIconCache();
-                    if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems\\" + itemId, true) ) {
+                    if ( Reg2.SetKey("Software\\Uptooda\\ContextMenuItems\\" + itemId, true) ) {
                         Reg2.WriteString( "Name", lid->name );
                         Reg2.WriteString("ServerName", Utf8ToWCstring(lid->serverProfile.serverName()));
                         Reg2.WriteString("ProfileName", Utf8ToWCstring(lid->serverProfile.profileName()));
@@ -176,7 +176,7 @@ bool CIntegrationSettings::apply()
                             Reg2.WriteDword( "ServerTypeMask", static_cast<DWORD>(ued->TypeMask) );
                         }
                         Reg2.WriteString( "Icon", icon);
-                        
+
                         serverProfiles_[itemId] = lid->serverProfile;
                     }
                 }
@@ -219,7 +219,7 @@ void CIntegrationSettings::createResources() {
         iconDelete_.DestroyIcon();
     }
     iconDelete_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDELETEITEM), iconWidth, iconHeight);
-    
+
     deleteItemButton_.SetIcon(iconDelete_);
 
     if (iconUp_) {
@@ -244,7 +244,7 @@ LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wI
         lid->name = dlg.menuItemTitle();
         lid->serverProfile = dlg.serverProfile();
         menuItemsListBox_.SetItemData(newIndex, reinterpret_cast<DWORD_PTR>(lid));
-        menuItemsChanged_ = true; 
+        menuItemsChanged_ = true;
     }
 
     return 0;
@@ -279,7 +279,7 @@ LRESULT CIntegrationSettings::OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /
         menuItemsListBox_.InsertString(itemIndex + 1,name);
         menuItemsListBox_.SetItemData(itemIndex + 1,data);
         menuItemsListBox_.SetCurSel(itemIndex+1);
-        menuItemsChanged_ = true; 
+        menuItemsChanged_ = true;
     }
     return 0;
 }
@@ -287,7 +287,7 @@ LRESULT CIntegrationSettings::OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /
 LRESULT CIntegrationSettings::OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     int itemIndex = menuItemsListBox_.GetCurSel();
-    if(itemIndex == -1) 
+    if(itemIndex == -1)
         return 0;
 
     if(itemIndex > 0)
@@ -300,7 +300,7 @@ LRESULT CIntegrationSettings::OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*w
         menuItemsListBox_.InsertString(itemIndex - 1,name);
         menuItemsListBox_.SetItemData(itemIndex - 1,data);
         menuItemsListBox_.SetCurSel(itemIndex-1);
-        menuItemsChanged_ = true; 
+        menuItemsChanged_ = true;
     }
 
     return 0;

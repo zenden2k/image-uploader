@@ -1,7 +1,7 @@
 /*
-     Image Uploader - program for uploading images/files to the Internet
+     Uptooda - free application for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ void BrushTool::continueDraw( int x, int y, DWORD flags ) {
 void BrushTool::endDraw( int x, int y ) {
     if ( x == startPoint_.x && y == startPoint_.y && x == oldPoint_.x && y == oldPoint_.y ) { // If user just clicked, but not moved pointer
         drawLine( x, y, x, y) ;
-    } 
+    }
     startPoint_.x = -1;
     startPoint_.y = -1;
     endPoint_ = oldPoint_ = startPoint_;
@@ -91,7 +91,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
     } else {
         gr->DrawLine(&pen, x0,y0, x1, y1);
     }
-    
+
     RECT updatedRect = {0,0,0,0};
 
     if ( y1 < y0 ) {
@@ -123,7 +123,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
             UnionRect(&updatedRect, &updatedRect, &rc);
             //gr->FillEllipse( &br, (int)x, y, penSize_, penSize_ );
             segments_.markRect( rc );
-        } 
+        }
     } else if ( y1 == y0 ) {
         for( int x = xStart; x <= xEnd; x++ ) {
             int y = y0;
@@ -133,7 +133,7 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
             UnionRect(&updatedRect, &updatedRect, &rc);
             //gr->FillEllipse( &br, (int)x, y, penSize_, penSize_ );
             segments_.markRect( rc );
-        } 
+        }
     } else {
         // Why not simple draw line ? O_o
         for( int a = 0; a <= len; a++ ) {
@@ -148,8 +148,8 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
             UnionRect(&updatedRect, &updatedRect, &rc);
             //gr->FillEllipse( &br, (int)x, y, penSize_, penSize_ );
             segments_.markRect( rc );
-        } 
-    }  
+        }
+    }
 
     canvas_->updateView(updatedRect);
 }

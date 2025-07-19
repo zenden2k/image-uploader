@@ -2,7 +2,7 @@
 
 #include "Core/Upload/FileUploadTask.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 void UploadObject::fillFromUploadResult(UploadResult* res, UploadTask* task) {
     uploadResult = *res;

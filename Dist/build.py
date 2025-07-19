@@ -12,15 +12,22 @@ import xml.etree.ElementTree
 import git
 
 from contextlib import contextmanager
+from dotenv import load_dotenv
 
-IS_RELEASE = False
-TEST_MODE = False
+def get_bool_env(env_var, default=False):
+    value = os.getenv(env_var, str(default))
+    return value.lower() in ('true', '1', 'yes', 'on')
+
+load_dotenv()
+
+IS_RELEASE = get_bool_env("UPTOODA_BUILD_RELEASE")
+TEST_MODE = get_bool_env("UPTOODA_BUILD_TEST_MODE")
 BUILD_DOCS = True
 OUTDIR = "Releases" if IS_RELEASE else "Packages" 
-APP_NAME = "Zenden2k Image Uploader"
+APP_NAME = "Uptooda"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
-DEFAULT_GIT_BRANCH = "master"
-PARALLEL_JOBS = "6"
+GIT_BRANCH = os.getenv("UPTOODA_BUILD_BRANCH", "master")
+PARALLEL_JOBS = os.getenv("UPTOODA_BUILD_PARALLEL_JOBS", "6")
 DOWNLOAD_CA_BUNDLE = True
 
 # --- Script requirements ---
@@ -205,7 +212,7 @@ BUILD_TARGETS = [
     },
 ]
 
-#BUILD_TARGETS = [BUILD_TARGETS[4]]
+#BUILD_TARGETS = [BUILD_TARGETS[6]]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
@@ -500,7 +507,7 @@ def modify_update_file(component_name, filepath, version_header_defines, json_da
     root.attrib['TimeStamp'] = str(int(now.timestamp()))
     root.attrib['Date'] = now.strftime('%Y-%m-%d %H:%M:%S')
     root.attrib['DisplayName'] = component_name + " " + version_header_defines['IU_APP_VER'] +  " build "  + version_header_defines['IU_BUILD_NUMBER']
-    root.attrib['DownloadPage'] = "https://svistunov.dev/imageuploader_downloads" if IS_RELEASE else "https://svistunov.dev/imageuploader_nightly"
+    root.attrib['DownloadPage'] = "https://svistunov.dev/uptooda_downloads" if IS_RELEASE else "https://svistunov.dev/uptooda_nightly"
     text = '';
     for commit in json_data['commits']:
         text += "- " + commit['commit_message'] + "\n"
@@ -513,7 +520,7 @@ def modify_update_file(component_name, filepath, version_header_defines, json_da
 if len(sys.argv) > 1:
     git_branch = sys.argv[1]
 else:
-    git_branch = DEFAULT_GIT_BRANCH
+    git_branch = GIT_BRANCH
 
 check_program(["git", "--version"])
 
@@ -684,7 +691,7 @@ for idx, target in enumerate(BUILD_TARGETS):
                 shutil.copy2(os.path.join(src_dir,fname), lib_path)
             src_dir = dist_directory + "/Libs/FFmpeg/" + target.get("arch") + "/include/"
             shutil.copytree(src_dir, include_path, dirs_exist_ok=True) 
-            src_dir = dist_directory + "/Libs/FFmpeg/" + target.get("arch") + "/bin/"
+            src_dir =  dist_directory + "/Libs/FFmpeg/" + target.get("arch") + "/bin/"
             dest_dir = "GUI/Release/"
             shutil.copytree(src_dir, dest_dir, dirs_exist_ok=True, ignore=shutil.ignore_patterns('*.lib')) 
 
@@ -768,9 +775,9 @@ for idx, target in enumerate(BUILD_TARGETS):
                 exit(1)
             appname_suffix = " Lite" if target.get("lite") else ""
             output_filename_suffix = "-lite" if target.get("lite") else ""
-            file_from = r"output\image-uploader-" + app_ver + "-build-" + build_number+ "-openssl-portable.7z"
+            file_from = r"output\uptooda-" + app_ver + "-build-" + build_number+ "-openssl-portable.7z"
           
-            filename =  "image-uploader-" + app_ver + "-build-" + build_number + output_filename_suffix + "-" + get_out_arch_name(target) + ".7z"
+            filename =  "uptooda-" + app_ver + "-build-" + build_number + output_filename_suffix + "-" + get_out_arch_name(target) + ".7z"
             file_to = package_os_dir + "\\" +filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
@@ -778,7 +785,7 @@ for idx, target in enumerate(BUILD_TARGETS):
             json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (GUI" + appname_suffix +")")
 
             if not target.get("lite"):
-                # Creating CLI archive (imgupload)
+                # Creating CLI archive (uptooda=cli)
                 command =  repo_dir_abs + used_dist_dir + r"create_cli.bat"
                 print("Running command:", command)
                 proc = subprocess.run(command, cwd=repo_dir_abs + used_dist_dir)
@@ -786,8 +793,8 @@ for idx, target in enumerate(BUILD_TARGETS):
                     print("Create archive failed")
                     exit(1)
 
-                file_from = r"output\imgupload-{version}-build-{build}-cli.7z".format(version=app_ver,build=build_number ); 
-                filename = "image-uploader-cli-{version}-build-{build}{suffix}-{arch}.7z".format(version=app_ver,
+                file_from = r"output\\uptooda-cli-{version}-build-{build}.7z".format(version=app_ver,build=build_number ); 
+                filename = "uptooda-cli-{version}-build-{build}{suffix}-{arch}.7z".format(version=app_ver,
                                                                                         build=build_number,
                                                                                         suffix=output_filename_suffix,
                                                                                         arch=get_out_arch_name(target))
@@ -815,8 +822,8 @@ for idx, target in enumerate(BUILD_TARGETS):
                 exit(1)
 
             # Copying installer
-            file_from = r"Installer\image-uploader-" + app_ver + "-build-" + build_number+ "-setup.exe"
-            filename = "image-uploader-" + app_ver + "-build-" + build_number + output_filename_suffix + "-" + get_out_arch_name(target)+"-setup.exe"
+            file_from = r"Installer\uptooda-" + app_ver + "-build-" + build_number+ "-setup.exe"
+            filename = "uptooda-" + app_ver + "-build-" + build_number + output_filename_suffix + "-" + get_out_arch_name(target)+"-setup.exe"
             file_to = package_os_dir + filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
@@ -837,22 +844,22 @@ for idx, target in enumerate(BUILD_TARGETS):
             package_os_dir = new_build_dir + relative_path
             mkdir_if_not_exists(package_os_dir)
 
-            file_from = r"Linux\imgupload_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
+            file_from = r"Linux\\uptooda-cli_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
                                                                                             build_number=build_number,
                                                                                             arch=target.get("deb_package_arch")
             )
-            filename = "zenden-image-uploader-cli_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") +".deb"
+            filename = "uptooda-cli_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") +".deb"
             file_to = package_os_dir + filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
             json_data = add_output_file(json_data, target, json_file_path, "Debian package", file_to, relative_path + filename, APP_NAME + " (CLI)")
        
-            file_from = r"Linux\imgupload-{version_clean}.{build_number}-{arch}.tar.xz".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
+            file_from = r"Linux\\uptooda-cli-{version_clean}.{build_number}-{arch}.tar.xz".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
                                                                                             build_number=build_number,
                                                                                             arch=target.get("deb_package_arch")
             )
-            filename = "zenden-image-uploader-cli_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") +".tar.xz"
+            filename = "uptooda-cli_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") +".tar.xz"
             file_to = package_os_dir + filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
@@ -870,11 +877,11 @@ for idx, target in enumerate(BUILD_TARGETS):
                     print("Failed to create debian package for Qt GUI")
                     exit(1)
 
-                file_from = r"Linux\zenden2k-imageuploader-qt_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
+                file_from = r"Linux\\uptooda_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
                                                                                                 build_number=build_number,
                                                                                                 arch=target.get("deb_package_arch")
                 )
-                filename = "zenden2k-image-uploader-qt_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") +".deb"
+                filename = "uptooda_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") +".deb"
                 file_to = package_os_dir + filename
                 print("Copy file from:", file_from)
                 print("Copy file to:", file_to)

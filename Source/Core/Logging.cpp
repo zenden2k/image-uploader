@@ -1,7 +1,7 @@
 /*
-     Image Uploader - program for uploading images/files to the Internet
+     Uptooda - free application for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@
 std::ostream& operator<<(std::ostream& out, const wchar_t* str) {
     std::string msg = IuCoreUtils::WstringToUtf8(str);
     out << msg;
-    return out; 
+    return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const std::wstring& str) {
     std::string msg = IuCoreUtils::WstringToUtf8(str);
-    
+
     return operator<<(out, msg);
 }
 

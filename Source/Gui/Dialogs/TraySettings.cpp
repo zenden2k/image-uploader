@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     middleClickIndex = 0, rightClickIndex = 0;
     int index = 0;
     for(const auto& hotkey: settings->Hotkeys) {
-        leftButtonDblClickCombo_.AddString(hotkey.GetDisplayName()); 
+        leftButtonDblClickCombo_.AddString(hotkey.GetDisplayName());
         leftButtonClickCombo_.AddString(hotkey.GetDisplayName());
         middleButtonClickCombo_.AddString(hotkey.GetDisplayName());
         rightButtoClickCombo_.AddString(hotkey.GetDisplayName());
@@ -69,7 +69,7 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     leftButtonClickCombo_.SetCurSel(leftClickIndex);
     middleButtonClickCombo_.SetCurSel(middleClickIndex);
     rightButtoClickCombo_.SetCurSel(rightClickIndex);
-    
+
     return 1;  // Let the system set the focus
 }
 
@@ -89,9 +89,9 @@ bool CTraySettingsPage::apply() {
     settings->TrayIconSettings.LeftClickCommandStr = getCommandByIndex(leftButtonClickCombo_.GetCurSel());
     settings->TrayIconSettings.MiddleClickCommandStr = getCommandByIndex(middleButtonClickCombo_.GetCurSel());
     settings->TrayIconSettings.RightClickCommandStr = getCommandByIndex(rightButtoClickCombo_.GetCurSel());
-    
+
     settings->TrayIconSettings.DontLaunchCopy = SendDlgItemMessage(IDC_ONEINSTANCE, BM_GETCHECK) == BST_CHECKED;
-    
+
     return true;
 }
 

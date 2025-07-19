@@ -1,4 +1,4 @@
-name: Build Image Uploader
+name: Build Uptooda
 
 on:
   pull_request:
@@ -59,18 +59,14 @@ jobs:
       working-directory: ${{github.workspace}}/Build
       shell: bash
       run: ./Tests/Release/Tests.exe --dir "${{github.workspace}}/Source/Tests/TestData" --sqdir "${{github.workspace}}/Source/Core/Scripting/API/Tests/"
-    - name: Copy executable
-      shell: bash
-      working-directory: ${{github.workspace}}/Build
-      run: cp "./GUI/Release/Image Uploader.exe" ./GUI/Release/ImageUploader.exe
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       if: "env.BUILD_TYPE == 'Release'"
       with:
         name: windows_artifacts
         path: |
-          ${{github.workspace}}/Build/GUI/Release/ImageUploader.exe
-          ${{github.workspace}}/Build/CLI/Release/CLI.exe
+          ${{github.workspace}}/Build/GUI/Release/uptooda.exe
+          ${{github.workspace}}/Build/CLI/Release/uptooda-cli.exe
           ${{github.workspace}}/Build/Tests/Release/Tests.exe
   ubuntu:
     name: run on ubuntu
@@ -118,5 +114,5 @@ jobs:
       with:
         name: ubuntu_artifacts
         path: |
-          ${{github.workspace}}/Build/CLI/Release/CLI
+          ${{github.workspace}}/Build/CLI/Release/uptooda-cli
           ${{github.workspace}}/Build/Tests/Release/Tests

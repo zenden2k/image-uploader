@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -47,12 +47,12 @@ CStatusDlg::CStatusDlg(std::shared_ptr<BackgroundTask> task):
 
     taskProgressConnection_ = task_->onProgress.connect([&](BackgroundTask*, int pos, int max, const std::string& status) {
         CString statusW = U2W(status);
-        
+
         if (!IsWindow()) {
             SetInfo(statusW, _T(""));
             return;
         }
-       
+
         ServiceLocator::instance()->taskRunner()->runInGuiThread([=] {
             updateTitle(statusW);
 
@@ -75,7 +75,7 @@ CStatusDlg::CStatusDlg(std::shared_ptr<BackgroundTask> task):
     });
 }
 
-CStatusDlg::CStatusDlg(bool canBeStopped):  
+CStatusDlg::CStatusDlg(bool canBeStopped):
     canBeStopped_(canBeStopped)
 {
     init();
@@ -104,10 +104,10 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     TRC(IDCANCEL, "Stop");
     ::ShowWindow(GetDlgItem(IDCANCEL), canBeStopped_ ? SW_SHOW : SW_HIDE);
     titleFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
-	
+
     progressBar_.ShowWindow(SW_SHOW);
     progressBar_.SetMarquee(TRUE);
-	
+
 	/*if (task_) {
         ServiceLocator::instance()->taskDispatcher()->postTask(task_);
 	}*/
@@ -122,7 +122,7 @@ LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
         task_->cancel();
 	}
     KillTimer(kUpdateTimer);
-    
+
     return 0;
 }
 
@@ -183,11 +183,11 @@ int CStatusDlg::executeTask(HWND parent, int timeoutMs) {
             // Task completed quickly - no dialog needed
             auto result = finishFuture_.get();
             return IDOK;
-        } 
+        }
     } catch (const std::exception& e) {
         LOG(ERROR) << "Wait on task failed: " << e.what();
     }
-    
+
     // Task is taking long - show dialog
     return DoModal(parent);
 }

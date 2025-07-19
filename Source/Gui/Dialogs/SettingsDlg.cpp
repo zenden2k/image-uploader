@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -56,11 +56,11 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
     m_SettingsPagesListBox.SubclassWindow(GetDlgItem(IDC_SETTINGSPAGESLIST));
     fillListBox();
-    // set icons 
+    // set icons
 
     hIcon = GuiTools::LoadBigIcon(IDR_MAINFRAME);
     hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
-    
+
     SetIcon(hIcon, TRUE);
     SetIcon(hIconSmall, FALSE);
 
@@ -69,10 +69,10 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     TRC(IDC_APPLY, "Apply");
     TRC(IDC_SAVESTATUSLABEL, "Settings have been saved.");
     SetWindowText(TR("Settings"));
-    
+
     m_SettingsPagesListBox.SetCurSel(PageToShow);
     ShowPage(PageToShow);
-    return 0; 
+    return 0;
 }
 
 LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -127,10 +127,10 @@ bool CSettingsDlg::ShowPage(SettingsPage idPage)
 
     if(idPage == CurPage) return true;
 
-    if(!Pages[idPage]) 
+    if(!Pages[idPage])
         CreatePage(idPage);
 
-    if(Pages[idPage]) 
+    if(Pages[idPage])
         ::ShowWindow(Pages[idPage]->PageWnd, SW_SHOW);
 
     if (CurPage != spNone && Pages[CurPage]) {
@@ -257,13 +257,13 @@ bool CSettingsDlg::CreatePage(SettingsPage pageId)
                 return {};
         }
     };
-    
+
     std::unique_ptr<CSettingsPage> page = createObject();
     Pages[pageId] = std::move(page);
 
     WINDOWPLACEMENT wp;
     ::GetWindowPlacement(GetDlgItem(IDC_TABCONTROL), &wp);
-    TabCtrl_AdjustRect(GetDlgItem(IDC_TABCONTROL),FALSE, &wp.rcNormalPosition);     
+    TabCtrl_AdjustRect(GetDlgItem(IDC_TABCONTROL),FALSE, &wp.rcNormalPosition);
     ::SetWindowPos(Pages[pageId]->PageWnd, m_SettingsPagesListBox, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left + wp.rcNormalPosition.right, -wp.rcNormalPosition.top + wp.rcNormalPosition.bottom, 0);
 
     Pages[pageId]->fixBackground();
@@ -293,4 +293,4 @@ LRESULT CSettingsDlg::OnCtlColorStatic(HDC hdc, HWND hwndChild)
         return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(backgroundBrush_));
     }
     return 0;
-}   
+}

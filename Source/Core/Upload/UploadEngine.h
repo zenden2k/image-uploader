@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ struct ActionVariable
 
     }
     ActionVariable() : nIndex(0) {
-        
+
     }
 };
 
@@ -71,7 +71,7 @@ struct ActionFunc {
     }
 
     ActionFunc(std::string functionName): Func(std::move(functionName)), Required(true){
-        
+
     }
 
     void setArg(size_t index, const std::string& value) {
@@ -111,7 +111,7 @@ struct UploadAction
     //int NumOfTries;
 
     UploadAction() {
-        Index = 0; 
+        Index = 0;
         IgnoreErrors = false;
         OnlyOnce = false;
         RetryLimit = 1;
@@ -152,11 +152,11 @@ public:
 
     /**
      * Params:
-     * 
+     *
      * Login
      * Password
-     * 
-     * Custom parameters which should be visible in server settings dialog, should have the same name as in \ref GetServerParamList. 
+     *
+     * Custom parameters which should be visible in server settings dialog, should have the same name as in \ref GetServerParamList.
      */
     std::string getParam(const std::string& name)
     {
@@ -171,7 +171,7 @@ public:
             auto it = params.find(name);
             if (it != params.end()) {
                 result = it->second;
-            }        
+            }
         }
         return result;
     }
@@ -223,7 +223,7 @@ class CUploadEngineData
 
         static ServerType ServerTypeFromString(const std::string& serverType);
 };
-/** 
+/**
 UploadParams class
 */
 class UploadParams
@@ -239,7 +239,7 @@ public:
     std::string DirectUrl;
 
     std::string ThumbUrl;
-    std::string ViewUrl; 
+    std::string ViewUrl;
     std::string EditUrl;
     std::string DeleteUrl;
 
@@ -434,7 +434,7 @@ class CAbstractUploadEngine
         bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
         bool ErrorMessage(ErrorInfo);
         virtual bool needStop();
-        virtual void SetStatus(StatusType status, const std::string& param = "");        
+        virtual void SetStatus(StatusType status, const std::string& param = "");
 };
 
 #endif // IU_CORE_UPLOADENGINE_H

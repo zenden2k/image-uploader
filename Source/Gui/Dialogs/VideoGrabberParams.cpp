@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -61,13 +61,13 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     TRC(IDC_VIDEOSNAPSHOTSFOLDERLABEL, "Folder for snapshots:");
     TRC(IDC_VIDEOSNAPSHOTSFOLDERBUTTON, "Select...");
-    
+
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
         HWND snapshotsFolderEditHwnd = GetDlgItem(IDC_VIDEOSNAPSHOTSFOLDEREDIT);
         LONG styleEx = ::GetWindowLong(snapshotsFolderEditHwnd, GWL_EXSTYLE);
         ::SetWindowLong(snapshotsFolderEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
-    
+
         GuiTools::RemoveWindowStyleEx(GetDlgItem(IDC_SNAPSHOTFILENAMEEDIT), WS_EX_RTLREADING);
     }
 

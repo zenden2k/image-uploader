@@ -31,6 +31,7 @@ struct ImageInfo {
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 
+std::unique_ptr<Gdiplus::Image> ImageFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType);
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType);
 void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea);
 void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus::Pen* p, Gdiplus::Brush* br);

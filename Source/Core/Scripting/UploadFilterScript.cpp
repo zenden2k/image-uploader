@@ -1,8 +1,8 @@
 ﻿/*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ limitations under the License.
 #include "API/ScriptAPI.h"
 #include "API/UploadTaskWrappers.h"
 
-UploadFilterScript::UploadFilterScript(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory) 
+UploadFilterScript::UploadFilterScript(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory)
     : Script(fileName, serverSync, networkClientFactory)
 {
 }

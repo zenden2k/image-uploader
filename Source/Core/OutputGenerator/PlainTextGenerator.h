@@ -6,7 +6,7 @@
 
 #include "AbstractCodeGenerator.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 class PlainTextGenerator : public AbstractCodeGenerator {
 public:

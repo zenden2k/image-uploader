@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-28 16:26+0300\n"
+"POT-Creation-Date: 2025-07-16 17:56+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/image-uploader/"
@@ -103,14 +103,26 @@ msgstr ""
 " %i% - عداد الملفات,\n"
 "%cx% - العرض,  %cy% - الارتفاع"
 
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:613
+#, fuzzy, c-format
+#| msgid "Screenshot Action"
+msgid "%s (screen recording)"
+msgstr "عمل لقطة للشاشة"
+
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:46
 #, c-format
 msgid "%s - Quick Setup"
 msgstr "%s-الاعداد السريع"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:891
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:893
 #, c-format
 msgid "%s - Updates available"
+msgstr "%s-التحديثات المتوفرة"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:55
+#, fuzzy, c-format
+#| msgid "%s - Updates available"
+msgid "%s Updates"
 msgstr "%s-التحديثات المتوفرة"
 
 #: ../Source/Gui/UploadListModel.cpp:105
@@ -118,7 +130,7 @@ msgstr "%s-التحديثات المتوفرة"
 msgid "%s of %s (%d%%) %s"
 msgstr "%s من %s (%d %%) %s"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:60
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:64
 #, c-format
 msgid "%s server settings"
 msgstr "اعدادات خادم %s"
@@ -146,8 +158,8 @@ msgstr ""
 msgid "&Upload"
 msgstr "&رفع"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:379
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:380
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:354
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:355
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1400
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1401
 msgid "(edited)"
@@ -164,24 +176,26 @@ msgstr "(تم نسخ الارتباط الى الحافظة)"
 msgid "(the link has been copied to the clipboard)"
 msgstr "(تم نسخ الارتباط الى الحافظة)"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:435
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:437
 msgid "< Back"
 msgstr "< السابق"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:567
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:565
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:952
 msgid "<no authentication>"
 msgstr "<لا توثيق>"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:165
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:167
 msgid "A new version is available:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:268
-msgid "About Image Uploader"
-msgstr "حول رافع الصور"
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:271
+#, fuzzy, c-format
+#| msgid "About..."
+msgid "About %s"
+msgstr "حول..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2736
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2738
 msgid "About..."
 msgstr "حول..."
 
@@ -193,16 +207,16 @@ msgstr "امكانية الوصول:"
 msgid "Account is not enabled"
 msgstr "لم يتم تمكين الحساب"
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:216
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:275
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:218
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:277
 msgid "Account with such name already exists."
 msgstr "حساب بهذا الاسم موجود مسبقا."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:323
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:320
 msgid "Account..."
 msgstr "الحساب..."
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:45
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:46
 msgid "Action"
 msgstr "عمل"
 
@@ -215,11 +229,11 @@ msgid "Active connection"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:88
-#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:81
 msgid "Add"
 msgstr "اضافة"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:470
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:468
 msgid "Add FTP server..."
 msgstr "اضافة خادم ناقل اللملفات"
 
@@ -235,19 +249,19 @@ msgstr ""
 msgid "Add Files"
 msgstr "اضافة ملفات"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:326
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:338
 msgid "Add Files..."
 msgstr "اضافة الملفات..."
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:330
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:342
 msgid "Add Folder..."
 msgstr "اضافة مجلد..."
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:324
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:336
 msgid "Add Images"
 msgstr "اضافة صور"
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:74
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:70
 msgid "Add Item"
 msgstr "اضافة مادة"
 
@@ -255,7 +269,7 @@ msgstr "اضافة مادة"
 msgid "Add Menu Item"
 msgstr "اضافة مادة القائمة"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:588
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:586
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:970
 #, fuzzy
 #| msgid "Account..."
@@ -284,7 +298,7 @@ msgstr "اضافة مجلد..."
 msgid "Add images..."
 msgstr "اضافة الملفات..."
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:51
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:53
 msgid "Add item to video files' context menu"
 msgstr "اضافة مادة الى قائمة السياق لملفات الفيديو"
 
@@ -292,7 +306,7 @@ msgstr "اضافة مادة الى قائمة السياق لملفات الفي
 msgid "Add local folder as new server..."
 msgstr "اضافة مجلد محلي كخادم جديد..."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:471
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:469
 msgid "Add local folder..."
 msgstr "اضافة مجلد محلي..."
 
@@ -304,7 +318,7 @@ msgstr "اضافة نص"
 msgid "Add text on thumbnail"
 msgstr "اضافة نص على الصورة المصغرة"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:46
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:47
 msgid "Add text to image"
 msgstr "اضافة نص الى الصور"
 
@@ -322,7 +336,7 @@ msgstr "اضافة الى قائمة"
 msgid "Add video files to the list after Drag'n'Drop"
 msgstr "اضافة ملفات الفيديو الى القائمة بعد سحب'n ' اسقاط"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:44
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:45
 msgid "Add watermark"
 msgstr "اضافة علامة مائية"
 
@@ -336,7 +350,7 @@ msgstr "اضافة الدليل باسم خادم"
 msgid "Additional options..."
 msgstr "اعدادات اضافية"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:60
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:61
 msgid "Additional params"
 msgstr "عربات اضافية"
 
@@ -344,7 +358,7 @@ msgstr "عربات اضافية"
 msgid "Additional settings"
 msgstr "اعدادات اضافية"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:26
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:27
 msgid "Address:"
 msgstr "العنوان:"
 
@@ -368,14 +382,14 @@ msgstr ""
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:207
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:283
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:163
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:138
 #: ../Source/Gui/Dialogs/LogWindow.cpp:181
 #: ../Source/Gui/Dialogs/MainDlg.cpp:727
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1723
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2008
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1725
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2010
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1535
 msgid "All files"
 msgstr "كافة الملفات"
@@ -386,7 +400,7 @@ msgstr "تم رفع كافة الملفات بنجاح."
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:583
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:178
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:98
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:80
 msgid "All monitors"
 msgstr ""
 
@@ -416,7 +430,7 @@ msgstr "حدث خطا اثناء الحصول على معلومات التحدي
 msgid "An error occured while loading script."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:151
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:153
 msgid "An error occured while receiving update information from server."
 msgstr "حدث خطا اثناء الحصول على معلومات التحديث من الالخادم."
 
@@ -426,8 +440,8 @@ msgid ""
 "error log."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1485
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2036
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1487
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2038
 msgid "Any file"
 msgstr "اي ملف"
 
@@ -435,36 +449,36 @@ msgstr "اي ملف"
 msgid "Appearance options"
 msgstr "خيارات المظهر"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:89
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:79
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:69
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:283
 msgid "Apply"
 msgstr "تطبيق"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:279
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:254
 msgid "Are you sure to place text and logo in the same position on image?"
 msgstr "هل انت متاكد من وضع النص والشعار في نفس الموقع في الصورة"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1916
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1918
 msgid "Are you sure to quit?"
 msgstr "هل انت متاكد من الهروب؟"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:412
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:428
 #, c-format
 msgid "Are you sure you want to delete profile '%s'?"
 msgstr "هل تريد حذف الصورة '%s'؟"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:427
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:428
 #, fuzzy, c-format
 #| msgid "Are you sure you want to delete profile '%s'?"
 msgid "Are you sure you want to delete the file '%s' from the server?"
 msgstr "هل تريد حذف الصورة '%s'؟"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:172
-msgid ""
-"Are you sure you want to delete this account from Image Uploader's internal "
-"list?"
-msgstr ""
+#, fuzzy, c-format
+#| msgid "Are you sure you want to delete profile '%s'?"
+msgid "Are you sure you want to delete this account from %s's internal list?"
+msgstr "هل تريد حذف الصورة '%s'؟"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1033
 msgid "Arrow"
@@ -478,7 +492,7 @@ msgstr "طلب تاكيد عند الخروج"
 msgid "At least one mouse command should not be empty"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:43
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:44
 msgid "Attention! Global hotkeys are active only when tray icon is shown."
 msgstr ""
 "هام! مفاتيح الاختصار العالمية النشطة فقط عندما اظهار ايقونة علبة الورق."
@@ -495,7 +509,7 @@ msgstr "صوت"
 msgid "Audio codec:"
 msgstr "ملفات صوتية"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2007
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2009
 msgid "Audio files"
 msgstr "ملفات صوتية"
 
@@ -505,7 +519,7 @@ msgstr "ملفات صوتية"
 msgid "Audio source:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:327
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:329
 msgid "Authenticated succesfully."
 msgstr "المصادقة بنجاح."
 
@@ -513,20 +527,20 @@ msgstr "المصادقة بنجاح."
 msgid "Authenticaton:"
 msgstr "التحقق:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:265
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:268
 msgid "Author:"
 msgstr "المؤلف:"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:29
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:30
 msgid "Authorization on proxy"
 msgstr "اذن على الوكيل"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:255
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:52
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
 msgid "Authorize"
 msgstr "الاذن"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:83
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:84
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:245
 msgid "Auto"
 msgstr "تلقائي"
@@ -543,7 +557,7 @@ msgstr "معلمات التفويض"
 msgid "Backend:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:70
 msgid "Background color:"
 msgstr "لون الخلفية:"
@@ -556,7 +570,7 @@ msgstr ""
 msgid "Best (slowest)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:105
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:108
 msgid "Beta-testers:"
 msgstr "اختبار بيتا:"
 
@@ -579,18 +593,18 @@ msgstr "نصف القطر المدور"
 msgid "Blurring rectangle"
 msgstr "عدم وضوح المستطيل"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:92
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:99
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:93
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:100
 msgid "Bottom center"
 msgstr "اسفل الوسط"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:91
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:98
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:92
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:99
 msgid "Bottom left corner"
 msgstr "الزاوية السفلي اليسرى"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:93
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:100
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:94
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:101
 msgid "Bottom right corner"
 msgstr "اسفل الزاوية اليمنى"
 
@@ -609,7 +623,7 @@ msgstr "استعراض..."
 msgid "Brush"
 msgstr "فرشاة"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:405
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:403
 msgid "By default"
 msgstr "حسب الافتراضي"
 
@@ -630,12 +644,12 @@ msgstr "حسب الافتراضي"
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:94
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:48
-#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:84
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:78
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:49
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:82
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:66
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:68
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:287
 msgid "Cancel"
@@ -682,36 +696,36 @@ msgid ""
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:568
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:66
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:207
 msgid "Capture Last Region"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:196
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
 msgid "Capture Rectangular Region"
 msgstr "التقاط منطقة مستطيلة"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:566
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:60
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:201
 msgid "Capture Selected Area"
 msgstr "التقاط منطقة مختارة"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:63
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:204
 msgid "Capture Selected Object"
 msgstr "التقاط الكائن المحدد"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:572
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:62
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:203
 #, fuzzy
 #| msgid "Capture the Active Window"
 msgid "Capture Selected Window"
 msgstr "التقاط الاطار النشط"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:97
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:73
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:54
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:63
 #, fuzzy
 #| msgid "Capture with shadow"
@@ -719,15 +733,15 @@ msgid "Capture cursor"
 msgstr "التقاط مع الظل"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:571
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:59
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:200
 #: ../Source/Gui/Win7JumpList.cpp:251
 msgid "Capture the Active Window"
 msgstr "التقاط الاطار النشط"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:58
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:199
 #: ../Source/Gui/Win7JumpList.cpp:243
 msgid "Capture the Entire Screen"
 msgstr "التقاط الشاشة باكملها"
@@ -736,15 +750,15 @@ msgstr "التقاط الشاشة باكملها"
 msgid "Capture with shadow"
 msgstr "التقاط مع الظل"
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:52
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:54
 msgid "Cascaded context menu"
 msgstr "قائمة سياق متعاقب"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:81
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:82
 msgid "Center"
 msgstr "مركز"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:152
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:160
 msgid "Change"
 msgstr ""
 
@@ -754,7 +768,7 @@ msgid ""
 "be uploaded."
 msgstr "تغيير اعدادات تجهيز الصورة او اختر خادما اخر، حيث يمكن رفع صورك."
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:43
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:44
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:195
 msgid "Change width:"
 msgstr "تغيير العرض:"
@@ -765,7 +779,7 @@ msgstr "تغيير العرض:"
 msgid "Check file types before upload"
 msgstr "عملية الصور قبل الرفع"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2738
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2740
 msgid "Check for Updates"
 msgstr "التحقق من وجود تحديثات"
 
@@ -776,7 +790,7 @@ msgstr "التحقق من وجود تحديثات"
 msgid "Checking file formats..."
 msgstr "التحقق من وجود تحديثات..."
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:144
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:146
 msgid "Checking for updates..."
 msgstr "التحقق من وجود تحديثات..."
 
@@ -784,12 +798,12 @@ msgstr "التحقق من وجود تحديثات..."
 msgid "Choose executable file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2038
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2040
 msgid "Choose files"
 msgstr ""
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:181
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1848
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1850
 msgid "Choose folder"
 msgstr ""
 
@@ -797,7 +811,7 @@ msgstr ""
 msgid "Choose folder..."
 msgstr "اختر المجلد..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2011
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2013
 msgid "Choose media file"
 msgstr ""
 
@@ -832,12 +846,12 @@ msgstr "اختر الخادم لرفع الصور"
 msgid "Choose server..."
 msgstr "اختر الخادم..."
 
-#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:82
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:80
 msgid "Choose servers"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:352
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1726
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1728
 msgid "Choose video file"
 msgstr ""
 
@@ -848,7 +862,7 @@ msgid "Choose..."
 msgstr "اختر المجلد..."
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:265
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:154
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:162
 #: ../Source/Gui/Dialogs/LogWindow.cpp:206
 msgid "Clear"
 msgstr "تنظيف"
@@ -857,15 +871,15 @@ msgstr "تنظيف"
 msgid "Clear History"
 msgstr "مسح التاريخ"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:102
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:103
 msgid "Clear History..."
 msgstr "مسح التاريخ..."
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:155
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:163
 msgid "Clear all"
 msgstr "مسح الكل"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:91
 msgid "Clear filters"
 msgstr ""
 
@@ -905,7 +919,7 @@ msgstr "انقر على هذه الرسالة لعرض التفاصيل..."
 msgid "Clickable thumbnails"
 msgstr "الصور المصغرة قابلة للنقر"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:96
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:97
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:220
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:77
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:563
@@ -913,9 +927,9 @@ msgstr "الصور المصغرة قابلة للنقر"
 #: ../Source/Gui/Dialogs/ResultsWindow.cpp:76
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:104
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:57
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:150
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:205
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:236
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:152
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:208
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:239
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1009
 msgid "Close"
 msgstr "اغلاق"
@@ -940,11 +954,11 @@ msgstr ""
 msgid "Colors"
 msgstr "الالوان"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:57
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:59
 msgid "Component name"
 msgstr "اسم المكون"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:68
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:70
 msgid "Components:"
 msgstr ""
 
@@ -954,7 +968,7 @@ msgstr ""
 msgid "Concatenation..."
 msgstr "الوثائق"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:64
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:212
 #, fuzzy
 #| msgid "Connection  name:"
 msgid "Connection"
@@ -969,11 +983,11 @@ msgstr "اسم الاتصال:"
 msgid "Connection name cannot be empty"
 msgstr "لا يمكن ان يكون اسم الاتصال فارغ"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:22
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:23
 msgid "Connection settings"
 msgstr "اعدادات الاتصال"
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:54
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:56
 msgid "Context menu custom items:"
 msgstr "سياق عناصر القائمة المخصصة:"
 
@@ -984,7 +998,7 @@ msgstr "سياق عناصر القائمة المخصصة:"
 msgid "Continue"
 msgstr "استمر"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:86
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:89
 msgid "Contributors:"
 msgstr "المساهمين:"
 
@@ -994,7 +1008,7 @@ msgstr "المساهمين:"
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr "مسار UNC تحويل\"\\\\ الى \"\"‎file:‎/‎/‎/‎/‎/‎\"\"\""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:407
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:409
 msgid "Converting history"
 msgstr ""
 
@@ -1033,7 +1047,7 @@ msgstr "نسخ النتائج تلقائيا الى الحافظة"
 msgid "Copy delete link"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:310
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:314
 msgid "Copy e-mail"
 msgstr ""
 
@@ -1058,21 +1072,21 @@ msgstr "نسخ في البيانات:صيغة رابط"
 msgid "Copy in data:URI format (html)"
 msgstr "نسخ في البيانات:صيغة رابط (html)"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:207
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:208
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:281
 #, fuzzy
 #| msgid "Copy image"
 msgid "Copy link"
 msgstr "نسخ الصورة"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:211
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:212
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:287
 #, fuzzy
 #| msgid "Clickable thumbnails"
 msgid "Copy link to thumbnail"
 msgstr "الصور المصغرة قابلة للنقر"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:208
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:209
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:284
 msgid "Copy link to view page"
 msgstr ""
@@ -1103,15 +1117,9 @@ msgstr "نسخ الى الحافظة"
 msgid "Could not add server."
 msgstr "تعذر اضافة الخادم"
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:332
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:334
 msgid "Could not authenticate. Please try again."
 msgstr "تعذر مصادقة. الرجاء المحاولة مرة اخرى."
-
-#: ../Source/Gui/Dialogs/TextViewDlg.cpp:83
-#, fuzzy, c-format
-#| msgid "Failed to load folder list."
-msgid "Could not create file '%s'."
-msgstr "فشل في رفع قائمة المجلدات."
 
 #: ../Source/Video/AvcodecFrameGrabber.cpp:202
 #, fuzzy
@@ -1134,7 +1142,7 @@ msgstr "تعذر العثور على الارتباطات في نص معين!"
 msgid "Could not read package %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:962
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:964
 msgid "Could not save settings file. See error log for details."
 msgstr "تعذر حفظ ملف الاعدادات. راجع سجل الاخطاء للحصول على التفاصيل."
 
@@ -1142,7 +1150,7 @@ msgstr "تعذر حفظ ملف الاعدادات. راجع سجل الاخطا�
 msgid "Could not upload screenshot :("
 msgstr "لا يمكن رفع الصورة:("
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:344
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:345
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1159,17 +1167,17 @@ msgstr ""
 
 #: ../Source/Core/Upload/Filters/ImageConverterFilter.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:214
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:185
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:250
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:259
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:188
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:253
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:262
 msgid "Couldn't load thumbnail preset!"
 msgstr "تعذر رفع الصور المصغرة مسبقا!"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:133
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:397
 msgid "Create Profile"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:59
 msgid "Create a Copy"
 msgstr "انشاء نسخ"
 
@@ -1190,7 +1198,7 @@ msgstr "انشاء مجلد متداخل"
 msgid "Create thumbnails"
 msgstr "انشاء مصغرات"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:320
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:323
 msgid "Creating new thumbnail preset"
 msgstr "انشاء اعداد مسبق جديد مصغر"
 
@@ -1200,11 +1208,11 @@ msgstr "جمع"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:585
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:169
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:89
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:71
 msgid "Current monitor"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:343
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:318
 msgid "Current profile's changes weren't saved. Do you want to continue?"
 msgstr "لا يتم حفظ التغييرات في الصورة الحالية. هل تريد الاستمرار؟"
 
@@ -1212,13 +1220,13 @@ msgstr "لا يتم حفظ التغييرات في الصورة الحالية. 
 msgid "Cut"
 msgstr "قص"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:158
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:161
 #, fuzzy
 #| msgid "Settings file path:"
 msgid "Data file path:"
 msgstr "اعدادات مسار الملف:"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:92
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:93
 msgid "Date from:"
 msgstr ""
 
@@ -1246,11 +1254,11 @@ msgstr "تشابك"
 msgid "Delay when hiding window:"
 msgstr "تاخير عند اخفاء النافذة:"
 
-#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:167
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:179
 msgid "Delete"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:135
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:399
 msgid "Delete Profile"
 msgstr "حذف السيرة"
 
@@ -1258,11 +1266,11 @@ msgstr "حذف السيرة"
 msgid "Delete account"
 msgstr "حذف الحساب"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:226
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:227
 msgid "Delete file from server"
 msgstr "حذف الملف من الخادم"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:430
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:431
 #, fuzzy
 #| msgid "Delete file from server"
 msgid "Deleting the file from the server"
@@ -1284,7 +1292,7 @@ msgstr ""
 msgid "Display video file information on resulting picture"
 msgstr "عرض معلومات ملف الفيديو على الصورة الناتجة"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1914
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1916
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:350
 msgid "Do not ask again"
 msgstr ""
@@ -1293,11 +1301,11 @@ msgstr ""
 msgid "Do not launch new program's instance from tray"
 msgstr "لا اطلاق مثيل برنامج جديد من علبة الورق"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:189
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
 msgid "Do nothing"
 msgstr "لا تفعل شيئا"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2737
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2739
 msgid "Documentation"
 msgstr "الوثائق"
 
@@ -1339,7 +1347,7 @@ msgstr "المدة:"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:208
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:357
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
 msgid "Edit"
 msgstr "تحرير"
 
@@ -1347,7 +1355,7 @@ msgstr "تحرير"
 msgid "Edit Profile"
 msgstr "تحرير السيرة"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:223
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:224
 msgid "Edit file on server"
 msgstr "تحرير الملف في الخادم"
 
@@ -1355,11 +1363,11 @@ msgstr "تحرير الملف في الخادم"
 msgid "Edit folder"
 msgstr "تحرير المجلد"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:42
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:43
 msgid "Edit hotkey..."
 msgstr "تحرير مفتاح نشط..."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:516
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:514
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:889
 #, fuzzy
 #| msgid "View log for details."
@@ -1379,15 +1387,15 @@ msgstr ""
 msgid "Enter URLs (one http:// or ftp:// link per line)"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:324
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:321
 msgid "Enter account information"
 msgstr "ادخل معلومات الحساب"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:325
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:300
 msgid "Enter new profile name:"
 msgstr "ادخل اسم السيرة الجديد:"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:320
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:323
 msgid "Enter new thumbnail preset name:"
 msgstr "ادخال اسم الاعداد المسبق المصغرة الجديدة:"
 
@@ -1400,7 +1408,7 @@ msgstr "ادخل النص الذي يحتوي على روابط للصور (BBco
 msgid "Enter your account information"
 msgstr "ادخال معلومات حسابك"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:53
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:54
 msgid "Enter your text:"
 msgstr "ادخل نصك:"
 
@@ -1416,12 +1424,12 @@ msgstr "ادخل نصك:"
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:81
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:134
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:143
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:149
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:216
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:270
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:275
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:157
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:166
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:172
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:218
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:272
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:277
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:194
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:109
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:190
@@ -1429,15 +1437,15 @@ msgstr "ادخل نصك:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:136
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:154
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
-#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:122
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:171
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:188
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:173
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:190
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:108
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:113
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:118
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:136
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:142
-#: ../Source/Gui/Dialogs/TextViewDlg.cpp:84
+#: ../Source/Gui/Dialogs/TextViewDlg.cpp:85
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:330
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:349
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1586
@@ -1453,7 +1461,7 @@ msgstr "التحكم بالاخطاء"
 msgid "Error in the field '%s':\n"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:208
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:222
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:151
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:145
 #, c-format
@@ -1497,9 +1505,9 @@ msgstr "تنفيذ المخطوطة السنجابية لكل مهمة (ملف)"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:274
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:661
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:218
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:430
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1861
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:226
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:432
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1863
 msgid "Exit"
 msgstr "خروج"
 
@@ -1549,7 +1557,7 @@ msgstr "فشل في رفع قائمة المجلدات."
 msgid "Failed to load folder list."
 msgstr "فشل في رفع قائمة المجلدات."
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:339
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:341
 msgid "Failed to logout."
 msgstr ""
 
@@ -1630,8 +1638,8 @@ msgstr "ملف:"
 msgid "Filename format:"
 msgstr "تنسيق اسم الملف:"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:94
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:49
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:95
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:50
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:79
 msgid "Filename:"
 msgstr "اسم الملف:"
@@ -1644,7 +1652,7 @@ msgstr "اسم الملف:"
 msgid "Files"
 msgstr "الملفات"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:98
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:99
 msgid "Files total:"
 msgstr "اجمالي الملفات:"
 
@@ -1667,13 +1675,13 @@ msgstr "بيضوي معبا"
 msgid "Filled rectangle"
 msgstr "مستطيل معبا"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:91
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:92
 msgid "Filters"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:459
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:232
 msgid "Finish"
 msgstr "انهاء"
 
@@ -1692,11 +1700,11 @@ msgstr "عمل لقطة للشاشة"
 msgid "Finished"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:115
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:123
 msgid "First you have to select an item in the list."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:81
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:82
 msgid "Fit"
 msgstr "ملائم"
 
@@ -1731,7 +1739,7 @@ msgstr "قائمة المجلدات على الخادم %s للحساب '%s':"
 msgid "Folder name:"
 msgstr "اسم المجلد:"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
 msgid "Folder/album:"
 msgstr "مجلد/البوم"
 
@@ -1743,15 +1751,15 @@ msgstr "مجلد:"
 msgid "Font size:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:56
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:57
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:52
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:57
 msgid "Font..."
 msgstr "الخط..."
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:41
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:42
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:59
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:60
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:67
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:193
 msgid "Format:"
@@ -1761,7 +1769,7 @@ msgstr "الصيغة:"
 msgid "Forum code (BBCode)"
 msgstr "كود منتدى (BBCode)"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:64
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:67
 #, fuzzy
 #| msgid "Found a bug? Send it to the author"
 msgid "Found a bug? Send a bug report to the author."
@@ -1782,16 +1790,16 @@ msgid "Frames layout"
 msgstr "تخطيط الاطارات"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:575
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:61
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:202
 msgid "Freehand Capture"
 msgstr "التقاط يدوي"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:332 ../Source/Gui/Win7JumpList.cpp:203
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:344 ../Source/Gui/Win7JumpList.cpp:203
 msgid "From Clipboard"
 msgstr "من الحافظة"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:328
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:340
 msgid "From Web"
 msgstr "من ويب"
 
@@ -1804,7 +1812,7 @@ msgstr ""
 msgid "Full screen"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:57
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:205
 msgid "General"
 msgstr "عام"
 
@@ -1822,7 +1830,7 @@ msgstr ""
 msgid "Getting info about file..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:47
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:48
 msgid "Global"
 msgstr "العالمية"
 
@@ -1867,17 +1875,17 @@ msgstr "كود ل HTML"
 msgid "HTML files"
 msgstr "ملفات الفيديو"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:55
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:56
 msgid "Height:"
 msgstr "الارتفاع:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:323
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:324
 msgid "Help"
 msgstr "التعليمات"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:205
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:432
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1863
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:434
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1865
 msgid "Hide"
 msgstr "اخفاء"
 
@@ -1885,11 +1893,11 @@ msgstr "اخفاء"
 msgid "Highlight"
 msgstr "ابراز"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:349
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:361
 msgid "History"
 msgstr "التاريخ"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:546
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:549
 msgid "History has been cleared successfully."
 msgstr ""
 
@@ -1897,7 +1905,7 @@ msgstr ""
 msgid "Horizontal interval:"
 msgstr "فاصل افقي:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:216
 msgid "Hotkeys"
 msgstr "مفاتيح الاختصار"
 
@@ -1939,19 +1947,9 @@ msgid ""
 "animation will be lost. Do you wish to continue?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:943
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:945
 msgid "Image Settings and Server Selection"
 msgstr "اعدادات الصور واختيار الخادم"
-
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:612
-#, fuzzy
-#| msgid "Image Uploader Updates"
-msgid "Image Uploader (screen recording)"
-msgstr "تحديثات رافع الصورة"
-
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:55
-msgid "Image Uploader Updates"
-msgstr "تحديثات رافع الصورة"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:53
 msgid "Image processing"
@@ -1961,18 +1959,18 @@ msgstr "معالجة الصور"
 msgid "Image processing settings..."
 msgstr "اعدادات معالجة الصورة..."
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:279
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:413
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:254
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:429
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:55
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:198
 msgid "Image settings"
 msgstr "اعدادات الصورة"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:162
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:137
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:123
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:59
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1483
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2034
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:207
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1485
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2036
 msgid "Images"
 msgstr "الصور"
 
@@ -1980,7 +1978,7 @@ msgstr "الصور"
 msgid "Images editor:"
 msgstr "محرر الصور:"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:220
 msgid "Images from web"
 msgstr "الصور من ويب"
 
@@ -1988,7 +1986,7 @@ msgstr "الصور من ويب"
 msgid "Images per string:"
 msgstr "مزيد من الصور في السلسلة:"
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:50
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:52
 msgid "Immediately begin uploading to the server"
 msgstr "البدء فورا في رفعها على الخادم"
 
@@ -1999,9 +1997,9 @@ msgstr ""
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:243
 #: ../Source/Gui/Components/DragndropOverlay.cpp:34
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:563
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:343 ../Source/Gui/Win7JumpList.cpp:267
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:355 ../Source/Gui/Win7JumpList.cpp:291
 msgid "Import Video File"
 msgstr "استيراد ملف الفيديو"
 
@@ -2010,7 +2008,7 @@ msgstr "استيراد ملف الفيديو"
 msgid "In queue"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1849
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1851
 msgid "Including subdirectories"
 msgstr "بما في ذلك الدلائل الفرعية"
 
@@ -2034,11 +2032,11 @@ msgstr ""
 msgid "Initial value:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:66
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:214
 msgid "Integration"
 msgstr "التكامل"
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:53
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:55
 msgid "Integration in menu \"Send to\""
 msgstr "التكامل في القائمة \"ارسال الى\""
 
@@ -2065,7 +2063,7 @@ msgstr ""
 msgid "Invert selection"
 msgstr "غير محدد"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:324
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:336
 msgid "JPEG, PNG, GIF, BMP or any other file"
 msgstr "JPEG، PNG، GIF، BMP او اي ملف اخر"
 
@@ -2091,7 +2089,7 @@ msgstr "مجرد سحب و اسقاط ملفاتك على نافذة رافع،�
 msgid "LAYOUT_DIRECTION"
 msgstr "RTL"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:339
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:351
 msgid "Last Region"
 msgstr ""
 
@@ -2116,7 +2114,7 @@ msgstr "انقر نقرا مزدوجا فوق الزر الايسر"
 msgid "Left button single click:"
 msgstr "نقرة واحدة على الزر الايسر:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:170
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:173
 msgid "Libraries:"
 msgstr ""
 
@@ -2159,7 +2157,7 @@ msgstr "روابط من القائمة"
 msgid "Loading..."
 msgstr "تحميل..."
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:46
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:47
 msgid "Local"
 msgstr "المحلية"
 
@@ -2180,18 +2178,18 @@ msgstr ""
 msgid "Logging in..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:268
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:270
 #, fuzzy
 #| msgid "Login:"
 msgid "Login"
 msgstr "تسجيل الدخول:"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:32
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:30
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:31
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:87
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:214
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:259
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:50
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:51
 msgid "Login:"
 msgstr "تسجيل الدخول:"
 
@@ -2199,7 +2197,7 @@ msgstr "تسجيل الدخول:"
 msgid "Logout"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:339
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:341
 msgid "Logout succesfully."
 msgstr ""
 
@@ -2211,7 +2209,7 @@ msgstr "فشل التحقق من ملف MD5"
 msgid "MD5 check of the update package failed "
 msgstr "MD5 التحقق من حزمة التحديث فشل"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:426
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:428
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -2228,7 +2226,7 @@ msgid "Mime-type"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:589
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:115
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:97
 msgid "Monitor"
 msgstr ""
 
@@ -2250,11 +2248,11 @@ msgstr "نقرات الماوس معالجات"
 msgid "Move"
 msgstr "نقل"
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:89
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:76
 msgid "Move Down"
 msgstr "تحريك لاسفل"
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:84
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:74
 msgid "Move Up"
 msgstr "تحريك لاعلى"
 
@@ -2272,11 +2270,11 @@ msgid "Name:"
 msgstr "الاسم:"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2743
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2745
 msgid "Network Debugger"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:325
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:300
 msgid "New Profile Name"
 msgstr "اسم السيرة الجديد"
 
@@ -2284,12 +2282,12 @@ msgstr "اسم السيرة الجديد"
 msgid "New folder"
 msgstr "مجلد جديد"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:394
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:410
 msgid "New profile"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:171
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:726
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:728
 msgid "Next >"
 msgstr "التالي >"
 
@@ -2309,13 +2307,15 @@ msgstr "لم يعثر على اي ملفات."
 msgid "No pictures were found."
 msgstr "لم يعثر على اي صور."
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:25
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:26
 msgid "No proxy (direct connection)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:206
-msgid "No updates for Image Uploader's components are available"
-msgstr ""
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:209
+#, fuzzy, c-format
+#| msgid "Updates are available"
+msgid "No updates for %s components are available"
+msgstr "تتوفر تحديثات"
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:99
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:159
@@ -2342,7 +2342,7 @@ msgstr "عدد الاعمدة:"
 msgid "Number of frames:"
 msgstr "عدد الاطارات:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:264
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:267
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:49
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:36
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:37
@@ -2354,9 +2354,9 @@ msgstr "عدد الاطارات:"
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:39
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:49
-#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:85
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:77
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:50
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:67
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:45
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:40
@@ -2372,11 +2372,11 @@ msgstr ""
 msgid "Open containing folder"
 msgstr "فتح المجلد المتضمن"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:67
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:69
 msgid "Open download page"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:205
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:206
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:364
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1051
 msgid "Open in Web Browser"
@@ -2390,7 +2390,7 @@ msgstr "فتح في المعالج"
 msgid "Open in external editor"
 msgstr "فتح في محرر خارجي"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:220
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:221
 #: ../Source/Gui/Dialogs/MainDlg.cpp:221
 msgid "Open in folder"
 msgstr "فتح في مجلد"
@@ -2399,13 +2399,13 @@ msgstr "فتح في مجلد"
 msgid "Open in the editor"
 msgstr "فتح في المحرر"
 
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:72
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:53
 msgid "Open screenshot in the editor"
 msgstr "فتح الصورة في محرر"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:654
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2740
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2742
 msgid "Open screenshots folder"
 msgstr "فتح مجلد الصور"
 
@@ -2415,7 +2415,7 @@ msgstr "فتح مجلد الصور"
 msgid "Open servers folder"
 msgstr "فتح مجلد الصور"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:91
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:89
 #, fuzzy
 #| msgid "Connection settings"
 msgid "Open system connection settings"
@@ -2447,21 +2447,21 @@ msgstr "الخيارات"
 msgid "Overall bitrate: "
 msgstr "معدل البت الاجمالي:"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:56
 msgid "Parameters:"
 msgstr "المعلمات:"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:33
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:31
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:32
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:89
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:215
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:261
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:51
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:52
 msgid "Password:"
 msgstr "كلمة السر:"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:557
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:219
 #: ../Source/Gui/Dialogs/MainDlg.cpp:169
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
 msgid "Paste"
@@ -2515,11 +2515,11 @@ msgstr ""
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "الرجاء تحديد اعدادات المصادقة للخادم '%s'!"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:407
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:409
 msgid "Please wait while your history is being converted..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:27
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:28
 msgid "Port:"
 msgstr "المنفذ:"
 
@@ -2531,7 +2531,7 @@ msgstr ""
 msgid "Preparing image..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:58
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:59
 msgid "Preserve metadata (for ex. EXIF)"
 msgstr ""
 
@@ -2576,7 +2576,7 @@ msgstr "عملية الصور قبل الرفع"
 msgid "Processing folder:"
 msgstr "تجهيز مجلد:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:550
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:552
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2584,11 +2584,11 @@ msgid ""
 "the application on the same computer."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:331
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:334
 msgid "Profile with such name already exists!"
 msgstr "السيرة بهذا الاسم موجود مسبقا!"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:40
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:41
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:57
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:197
 msgid "Profile:"
@@ -2602,7 +2602,7 @@ msgstr "التقدم:"
 msgid "Properties"
 msgstr "خصائص"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:28
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:29
 msgid "Proxy type:"
 msgstr "نوع الوكيل:"
 
@@ -2610,20 +2610,20 @@ msgstr "نوع الوكيل:"
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:24
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:21
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:27
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:42
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:43
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:60
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:61
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:68
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:194
 msgid "Quality:"
 msgstr "الجودة:"
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:220
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:223
 msgid "Queued"
 msgstr "في قائمة الانتظار"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:560
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:214
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:222
 msgid "Quick upload image from clipboard"
 msgstr ""
 
@@ -2670,7 +2670,7 @@ msgstr "الدليل عن بعد:"
 msgid "Remove"
 msgstr "ازالة"
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:79
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:72
 msgid "Remove Item"
 msgstr "ازالة مادة"
 
@@ -2686,7 +2686,7 @@ msgstr "ازالة من قائمة"
 msgid "Remove this account from the list (not from the remote server)"
 msgstr "ازالة هذا الحساب من القائمة (وليس من الخادم عن بعد)"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:48
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:49
 msgid "Resize mode:"
 msgstr "نمط التحجيم:"
 
@@ -2695,7 +2695,7 @@ msgstr "نمط التحجيم:"
 msgid "Resume"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:101
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:102
 msgid "Retrieve thumbnails from the Internet"
 msgstr "استرداد الصور المصغرة من الانترنت"
 
@@ -2704,11 +2704,11 @@ msgid "Retry"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:76
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:334 ../Source/Gui/Win7JumpList.cpp:211
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:346 ../Source/Gui/Win7JumpList.cpp:211
 msgid "Reupload"
 msgstr "اعادة الرفع"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:225
 msgid "Reupload images"
 msgstr "اعادة رفع الصور"
 
@@ -2748,7 +2748,7 @@ msgstr "نصف القطر المدور"
 msgid "SFTP"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:72
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:73
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:100
 msgid "Same format as image"
 msgstr "نفس شكل الصورة"
@@ -2758,7 +2758,7 @@ msgstr "نفس شكل الصورة"
 msgid "Save"
 msgstr "حفظ"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:134
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:398
 msgid "Save Profile"
 msgstr "حفظ السيرة"
 
@@ -2799,9 +2799,9 @@ msgstr "حفظ المعلمات"
 msgid "Scaling:"
 msgstr "القياس:"
 
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:69
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:61
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:337
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:50
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:209
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:349
 msgid "Screen Capture"
 msgstr "التقاط الشاشة"
 
@@ -2811,44 +2811,44 @@ msgstr "التقاط الشاشة"
 msgid "Screen Recoding"
 msgstr "عمل لقطة للشاشة"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:62
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:210
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording"
 msgstr "عمل لقطة للشاشة"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:215
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording (cancel)"
 msgstr "عمل لقطة للشاشة"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:214
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording (pause)"
 msgstr "عمل لقطة للشاشة"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording (start)"
 msgstr "عمل لقطة للشاشة"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording (stop)"
 msgstr "عمل لقطة للشاشة"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording Window"
 msgstr "عمل لقطة للشاشة"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:647
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:340
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:352 ../Source/Gui/Win7JumpList.cpp:267
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording..."
@@ -2861,7 +2861,7 @@ msgid "Screen recording backend: %s"
 msgstr "عمل لقطة للشاشة"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:565
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
 #: ../Source/Gui/Dialogs/MainDlg.cpp:75
 msgid "Screenshot"
 msgstr "لقطة للشاشة"
@@ -2871,7 +2871,7 @@ msgid "Screenshot Action"
 msgstr "عمل لقطة للشاشة"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:1027
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2450
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2452
 #, fuzzy
 #| msgid "Screenshot was saved to clipboard."
 msgid "Screenshot has been copied to clipboard."
@@ -2882,7 +2882,7 @@ msgstr "تم حفظ لقطة للشاشة الى الحافظة."
 msgid "Screenshot was uploaded"
 msgstr "تم رفع لقطة للشاشة"
 
-#: ../Source/Gui/Win7JumpList.cpp:219
+#: ../Source/Gui/Win7JumpList.cpp:227
 msgid "Screenshot..."
 msgstr "لقطة..."
 
@@ -2916,7 +2916,7 @@ msgstr "البحث عن ملفات الصورة..."
 msgid "Secured connection:"
 msgstr "حدد الاجراء:"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:338
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:350
 msgid "Select Region..."
 msgstr ""
 
@@ -2953,7 +2953,7 @@ msgstr "حدد المنطقة"
 msgid "Select window..."
 msgstr "تحديد..."
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:63
 msgid "Select..."
 msgstr "تحديد..."
@@ -2972,7 +2972,7 @@ msgstr ""
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:24
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
-#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:160
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:172
 msgid "Server"
 msgstr "خادم"
 
@@ -2980,7 +2980,7 @@ msgstr "خادم"
 msgid "Server [:port]:"
 msgstr "خادم [: المنفذ]:"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:678
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:684
 msgid "Server and authentication settings"
 msgstr "الخادم و اعدادات التوثيق"
 
@@ -3038,27 +3038,27 @@ msgstr "لا يمكن ان يكون اسم الخادم فارغ"
 msgid "Server: "
 msgstr "خادم:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:58
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:206
 msgid "Servers"
 msgstr "خوادم"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:97
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:98
 msgid "Session total:"
 msgstr "مجموع الجلسات:"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:175
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:659
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:81
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:348
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:218
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:71
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:360
 msgid "Settings"
 msgstr "الاعدادات"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:157
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:160
 msgid "Settings file path:"
 msgstr "اعدادات مسار الملف:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:80
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:70
 msgid "Settings have been saved."
 msgstr "تم حفظ الاعدادات."
 
@@ -3066,7 +3066,7 @@ msgstr "تم حفظ الاعدادات."
 msgid "Settings..."
 msgstr "الاعدادات..."
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:48
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:50
 msgid "Shell context menu integration"
 msgstr "تكامل قائمة سياق شل"
 
@@ -3093,12 +3093,14 @@ msgid "Shorten URLs"
 msgstr "اختصار عناوين المواقع"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:651
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:215
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:335
-msgid "Shorten a link"
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:223
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:347
+#, fuzzy
+#| msgid "Shorten a link"
+msgid "Shorten a Link"
 msgstr "اختصار الرابط"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:216
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:224
 msgid "Shorten a link from the clipboard"
 msgstr "اختصار وصلة من الحافظة"
 
@@ -3117,7 +3119,7 @@ msgstr "لقطة لمنطقة محددة..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2749
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2751
 msgid "Show Error Log"
 msgstr "اظهار سجل اغلاخطا"
 
@@ -3138,7 +3140,7 @@ msgid "Show preview for video files in file list"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:653
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:216
 #, fuzzy
 #| msgid "Show program's window"
 msgid "Show program window"
@@ -3164,12 +3166,12 @@ msgstr ""
 msgid "Skip all"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:59
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:60
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:208
 msgid "Skip animated"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:45
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:46
 msgid "Skip image processing step if the image has right parameters"
 msgstr "تخطي خطوة معالجة الصورة اذا كان المعلمات صحيحة للصورة"
 
@@ -3196,7 +3198,7 @@ msgid "Start"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:648
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:341
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:353 ../Source/Gui/Win7JumpList.cpp:275
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Start Recording"
@@ -3206,7 +3208,7 @@ msgstr "عمل لقطة للشاشة"
 msgid "Starting upload"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:58
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:60
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:75
 msgid "Status"
 msgstr "مركز"
@@ -3231,11 +3233,11 @@ msgstr "ايقاف الرفع"
 msgid "Stopped"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:81
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:82
 msgid "Stretch"
 msgstr "تمدد"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:55
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:56
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:41
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:50
 msgid "Stroke color:"
@@ -3288,7 +3290,7 @@ msgstr "خيارات النص"
 msgid "Text Settings:"
 msgstr "اعدادات النص:"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:54
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:55
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:49
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:58
 msgid "Text color:"
@@ -3306,11 +3308,11 @@ msgstr ""
 msgid "Text files"
 msgstr "ملفات الفيديو"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:52
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:53
 msgid "Text on image"
 msgstr "النص على الصورة"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:57
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:58
 msgid "Text position:"
 msgstr "موقع النص:"
 
@@ -3318,15 +3320,15 @@ msgstr "موقع النص:"
 msgid "Text:"
 msgstr "نص:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:109
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:112
 msgid "Thanks to the authors of the following open-source libraries:"
 msgstr "شكرا لاصحاب المكتبات مفتوحة المصدر التالية:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:85
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:88
 msgid "Thanks to:"
 msgstr "شكرا لــ:"
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:269
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:271
 #, fuzzy, c-format
 #| msgid "Download URL cannot be empty."
 msgid "The field '%s' cannot be empty."
@@ -3378,7 +3380,7 @@ msgstr "صورة مصغرة"
 msgid "Thumbnail Preset Editor"
 msgstr "محرر الصور المصغرة مسبقا"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:56
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:61
 msgid "Thumbnail Preset:"
 msgstr "الاعداد المسبق للصورة المصغرة:"
@@ -3387,7 +3389,7 @@ msgstr "الاعداد المسبق للصورة المصغرة:"
 msgid "Thumbnail settings"
 msgstr "اعدادات الصورة المصغرة"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:52
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:53
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:69
 msgid "Thumbnail text:"
 msgstr "نص الصورة المصغرة:"
@@ -3400,7 +3402,7 @@ msgstr "عرض الصور المصغرة:"
 msgid "Thumbnail's size:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:60
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:208
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:200
 msgid "Thumbnails"
 msgstr "صور مصغرة"
@@ -3412,7 +3414,7 @@ msgid "Time"
 msgstr "المهلة:"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:95
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:70
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:51
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
 msgid "Timeout:"
 msgstr "المهلة:"
@@ -3421,34 +3423,34 @@ msgstr "المهلة:"
 msgid "To all"
 msgstr "للكل"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:89
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:96
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:90
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:97
 msgid "Top center"
 msgstr "اعلى المركز"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:88
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:95
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:89
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:96
 msgid "Top left corner"
 msgstr "الزاوية العلوية اليسرى"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:90
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:97
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:91
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:98
 msgid "Top right corner"
 msgstr "الزاوية اليمنى العليا"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:99
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:100
 msgid "Total size:"
 msgstr "الحجم الاجمالي:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:96
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:99
 msgid "Translators:"
 msgstr "المترجمين:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:67
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:215
 msgid "Tray icon"
 msgstr "ايقونة علبة"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:190
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
 msgid "Tray icon context menu"
 msgstr "ايقونة علبة قائمة السياق"
 
@@ -3476,7 +3478,7 @@ msgstr "الرابط لتنزيلة:"
 msgid "URL shortening server"
 msgstr "رابط خادم قصير"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:95
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:96
 msgid "URL:"
 msgstr ""
 
@@ -3485,7 +3487,7 @@ msgstr ""
 msgid "Unable to load picture"
 msgstr "غير قادر على  رفع الصورة"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2416
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2418
 msgid "Unable to make screenshot!"
 msgstr ""
 
@@ -3507,7 +3509,7 @@ msgstr "تراجع"
 msgid "Unknown status"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:191
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:194
 msgid "Update components"
 msgstr ""
 
@@ -3516,11 +3518,11 @@ msgstr ""
 msgid "Update finished. Updated %d of %d files "
 msgstr "تم الانتهاء من التحديث. تحديث %d من %d ملفات"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:32
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:33
 msgid "Upload Buffer Size:"
 msgstr "حجم مخزن الرفع المؤقت:"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:100
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:101
 msgid "Upload History"
 msgstr "تاريخ الرفع"
 
@@ -3539,17 +3541,17 @@ msgstr "فشلت عملية الرفع اعادة المحاولة مرة اخر
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:241
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:539
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:192
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
 msgid "Upload files"
 msgstr "رفع ملفات"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:540
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:193
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
 msgid "Upload folder"
 msgstr "رفع مجلد"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:240
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:191
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
 msgid "Upload images"
 msgstr "رفع الصور"
 
@@ -3565,7 +3567,7 @@ msgstr "تقدم الرفع"
 msgid "Upload results"
 msgstr "نتائج الرفع"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:33
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:34
 msgid "Upload speed limit per thread:"
 msgstr ""
 
@@ -3594,11 +3596,11 @@ msgstr ""
 msgid "Uploaded images: "
 msgstr "الصور المرفوعة:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:65
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:213
 msgid "Uploading"
 msgstr "الرفع"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:945
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:947
 msgid "Uploading Files to Server"
 msgstr "رافع الملف على الخادم"
 
@@ -3644,7 +3646,7 @@ msgstr "استخدم الروابط المباشرة"
 msgid "Use old method of rectangular area selection"
 msgstr "استخدام الطريقة القديمة لتحديد منطقة مستطيلة"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:23
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:24
 msgid "Use provided proxy:"
 msgstr ""
 
@@ -3653,7 +3655,7 @@ msgstr ""
 msgid "Use server-side thumbnails"
 msgstr "استخدام خادم المصغرات"
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:24
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:25
 msgid "Use system proxy settings"
 msgstr ""
 
@@ -3674,7 +3676,7 @@ msgstr ""
 msgid "Vertical interval:"
 msgstr "فاصل عمودي:"
 
-#: ../Source/Gui/Dialogs/SettingsDlg.cpp:63
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:211
 msgid "Video"
 msgstr "فيديو"
 
@@ -3692,9 +3694,9 @@ msgid "Video codec:"
 msgstr "فديو:"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1722
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2006
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2035
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1724
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2008
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2037
 msgid "Video files"
 msgstr "ملفات الفيديو"
 
@@ -3719,12 +3721,12 @@ msgstr "فديو:"
 msgid "View"
 msgstr "عرض"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:214
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:215
 msgid "View BBCode/HTML codes"
 msgstr "عرض BBCode/HTML codes"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:346
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:221
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:358
 msgid "View Media File Information"
 msgstr "عرض معلومات ملف الوسائط"
 
@@ -3747,11 +3749,11 @@ msgstr "تحميل..."
 msgid "Watch Clipboard for URLs"
 msgstr "مشاهدة الحافظة للروابط"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:51
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:52
 msgid "Watermark"
 msgstr "علامة مائية"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:50
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:51
 msgid "Watermark position:"
 msgstr "موقع العلامة المائية:"
 
@@ -3759,7 +3761,7 @@ msgstr "موقع العلامة المائية:"
 msgid "WebDAV"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:266
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:269
 msgid "Website:"
 msgstr "الموقع:"
 
@@ -3772,7 +3774,7 @@ msgstr ""
 "الفيديو الى شبكة الانترنت!"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:47
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:55
 msgid "Width:"
 msgstr "العرض:"
 
@@ -3782,11 +3784,11 @@ msgstr "العرض:"
 msgid "Window"
 msgstr "نافذة المعاينة"
 
-#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:47
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:49
 msgid "Windows Explorer integration"
 msgstr "ويندوز اكسبلورر متكامل"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2627
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2629
 #, fuzzy
 #| msgid "Upload progress"
 msgid "Work in progress"
@@ -3796,19 +3798,20 @@ msgstr "تقدم الرفع"
 msgid "Yes"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:169
-msgid "You are using the latest Image Uploader version."
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:171
+#, c-format
+msgid "You are using the latest %s version."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:133
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:142
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:156
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:165
 #, c-format
 msgid "You have not selected \"%s\""
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:80
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:148
-#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:121
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:171
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:133
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:117
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:141
 #, c-format
@@ -3832,26 +3835,26 @@ msgstr "لم تحدد الخادم"
 msgid "You have not selected server!"
 msgstr "لم تقم بتحديد الخادم"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:337
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:349
 msgid "a pic of the whole screen or selected region"
 msgstr "صور للشاشة باكملها او منطقة مختارة"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:348
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:360
 msgid "a tool for advanced users"
 msgstr "اداة للمستخدمين المتقدمين"
 
-#: ../Source/Gui/Dialogs/LogoSettings.cpp:47
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:48
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:196
 msgid "and/or height:"
 msgstr "و/او الطول:"
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:343
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:355
 #, fuzzy
 #| msgid "Extracting frames from video"
 msgid "extracting frames from video"
 msgstr "استخراج اطارات من الفيديو"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:440
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:456
 #, fuzzy
 #| msgid "Filesize: "
 msgid "file size"
@@ -3867,13 +3870,13 @@ msgstr "المجلد \"%s\""
 msgid "high quality (100)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:439
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:455
 #, fuzzy
 #| msgid "By height"
 msgid "image height"
 msgstr "حسب الارتفاع"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:438
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:454
 #, fuzzy
 #| msgid "Change width:"
 msgid "image width"
@@ -3894,13 +3897,13 @@ msgstr "م ث"
 msgid "multiple files"
 msgstr "ملفات متعددة"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:106
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:201
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:110
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:224
 msgid "not selected"
 msgstr "غير محدد"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:96
-#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:71
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:52
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
 msgid "sec"
 msgstr "ثانية"
@@ -3911,11 +3914,11 @@ msgstr "ثانية"
 msgid "single file (mosaic)"
 msgstr "ملف واحد"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:93
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:94
 msgid "to:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:91
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:94
 msgid "translator_name"
 msgstr "translator_name"
 
@@ -3924,6 +3927,25 @@ msgstr "translator_name"
 #| msgid "Random server"
 msgid "unknown server"
 msgstr "خادم عشوائي"
+
+#~ msgid "Shorten a link"
+#~ msgstr "اختصار الرابط"
+
+#~ msgid "About Image Uploader"
+#~ msgstr "حول رافع الصور"
+
+#, fuzzy
+#~| msgid "Failed to load folder list."
+#~ msgid "Could not create file '%s'."
+#~ msgstr "فشل في رفع قائمة المجلدات."
+
+#, fuzzy
+#~| msgid "Image Uploader Updates"
+#~ msgid "Image Uploader (screen recording)"
+#~ msgstr "تحديثات رافع الصورة"
+
+#~ msgid "Image Uploader Updates"
+#~ msgstr "تحديثات رافع الصورة"
 
 #, fuzzy
 #~| msgid "File uploading was cancelled by user."
@@ -4027,9 +4049,6 @@ msgstr "خادم عشوائي"
 
 #~ msgid " (optional)"
 #~ msgstr "(اختياري)"
-
-#~ msgid "Updates are available"
-#~ msgstr "تتوفر تحديثات"
 
 #~ msgid "Share"
 #~ msgstr "حصة"

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -171,7 +171,7 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
     int retCode = sqlite3_step(stmt);
     if (retCode != SQLITE_DONE) {
         int i = 3;
-        
+
         while (retCode == SQLITE_BUSY && i-- > 0) {
             retCode = sqlite3_step(stmt);
         }
@@ -183,7 +183,7 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
     /*sqlite3_reset(stmt);
     sqlite3_clear_bindings(stmt);*/
     sqlite3_finalize(stmt);
-    
+
     return true;
 }
 
@@ -281,7 +281,7 @@ bool CHistoryManager::convertHistory() {
                     saveHistoryItem(&item);
                 }
             }
-            
+
             std::string newName = historyFolder + i->path().filename().string() + std::to_string(dist(mt_)) + ".bak";
             if (!IuCoreUtils::MoveFileOrFolder(i->path().string(), newName)) {
                 LOG(ERROR) << "Unable to rename file " << i->path();
@@ -347,7 +347,7 @@ bool CHistoryReader::loadFromDB(time_t from, time_t to, const std::string& filen
     if (from && to) {
         condition += boost::str(boost::format(" and  created_at between %d and %d") % from % to);
     }
-   
+
     std::string sql = "SELECT * from upload_sessions WHERE true " + condition;
 
     char *err = nullptr;
@@ -403,7 +403,7 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
             break;
         }
     }
-    
+
     auto session = std::make_unique<CHistorySession>("", sessionId);
     for (int i = 0; i < argc; i++) {
         const char* val = argv[i] ? argv[i] : "";
@@ -423,7 +423,7 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
 }
 
 int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char **azColName){
-   
+
     auto pthis = static_cast<CHistoryReader*>(userData);
 
     std::string sessionId;

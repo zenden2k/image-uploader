@@ -3,10 +3,10 @@ SET CLI_VERSION=1.4.0
 set zipcmd=7z
 
 For /F "tokens=2,3 delims= " %%i In (..\Source\VersionInfo.h) Do (set %%i=%%~j)
-echo Creating distribution archive for Image Uploader version %IU_APP_VER% %IU_BUILD_NUMBER%
+echo Creating distribution archive for Uptooda CLI version %IU_APP_VER% %IU_BUILD_NUMBER%
 
 set temp_dir=..\Build\portable\temp_%BUILD%_cli_%CLI_VERSION%
-set filename=imgupload-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-cli.7z
+set filename=uptooda-cli-%IU_APP_VER%-build-%IU_BUILD_NUMBER%.7z
 echo %temp_dir%
 
 rmdir /q /s  %temp_dir%
@@ -17,8 +17,8 @@ mkdir %temp_dir%\Data
 mkdir %temp_dir%\Data\Scripts
 mkdir %temp_dir%\Data\Update
 
-rem signtool sign /t http://time.certum.pl /f d:\Backups\ImageUploader\zenden2k.pem  "..\Build\CLI\win32\release\executable\imgupload.exe"  
-Copy "..\Build\CLI\Release\CLI.exe" %temp_dir%\imgupload.exe
+rem signtool sign /t http://time.certum.pl /f d:\Backups\ImageUploader\zenden2k.pem  "..\Build\CLI\win32\release\executable\uptooda.exe"  
+Copy "..\Build\CLI\Release\uptooda-cli.exe" %temp_dir%\uptooda-cli.exe
 if ERRORLEVEL 1 goto CopyFailed
 Copy "curl-ca-bundle.crt" %temp_dir%\curl-ca-bundle.crt
 if ERRORLEVEL 1 goto CopyFailed

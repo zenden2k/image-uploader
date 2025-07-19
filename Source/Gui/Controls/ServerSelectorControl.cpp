@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ CServerSelectorControl::~CServerSelectorControl()
 
 void CServerSelectorControl::TranslateUI() {
 }
-    
+
 LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     TranslateUI();
@@ -95,7 +95,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     accountLink_.SetToolTipText(TR("User name"));
 
     imageProcessingParamsLink_.SubclassWindow(GetDlgItem(IDC_IMAGEPROCESSINGPARAMS));
-    imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
+    imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
     imageProcessingParamsLink_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(imageProcessingParamsLink_);
     CString linkLabel = showImageProcessingParams_ ? TR("Image processing settings...") : TR("Settings...");
     imageProcessingParamsLink_.SetLabel(linkLabel);
@@ -112,7 +112,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     createResources();
     updateServerList();
 
-    return FALSE;  
+    return FALSE;
 }
 
 LRESULT CServerSelectorControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -127,7 +127,7 @@ LRESULT CServerSelectorControl::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lP
     createResources();
 
     // Not working:
-    //updateServerList(); 
+    //updateServerList();
     return 0;
 }
 
@@ -154,7 +154,7 @@ void CServerSelectorControl::setServerProfile(const ServerProfile& serverProfile
     for (int i = 0; i < count; i++) {
         char * data = static_cast<char*>(serverComboBox_.GetItemDataPtr(i));
         if (data && !strcmp(data, serverProfile.serverName().c_str())) {
-            comboboxItemIndex = i; 
+            comboboxItemIndex = i;
             break;
         }
     }
@@ -180,7 +180,7 @@ LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND h
 
     if (serverParamsDlg.DoModal(m_hWnd) == IDOK) {
         serverProfile_ = serverParamsDlg.serverProfile();
-        notifyChange();     
+        notifyChange();
     }
 
     updateInfoLabel();
@@ -273,7 +273,7 @@ void CServerSelectorControl::serverChanged() {
                 }
             }
         }
- 
+
     } else {
         serverProfile_ = ServerProfile();
     }
@@ -309,13 +309,13 @@ void CServerSelectorControl::updateInfoLabel() {
     }
 
     showServerParams = uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization;
-    
+
     CString accountInfoText;
     BasicSettings* settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* res = settings->getServerSettings(serverProfile_);
 
     LoginInfo loginInfo = res ? res->authData : LoginInfo();
-    
+
     if ( loginInfo.Login.empty() || (!loginInfo.DoAuth  && uploadEngineData->NeedAuthorization != 2 ) ) {
         accountInfoText += TR("Account...");
         accountLink_.SetToolTipText(TR("Enter account information"));
@@ -330,16 +330,16 @@ void CServerSelectorControl::updateInfoLabel() {
         /*if ( folderTitle.IsEmpty() ) {
             folderTitle = TR("not set");
         } */
-        
+
     }
     SetDlgItemText(IDC_ACCOUNTINFO, accountInfoText);
     bool showAccount = uploadEngineData->NeedAuthorization != 0 && showServerParams;
     GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showAccount);
     accountLink_.SetLabel(accountInfoText);
     SetDlgItemText(IDC_FOLDERLABEL, folderTitle);
-    
+
     GuiTools::ShowDialogItem(m_hWnd, IDC_USERICON, showAccount);
-    
+
     bool showFolder = !folderTitle.IsEmpty() && showServerParams;
 
     RECT rect;
@@ -394,7 +394,7 @@ void CServerSelectorControl::updateServerList()
         DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
         comboBoxImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
     }
-    
+
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if (showEmptyItem_) {
         serverComboBox_.AddItem(_T(""), -1, -1, 0, reinterpret_cast<LPARAM>(DuplicateString("")));
@@ -799,7 +799,7 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
             break;
         }
 
-        
+
         bool isChildMessage = ::IsChild(hwndPopup, msg.hwnd)!=FALSE;
         if (!isChildMessage)
         {
@@ -823,7 +823,7 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
             // These mouse messages arrive in client coordinates, so in
             // addition to stealing the message, we also need to convert the
             // coordinates.
-        
+
         case WM_LBUTTONDOWN:
         case WM_LBUTTONUP:
         case WM_LBUTTONDBLCLK:
@@ -850,7 +850,7 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
 
             // These mouse messages arrive in screen coordinates, so we just
             // need to steal the message.
-        
+
         case WM_NCLBUTTONDOWN:
         case WM_NCLBUTTONUP:
         case WM_NCLBUTTONDBLCLK:
@@ -901,8 +901,8 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-    
-        
+
+
         // If our owner stopped being the active window (e.g. the user
         // Alt+Tab'd to another window in the meantime), then stop.
         hwndActive = GetActiveWindow();
@@ -958,7 +958,7 @@ DLGTEMPLATE* CServerSelectorControl::GetTemplate()
     {
         pMyDlgTemplate->style -= WS_CHILD;
         pMyDlgTemplate->style -= DS_CONTROL;
-        pMyDlgTemplate->exStyle |= WS_EX_NOACTIVATE | 
+        pMyDlgTemplate->exStyle |= WS_EX_NOACTIVATE |
             WS_EX_TOOLWINDOW |      // So it doesn't show up in taskbar
             WS_EX_DLGMODALFRAME |   // Get the edges right
             WS_EX_WINDOWEDGE /*|
@@ -981,6 +981,6 @@ LRESULT CServerSelectorControl::OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam
         // Disable wizard window when a modal window is shown
         ::EnableWindow(GetParent(), wParam);
     }
-    
+
     return 0;
 }

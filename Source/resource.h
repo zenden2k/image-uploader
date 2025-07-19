@@ -1,6 +1,6 @@
 ﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by Image Uploader.rc
+// Used by GUI.rc
 //
 #define IDC_STOP                        2
 #define IDC_FILEINFOLABEL               2
@@ -207,6 +207,8 @@
 #define IDB_PNG15                       352
 #define IDI_ICON16                      353
 #define IDI_ICONSTARTRECORD             353
+#define IDB_PNGAPPNAME                  355
+#define IDB_APPNAME                     355
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -901,7 +903,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        354
+#define _APS_NEXT_RESOURCE_VALUE        357
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1377
 #define _APS_NEXT_SYMED_VALUE           128

@@ -34,7 +34,7 @@
 CAppModule _Module;
 QString dataFolder = "Data/";
 #else
-QString dataFolder = "/usr/share/imageuploader/";
+QString dataFolder = "/usr/share/uptooda/";
 #endif
 QtGuiSettings Settings;
 std::unique_ptr<LogWindow> logWindow;
@@ -151,11 +151,11 @@ int main(int argc, char *argv[])
     }
 #ifndef _WIN32
    else {
-dataFolder = "/usr/share/zenden2k-imageuploader/";
+dataFolder = "/usr/share/uptooda/";
    }
 
 #ifndef __APPLE__
-settingsFolder = getenv("HOME")+QString("/.config/zenden2k-imageuploader/");
+settingsFolder = getenv("HOME")+QString("/.config/uptooda/");
 QDir settingsDir = QDir::root();
 settingsDir.mkpath(settingsFolder);
 #endif
@@ -176,7 +176,7 @@ settingsDir.mkpath(settingsFolder);
         LOG(ERROR) << "Unable to create temp directory!";
     }
 
-    Settings.LoadSettings(AppParams::instance()->settingsDirectory(), "qimageuploader.xml");
+    Settings.LoadSettings(AppParams::instance()->settingsDirectory(), "uptooda.xml");
 
 	if (!engineList->loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
 		QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");

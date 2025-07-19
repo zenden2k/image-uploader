@@ -1,7 +1,7 @@
 /*
-     Image Uploader - program for uploading images/files to the Internet
+     Uptooda - free application for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ ImageEditor::CursorType TextTool::getCursor(int x, int y)
     CursorType ct = MoveAndResizeTool::getCursor(x,y);
     TextElement* textElement = dynamic_cast<TextElement*>(currentElement_);
     auto inputBox = textElement ? textElement->getInputBox() : nullptr;
-    if ( (ct == CursorType::ctDefault || ( ct == CursorType::ctMove && canvas_->getElementAtPosition(x,y)!= currentElement_)) && 
+    if ( (ct == CursorType::ctDefault || ( ct == CursorType::ctMove && canvas_->getElementAtPosition(x,y)!= currentElement_)) &&
         ( !inputBox || !inputBox->isVisible() )) {
             ct = CursorType::ctEdit;
     }

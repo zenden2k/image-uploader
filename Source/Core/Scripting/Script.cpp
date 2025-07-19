@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ bool Script::load(const std::string& fileName)
         LOG(ERROR) << "Script file doesn't exist: " << fileName;
         return false;
     }
-       
+
     using namespace ScriptAPI;
     try
     {
@@ -123,7 +123,7 @@ bool Script::load(const std::string& fileName)
         }
 
         preLoad();
- 
+
         switchToThisVM();
         m_SquirrelScript = std::make_unique<Sqrat::Script>(vm_.GetVM());
         m_SquirrelScript->CompileString(scriptText, IuCoreUtils::ExtractFileName(fileName));
@@ -135,7 +135,7 @@ bool Script::load(const std::string& fileName)
     }
     catch (std::exception& e)
     {
-        LOG(ERROR)<< "CScriptUploadEngine::Load failed" << std::endl 
+        LOG(ERROR)<< "CScriptUploadEngine::Load failed" << std::endl
             << "File: " << IuCoreUtils::ExtractFileName(fileName) << std::endl
             << std::string("Error: ") <<  e.what();
         FlushSquirrelOutput();

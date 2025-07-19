@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> 
     m_SubItemHeight = 0;
     downloading_enabled_ = true;
     m_bIsRunning = false;
-}    
+}
 
 CHistoryTreeControl::~CHistoryTreeControl()
 {
@@ -97,10 +97,10 @@ void CHistoryTreeControl::abortLoadingThreads()
         SignalStop();
     }
 
-    if (m_FileDownloader && m_FileDownloader->isRunning()) { 
+    if (m_FileDownloader && m_FileDownloader->isRunning()) {
         m_FileDownloader->stop();
     }
-    
+
     if(IsRunning()) {
         SignalStop();
     }
@@ -225,8 +225,8 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     CRect calcRect;
 
     dc.SetBkMode(TRANSPARENT);
-   
-    
+
+
     CBrush backgroundBrush;
 
     DWORD color = GetSysColor(COLOR_WINDOW);
@@ -249,7 +249,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
         dateRect.right -= 20;
         dateRect.top += kPaddingY;
         dateRect.bottom -= kPaddingY;
-        //dateRect.OffsetRect(400,0);        
+        //dateRect.OffsetRect(400,0);
         dc.DrawText(text, text.GetLength(), &dateRect, DT_RIGHT | DT_VCENTER);
     }
 
@@ -259,7 +259,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     gradientLineRect.bottom--;
     gradientLineRect.top = gradientLineRect.bottom;
     if (draw) {
-        COLORREF bgColor = GetSysColor(COLOR_WINDOW); 
+        COLORREF bgColor = GetSysColor(COLOR_WINDOW);
         GuiTools::FillRectGradient(hdc, gradientLineRect, GuiTools::IsColorBright(bgColor) ? GetSysColor(COLOR_GRAYTEXT): RGB(210,210,210), bgColor, true);
     }
 
@@ -269,7 +269,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     dc.DrawText(lowTextW, lowTextW.GetLength(), &calcRect, DT_CALCRECT);
     if (draw) {
         bool isItemExpanded = item->IsExpanded();
-        //(GetItemState(item,TVIS_EXPANDED)&TVIS_EXPANDED);    
+        //(GetItemState(item,TVIS_EXPANDED)&TVIS_EXPANDED);
         CRect plusIconRect;
         SIZE plusIconSize = {9, 9};
         HTHEME theme = OpenThemeData(_T("treeview"));
@@ -356,7 +356,7 @@ int CHistoryTreeControl::CalcItemHeight(TreeItem* item)
         DrawSubItem(item,  dc, 0, rc, &res);
         //m_SubItemHeight = res;
     }
-    else 
+    else
     {
         _DrawItem(item,  dc, 0, rc, &res);
         //m_SessionItemHeight = res;
@@ -467,8 +467,8 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
     urlRect.top += filenameHeight + 3;
 
     CString url = it2 ? Utf8ToWCstring(it2->directUrl.length() ? it2->directUrl : it2->viewUrl) : CString();
-    
-    if (draw) {  
+
+    if (draw) {
         dc.SetTextColor(grayColor);
         dc.DrawText(url, url.GetLength(), &urlRect, DT_LEFT);
         dc.SetTextColor(oldTextColor);
@@ -499,7 +499,7 @@ void CHistoryTreeControl::DrawTreeItem(HDC dc, RECT rc, UINT itemState,  TreeIte
     {
         DrawSubItem(item,  dc, itemState, rc, 0);
     }
-    else 
+    else
     {
         _DrawItem(item,  dc, itemState, rc, 0);
     }
@@ -514,7 +514,7 @@ void CHistoryTreeControl::TreeItemSize( TreeItem *item, SIZE *sz)
 TreeItem * CHistoryTreeControl::selectedItem()
 {
     int idx = GetCurSel();
-    if( idx != -1 ) 
+    if( idx != -1 )
     {
         TreeItem* prop = GetItem(idx);
         return prop;
@@ -600,13 +600,13 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
 
     RectF bounds(0, 0, float(width), float(height));
 
-    if(bm && !bm->GetWidth() && item) 
+    if(bm && !bm->GetWidth() && item)
     {
         error = true;
     }
-    else 
+    else
     {
-        LinearGradientBrush br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), LinearGradientModeBackwardDiagonal); 
+        LinearGradientBrush br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), LinearGradientModeBackwardDiagonal);
 
         if(IuCommonFunctions::IsImage(filename))
             gr.FillRectangle(&br,0, 0, width, height);
@@ -614,15 +614,15 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
 
         if(bm)
                 gr.DrawImage(/*backBuffer*/bm, (int)((width-newwidth)/2), (int)((height-newheight)/2), (int)newwidth,(int)newheight);
-    
+
 
         RectF bounds(0, float(height), float(width), float(20));
 
 //        if (ExtendedView)
         {
-            LinearGradientBrush 
-                br2(bounds, Color(240, 255, 255, 255), Color(200, 210, 210, 210), 
-                LinearGradientModeBackwardDiagonal /*LinearGradientModeVertical*/); 
+            LinearGradientBrush
+                br2(bounds, Color(240, 255, 255, 255), Color(200, 210, 210, 210),
+                LinearGradientModeBackwardDiagonal /*LinearGradientModeVertical*/);
             gr.FillRectangle(&br2,(float)1, (float)height+1, (float)width-2, (float)height+20-1);
         }
 
@@ -639,7 +639,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             WCHAR buf2[25];
             WinUtils::NewBytesToString(fileSize, buf2, 25);
             CString FileExt = WinUtils::GetFileExt(Filename);
-            if(!lstrcmpi(FileExt, _T("jpg"))) 
+            if(!lstrcmpi(FileExt, _T("jpg")))
                 FileExt = _T("JPEG");
             if(IuCommonFunctions::IsImage(filename) && bm)
             {
@@ -689,7 +689,7 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 
     item->ThumbnailRequested = true;
 
-    
+
     std::string stdLocalFileName = item->hi->localFilePath;
     CString localFileName = Utf8ToWCstring(stdLocalFileName);
     if(!IuCommonFunctions::IsImage(localFileName))
@@ -733,7 +733,7 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
         {
             CreateDownloader();
             m_FileDownloader->addFile(thumbUrl, it);
-            if(onThreadsStarted_)    
+            if(onThreadsStarted_)
                 onThreadsStarted_();
             m_FileDownloader->start();
         }
@@ -751,7 +751,7 @@ DWORD CHistoryTreeControl::Run()
         if(!LoadThumbnail(it) && it->thumbnailSource.empty())
         {
             // Try downloading it
-            DownloadThumb(it);    
+            DownloadThumb(it);
         }
         else {
             /* ServiceLocator::instance()->taskRunner()->runInGuiThread([this, treeItem = it->treeItem] {
@@ -761,12 +761,12 @@ DWORD CHistoryTreeControl::Run()
                 }
             },
             true);*/
-           
+
             PostMessage(WM_APP_MY_THUMBLOADED, 0, 0);
         }
     }
     m_bIsRunning = false;
-    if(!m_FileDownloader || !m_FileDownloader->isRunning()) 
+    if(!m_FileDownloader || !m_FileDownloader->isRunning())
         threadsFinished();
     return 0;
 }
@@ -775,7 +775,7 @@ void CHistoryTreeControl::StartLoadingThumbnails()
 {
     if(!IsRunning())
     {
-        if(onThreadsStarted_)    
+        if(onThreadsStarted_)
             onThreadsStarted_();
         m_bIsRunning = true;
 
@@ -797,7 +797,7 @@ bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, const CFileDow
             {
                 std::lock_guard<std::mutex> lk(m_thumbLoadingQueueMutex);
                 m_thumbLoadingQueue.push_back(hit);
-            }   
+            }
 
             StartLoadingThumbnails();
         }
@@ -817,7 +817,7 @@ void CHistoryTreeControl::OnTreeItemDelete(TreeItem* item)
     }
     if (!m_thumbLoadingQueue.empty()) {
         LOG(WARNING) << "m_thumbLoadingQueue is not empty";
-    } 
+    }
     item->setUserData(nullptr);
     delete hti;
 }
@@ -861,7 +861,7 @@ void CHistoryTreeControl::ResetContent()
         std::lock_guard<std::mutex> lk(m_thumbLoadingQueueMutex);
         m_thumbLoadingQueue.clear();
     }
-   
+
     CCustomTreeControlImpl<CHistoryTreeControl>::ResetContent();
 }
 

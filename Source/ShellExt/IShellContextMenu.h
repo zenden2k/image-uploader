@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class StringsReader
 public:
     StringsReader() {
         reg.SetRootKey(HKEY_LOCAL_MACHINE);
-        reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader\\Strings"), false);
+        reg.SetKey(_T("Software\\Uptooda\\Strings"), false);
     }
 
     CString getString(CString name, CString defaultValue) {
@@ -126,7 +126,7 @@ class ATL_NO_VTABLE CIShellContextMenu :
         STDMETHOD(HandleMenuMsg)(UINT uMsg, WPARAM wParam, LPARAM lParam);
         STDMETHOD(HandleMenuMsg2)(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *pResult);
 
-    
+
         STDMETHOD(QueryContextMenu)(HMENU hmenu, UINT indexMenu,UINT idCmdFirst, UINT idCmdLast, UINT uFlags);
         STDMETHOD(InvokeCommand)(LPCMINVOKECOMMANDINFO lpici);
         STDMETHOD(GetCommandString)(UINT_PTR idCmd, UINT uType, UINT *pwReserved, LPSTR pszName, UINT cchMax);

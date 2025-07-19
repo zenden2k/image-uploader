@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ limitations under the License.
 
 #include "BasicSettings.h"
 
-#include <boost/uuid/uuid.hpp>           
+#include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp> 
+#include <boost/uuid/uuid_io.hpp>
 
 #include "EncodedPassword.h"
 #include "Core/BasicConstants.h"
@@ -97,7 +97,7 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
         tempSettings.defaultFolder.setId(server.Attribute("DefaultFolderId"));
         tempSettings.defaultFolder.viewUrl = server.Attribute("DefaultFolderUrl");
         tempSettings.defaultFolder.setTitle(server.Attribute("DefaultFolderTitle"));
-        
+
         myFromString(server.Attribute("DefaultFolderParentIds"), tempSettings.defaultFolder.parentIds);
         ServersSettings[server_name][tempSettings.authData.Login] = tempSettings;
     }

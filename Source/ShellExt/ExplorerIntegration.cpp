@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ class CExplorerIntegrationModule : public CAtlDllModuleT< CExplorerIntegrationMo
 {
 public :
     DECLARE_LIBID(LIBID_ExplorerIntegrationLib)
-    DECLARE_REGISTRY_APPID_RESOURCEID(IDR_EXPLORERINTEGRATION, "{B3E19CB7-7EF2-4C97-A1DC-324F6A6CF2E5}")
+    DECLARE_REGISTRY_APPID_RESOURCEID(IDR_EXPLORERINTEGRATION, "{EF093282-2A90-487A-AB9D-8782A7B4942F}")
 };
 
 CExplorerIntegrationModule _AtlModule;
@@ -79,12 +79,12 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
                     }
                 #endif
             }
-            
+
 
             Lang.LoadLanguage(lang);*/
         }
 
-        return _AtlModule.DllMain(dwReason, lpReserved); 
+        return _AtlModule.DllMain(dwReason, lpReserved);
     }
 
 #ifdef _MANAGED

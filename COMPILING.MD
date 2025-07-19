@@ -1,6 +1,6 @@
-# Building Image Uploader on Windows
+# Building Uptooda on Windows
 
-You will need these tools to build Image Uploader from source files:
+You will need these tools to build Uptooda from source files:
 - Git 		https://git-scm.com/downloads
 - Microsoft Visual Studio 2019 or newer (with C++ compiler)   https://visualstudio.microsoft.com/downloads/
 - Windows 10 SDK
@@ -28,7 +28,7 @@ cd Build
 The recommended way is to pass conan profile to the `cmake` command.
 
 ```bash
-cmake <path_to_imageuploader_source>\Source -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCONAN_HOST_PROFILE=default -DCONAN_BUILD_PROFILE=default 
+cmake <path_to_uptooda_source>\Source -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCONAN_HOST_PROFILE=default -DCONAN_BUILD_PROFILE=default 
 ```
 
 If you are cross-compiling (from Windows x64 to x86) and want to build FFmpeg libraries from Conan repository then you should use two profiles (`-DCONAN_HOST_PROFILE=windows_vs2019_x86_release -DCONAN_BUILD_PROFILE=windows_vs2019_x64_release`)
@@ -41,7 +41,7 @@ cmake --build . --config Release
 The same you can achieve using `cmake-gui` utility.
 In cmake-gui you can see all compilation options and easily change them.
 
-If you want to build Image Uploader with separate FFmpeg libraries (`IU_ENABLE_FFMPEG=On` and `IU_FFMPEG_STANDALONE=On`), after building put them (avcodec.lib, avformat.lib, avutil.lib, swscale.lib) into `Contrib\Lib` directory and header files into `Contrib\Include` directory.
+If you want to build Uptooda with separate FFmpeg libraries (`IU_ENABLE_FFMPEG=On` and `IU_FFMPEG_STANDALONE=On`), after building put them (avcodec.lib, avformat.lib, avutil.lib, swscale.lib) into `Contrib\Lib` directory and header files into `Contrib\Include` directory.
 
 Some examples, nevermind:
 
@@ -70,9 +70,9 @@ Save settings, then open *Test* -> *Test explorer* and run all the tests.
 
 # Building on Ubuntu (CLI and Qt GUI)
 
-Use the same approach with Conan to build imgupload on Ubuntu 20.04.
+Use the same approach with Conan to build uptooda-cli on Ubuntu 20.04.
 
-Before compiling IU install the following packages:
+Before compiling Uptooda install the following packages:
 
 ```
 sudo apt-get install g++ git ninja-build python3-pip # cmake
@@ -94,7 +94,7 @@ cmake ../Source  -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL
 cmake --build .
 ```
 
-If you want to compile qimageuploader (GUI) you have to install Qt 5 dev libraries before compiling:
+If you want to compile uptooda (Qt GUI) you have to install Qt 5 dev libraries before compiling:
 ```bash
 sudo apt install qt5-default
 ```
@@ -133,11 +133,11 @@ Allow creating symlinks (you can do it by turning on Developer Mode on Windows 1
  * Inno Setup 6 (iscc.exe)
  * WSL 2 & Ubuntu 20.04+
 
-Add Conan remote and install GitPython:
+Add Conan remote and install python libraries:
 
 ```bash
 conan remote add zenden2k https://conan.svistunov.dev --index 0
-pip install GitPython
+pip install GitPython python-dotenv
 ```
 
 ## Prerequisites On WSL (Ubuntu Linux)

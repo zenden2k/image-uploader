@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ limitations under the License.
 
 #include "ServerListManager.h"
 
-#include <boost/uuid/uuid.hpp>           
+#include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
@@ -28,7 +28,7 @@ limitations under the License.
 #include "UploadEngineList.h"
 #include "Core/Utils/StringUtils.h"
 
-ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings): 
+ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings):
     serversSettings_(serversSettings),
     serversDirectory_(serversDirectory),
     uploadEngineList_(uel)
@@ -36,7 +36,7 @@ ServerListManager::ServerListManager(const std::string &serversDirectory, CUploa
 }
 
 
-std::string ServerListManager::addFtpServer(ServerType serverType, bool temporary, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl, 
+std::string ServerListManager::addFtpServer(ServerType serverType, bool temporary, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl,
     const std::string& privateKeyFile, int securedConnection, const std::string& activeConnectionPort)
 {
     SimpleXml xml;
@@ -57,11 +57,11 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
 
     if (temporary) {
         boost::uuids::uuid uuid = boost::uuids::random_generator()();
-        newName = boost::uuids::to_string(uuid); 
+        newName = boost::uuids::to_string(uuid);
     } else {
         newName = name + " (" + plugin + ")";
     }
-    
+
     if ( uploadEngineList_->byName(newName) ) {
         throw std::runtime_error("Server with such name already exists.");
     }
@@ -102,7 +102,7 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
             throw std::runtime_error("Unable to save file " + outFile);
         }
     }
-   
+
     ServerSettingsStruct &ss = serversSettings_[newName][login];
     ss.setParam("hostname",serverName);
     ss.setParam("folder",remoteDirectory);
@@ -121,7 +121,7 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
     ss.authData.Password = password;
     ss.authData.DoAuth = !login.empty();
 
-    
+
     if (!temporary && !uploadEngineList_->loadFromFile(outFile, serversSettings_)) {
         throw std::runtime_error("Unable to load file " + outFile);
     }
@@ -169,7 +169,7 @@ std::string ServerListManager::addDirectoryAsServer(const std::string &name, con
     ss.setParam("downloadUrl", downloadUrl);
     ss.setParam("convertUncPath", std::to_string(static_cast<int>(convertUncPath)));
     ss.authData.DoAuth = false;
-  
+
     if (!uploadEngineList_->loadFromFile(outFile,serversSettings_)) {
         throw std::runtime_error("Unable to load file " + outFile);
     }

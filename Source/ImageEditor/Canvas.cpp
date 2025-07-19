@@ -1,7 +1,7 @@
 /*
-     Image Uploader - program for uploading images/files to the Internet
+     Uptooda - free application for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -32,14 +32,14 @@
 #include "Core/i18n/Translator.h"
 
 namespace ImageEditor {
-    
+
 Canvas::Canvas( HWND parent ) {
     parentWindow_            = parent;
     oldPoint_.x           = -1;
     oldPoint_.y           = -1;
     callback_             = nullptr;
     drawingToolType_      = DrawingToolType::dtNone;
-    previousDrawingTool_ = DrawingToolType::dtNone; 
+    previousDrawingTool_ = DrawingToolType::dtNone;
     leftMouseDownPoint_.x = -1;
     leftMouseDownPoint_.y = -1;
     leftMouseUpPoint_ = { -1, -1 };
@@ -141,7 +141,7 @@ void Canvas::mouseMove( int x, int y, DWORD flags) {
     */
 
     /*if ( isLButtonDown && oldPoint_.x != -1 && currentDrawingTool_ == dtPen ) {
-        
+
         int xStart = oldPoint_.x;
         int yStart = oldPoint_.y;
         int xEnd   = point.x;
@@ -149,10 +149,10 @@ void Canvas::mouseMove( int x, int y, DWORD flags) {
 
         ImageEditor::Line line( xStart, yStart, xEnd, yEnd );
         doc_->addDrawingElement( &line );
-        RECT updateRect =  { std::min<>( xStart, xEnd), std::min<>( yStart, yEnd ), 
+        RECT updateRect =  { std::min<>( xStart, xEnd), std::min<>( yStart, yEnd ),
                                     std::max<>( xStart, xEnd) + 1, std::max<>( yStart, yEnd) + 1 };
         updateView( updateRect );
-        
+
     } else if ( currentDrawingTool_ == dtLine ) {
 
     }*/
@@ -203,7 +203,7 @@ void Canvas::mouseDoubleClick(int button, int x, int y)
     currentDrawingTool_->mouseDoubleClick( x, y );
 }
 
-void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOffset, SIZE size) { 
+void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOffset, SIZE size) {
     using namespace Gdiplus;
     scrollOffset_ = scrollOffset;
     // Updating rect in canvas coordinates
@@ -225,7 +225,7 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
     }
 
     if ( canvasChanged_ || fullRender_ ) {
-        renderInBuffer(updatedRect_);    
+        renderInBuffer(updatedRect_);
     }
     BitmapData bitmapData;
     Rect lockRect(0,0, getWidth(),getHeigth());
@@ -233,7 +233,7 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
     if ( buffer_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok ) {
         uint8_t * source = (uint8_t *) bitmapData.Scan0;
         unsigned int stride;
-        if ( bitmapData.Stride > 0) { 
+        if ( bitmapData.Stride > 0) {
             stride = bitmapData.Stride;
         } else {
             stride = - bitmapData.Stride;
@@ -541,7 +541,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
     if ( toolType != DrawingToolType::dtColorPicker ) {
         unselectAllElements();
     }
-    
+
     //showOverlay(toolType == dtCrop );
 
     delete currentDrawingTool_;
@@ -553,7 +553,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
     } else if ( toolType == DrawingToolType::dtMarker) {
         currentDrawingTool_ = new MarkerTool( this );
     }else if ( toolType == DrawingToolType::dtBlur) {
-        #if GDIPVER >= 0x0110 
+        #if GDIPVER >= 0x0110
         currentDrawingTool_ = new BlurTool( this );
         #else
         LOG(ERROR) << "Blur effect is not supported by current version of GdiPlus.";
@@ -565,9 +565,9 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
     } else if ( toolType == DrawingToolType::dtCrop ) {
         currentDrawingTool_ = new CropTool( this );
         showOverlay(true);
-    } 
+    }
     else {
-        ElementType type; 
+        ElementType type;
         bool createVectorTool = true;
         if ( toolType == DrawingToolType::dtLine ) {
             type = ElementType::etLine;
@@ -648,7 +648,7 @@ void Canvas::setPreviousDrawingTool()
     if ( previousDrawingTool_ != DrawingToolType::dtNone ) {
         setDrawingToolType(previousDrawingTool_, true);
     }
-}    
+}
 
 AbstractDrawingTool* Canvas::getCurrentDrawingTool() const
 {
@@ -862,7 +862,7 @@ void Canvas::updateView( RECT boundingRect ) {
     } else {
         Rect::Union(updatedRect_,newRect,updatedRect_);
     }
-    
+
     //LOG(INFO) << "updatedRect_ after union" << updatedRect_.X << " " << updatedRect_.Y << " " << updatedRect_.Width << " " <<updatedRect_.Height;
 
     //region.CreateRectRgnIndirect( &boundingRect );
@@ -909,7 +909,7 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
     //LOG(INFO) << "renderInBuffer " << rc.X << " " << rc.Y << " " << rc.Width << " " <<rc.Height << " forExport=" << forExport;
     bufferedGr_->SetPageUnit(Gdiplus::UnitPixel);
     bufferedGr_->SetSmoothingMode(SmoothingModeAntiAlias);
-    
+
     if ( doc_->hasTransparentPixels() ) {
         if (  !forExport ) {
             SolidBrush whiteBrush(Color(255,255,255));
@@ -1053,7 +1053,7 @@ MovableElement* Canvas::getElementAtPosition(int x, int y, ElementType et)
 {
     int count = elementsOnCanvas_.size();
     for ( int i = count-1; i >=0 ; i-- ) {
-        if ( elementsOnCanvas_[i]->getType() != ElementType::etCrop && ( et == ElementType::etNone || et == elementsOnCanvas_[i]->getType()) ) {    
+        if ( elementsOnCanvas_[i]->getType() != ElementType::etCrop && ( et == ElementType::etNone || et == elementsOnCanvas_[i]->getType()) ) {
             if ( elementsOnCanvas_[i]->isItemAtPos(x,y) ) {
                 return  elementsOnCanvas_[i];
             }
@@ -1253,7 +1253,7 @@ void Canvas::rotate(Gdiplus::RotateFlipType angle) {
     bmp->RotateFlip(angle);
     bmp = std::shared_ptr<Gdiplus::Bitmap>(bmp->Clone(0, 0, bmp->GetWidth(), bmp->GetHeight(), PixelFormat32bppARGB));
     doc_->updateBitmap(bmp);
-  
+
     // Deleting all elements on canvas
     int deletedCount = 0;
     auto uhi = std::make_unique<UndoHistoryItem>();
@@ -1312,7 +1312,7 @@ std::shared_ptr<InputBox> Canvas::getInputBox( const RECT& rect ) {
         | ES_NOHIDESEL /*| ES_LEFT */, WS_EX_TRANSPARENT | rtlStyle);
 
     inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);
-    inputBox_->setFont(font_,  CFM_FACE | CFM_SIZE | CFM_CHARSET 
+    inputBox_->setFont(font_,  CFM_FACE | CFM_SIZE | CFM_CHARSET
         | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET);
     inputBox_->SetFocus();
     return inputBox_;
@@ -1425,7 +1425,7 @@ void Canvas::setFillTextBackground(bool fill) {
     int count = 0;
     auto uhi = std::make_unique<UndoHistoryItem>();
     uhi->type = UndoHistoryItemType::uitFillBackgroundChanged;
-    
+
     for (auto& el: elementsOnCanvas_) {
         if (el->isSelected() && el->getType() == ElementType::etText) {
             auto* textEl = dynamic_cast<TextElement*>(el);

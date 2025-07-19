@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ CUpdateInfo::CUpdateInfo():
 bool CUpdateInfo::LoadUpdateFromFile(const CString& filename)
 {
     SimpleXml xml;
-    if(!xml.LoadFromFile(W2U(filename)))    
+    if(!xml.LoadFromFile(W2U(filename)))
     {
         ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), CString(_T("Failed to load update file ")) + filename + _T("\r\n"));
         return false;
@@ -68,7 +68,7 @@ bool CUpdateInfo::SaveToFile(const CString& filename) const
 {
     FILE *f = _wfopen(filename, _T("wb"));
     if(!f) return false;
-    
+
     fwrite(m_Buffer.c_str(), 1, m_Buffer.size(), f);
     fclose(f);
     return true;
@@ -83,9 +83,9 @@ bool CUpdateInfo::LoadUpdateFromBuffer(const std::string& buffer)
         return false;
     }
     m_Buffer = buffer;
-    
+
     Parse(m_xml);
-    
+
     return true;
 }
 
@@ -99,7 +99,7 @@ bool CUpdateInfo::Parse( SimpleXml &xml)
 {
     SimpleXmlNode root = xml.getRoot("UpdateInfo", false);
     if(root.IsNull()) return false;
-    
+
     m_PackageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
     m_UpdateUrl = IuCoreUtils::Utf8ToWstring(root.Attribute("UpdateUrl")).c_str();
     m_DownloadUrl = IuCoreUtils::Utf8ToWstring(root.Attribute("DownloadUrl")).c_str();
@@ -108,7 +108,7 @@ bool CUpdateInfo::Parse( SimpleXml &xml)
     m_Hash = IuCoreUtils::Utf8ToWstring(root.Attribute("Hash")).c_str();
     m_TimeStamp = root.AttributeInt("TimeStamp");
     m_DisplayName = IuCoreUtils::Utf8ToWstring(root.Attribute("DisplayName")).c_str();
-        
+
     if (m_PackageName.IsEmpty() || m_UpdateUrl.IsEmpty() || !m_TimeStamp)
         return false;
 
@@ -124,14 +124,14 @@ bool CUpdateInfo::Parse( SimpleXml &xml)
     int core = 0;
     core = root.AttributeInt("CoreUpdate");
     m_CoreUpdate = core!=0;
-        
+
         //if(m_xml.FindElem(_T("Info")))
     //    {
     m_ReadableText = IuCoreUtils::Utf8ToWstring(root["Info"].Text()).c_str();
             //m_xml.GetData(m_ReadableText);
             m_ReadableText.Replace(_T("\n"),_T("\r\n"));
         //}
-    
+
     return true;
 }
 
@@ -275,7 +275,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
     CString url = localPackage.updateUrl();
     Json::Value request;
-   
+
     const AppParams::AppVersionInfo* ver = AppParams::instance()->GetAppVersion();
     Json::Value version;
     version["FullString"] = ver->FullVersion;
@@ -289,9 +289,9 @@ bool CUpdateManager::internal_load_update(CString name)
 #if defined(_M_ARM64)
     version["Architecture"] = "ARM64";
 #elif defined(_M_X64)
-    version["Architecture"] = "x64";   
+    version["Architecture"] = "x64";
 #elif defined(_M_IX86)
-    version["Architecture"] = "x86"; 
+    version["Architecture"] = "x86";
 #endif
 
     ITranslator* translator = ServiceLocator::instance()->translator();
@@ -309,7 +309,7 @@ bool CUpdateManager::internal_load_update(CString name)
     environment["OS"] = OS;
     environment["CPUFeatures"] = IuCoreUtils::GetCpuFeatures();
     request["Environment"] = environment;
-    
+
     Json::Value package;
     package["Name"] = W2U(localPackage.packageName());
     package["LocalTimestamp"] = localPackage.timeStamp();
@@ -319,10 +319,10 @@ bool CUpdateManager::internal_load_update(CString name)
 
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
-    builder["indentation"] = "   ";  
+    builder["indentation"] = "   ";
 
     std::string jsonString = Json::writeString(builder, request);
-    nm->setUserAgent("Image Uploader " + ver->FullVersion);
+    nm->setUserAgent(APP_NAME_A + std::string(" ") + ver->FullVersion);
     try {
         nm->setUrl(W2U(url));
         nm->doPost(jsonString);
@@ -359,8 +359,8 @@ bool CUpdateManager::internal_load_update(CString name)
 
         m_updateList.push_back(remotePackage);
     }
-   
-   
+
+
     return true;
 }
 
@@ -389,7 +389,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     } catch (NetworkClient::AbortedException&) {
         return false;
     }
-    
+
     if(nm_->responseCode() != 200)
     {
         ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + WinUtils::IntToStr(nm_->responseCode())+ _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_->errorString()).c_str(), CString("URL=") + ui.downloadUrl());
@@ -450,7 +450,7 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
         ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), CString(_T("Failed to load update file \'")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str());
         return false;
     }
-    
+
     m_PackageFolder = IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFilePath(W2U(filename))).c_str();
     m_PackageFolder += "\\";
     SimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
@@ -458,11 +458,11 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
 
     //CString packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
     m_TimeStamp =  root.AttributeInt("TimeStamp");
-        
+
     int core=root.AttributeInt("CoreUpdate");
-        
+
     m_CoreUpdate = (core != 0);
-        
+
     SimpleXmlNode entry = root["Entries"];
     std::vector<SimpleXmlNode> entries;
     entry.GetChilds("Entry", entries);
@@ -477,7 +477,7 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
         if(ui.name.IsEmpty()  || (ui.hash.IsEmpty() &&  ui.action!=_T("delete") )|| ui.saveTo.IsEmpty())
             continue;
         m_entries.push_back(ui);
-        }    
+        }
     return true;
 }
 
@@ -512,7 +512,7 @@ bool CUpdatePackage::doUpdate()
     for(size_t i=0; i< m_entries.size(); i++)
     {
         CUpdateItem &ue = m_entries[i];
-    
+
         CString copyFrom, copyTo;
         copyFrom = m_PackageFolder + ue.name;
         copyTo = ue.saveTo;
@@ -554,24 +554,24 @@ bool CUpdatePackage::doUpdate()
         {
             if(MoveFile(copyTo,renameTo))
                 m_nUpdatedFiles++;
-                DeleteFile(renameTo);            
+                DeleteFile(renameTo);
         }
         else
         {
             WinUtils::CreateFolder(buffer);
             if(m_CoreUpdate)
             {
-                
-                MoveFile(copyTo,renameTo); 
+
+                MoveFile(copyTo,renameTo);
             }
             setStatusText( _T("Copying file '") + copyFrom + _T("' to location '") + copyTo);
-                  
+
             if(!CopyFile(copyFrom,copyTo,FALSE))
             {
                 ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), CString(_T("Could not write file ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo))).c_str());
-                
+
             }
-            else 
+            else
             {
                 m_nUpdatedFiles++;
                 if(m_CoreUpdate) DeleteFile(renameTo);
@@ -594,7 +594,7 @@ CUpdateManager::CUpdateManager(std::shared_ptr<INetworkClientFactory> networkCli
     m_statusCallback = nullptr;
     m_nCoreUpdates = 0;
     nCurrentIndex = 0;
-    
+
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
     nm_ = networkClientFactory_->create();
@@ -615,7 +615,7 @@ CString CUpdateManager::generateReport(bool manualUpdates)
         date.Format(_T("[%02d.%02d.%04d]"), timeinfo->tm_mday, timeinfo->tm_mon+1, 1900+timeinfo->tm_year);
         text += _T(" * ") + item.displayName() + _T("  ") + date + _T("\r\n\r\n");
         text += item.readableText();
-        text += _T("\r\n");    
+        text += _T("\r\n");
     }
     return text;
 }

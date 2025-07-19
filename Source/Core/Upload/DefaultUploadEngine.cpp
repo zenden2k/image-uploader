@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ int CDefaultUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadPa
         UploadError(ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false);
         return 0;
     }
-    
+
     return doUpload(task, params);
 }
 
@@ -121,9 +121,9 @@ bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task,
     if ( !actionsExecuteResult ) {
         return false;
     }
-    std::string m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
-    std::string m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
-    std::string m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
+    std::string m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate );
+    std::string m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate );
+    std::string m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate );
 
     params.ThumbUrl  = m_ThumbUrl;
     params.DirectUrl = m_ImageUrl;
@@ -184,7 +184,7 @@ bool CDefaultUploadEngine::executeActions() {
 
             if (!ActionRes ) {
                 // Prepare error string which will be displayed in Log Window
-                std::string ErrorStr = m_ErrorReason; 
+                std::string ErrorStr = m_ErrorReason;
                 ErrorType errorType;
 
                 if (!m_ErrorReason.empty()) {
@@ -226,7 +226,7 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
         AddQueryPostParams(Action);
 
         m_NetworkClient->setUrl(Action.Url);
-       
+
         if ( bUpload ) {
             if (Action.Type == "put") {
                 m_NetworkClient->setMethod( "PUT" );
@@ -275,7 +275,7 @@ bool CDefaultUploadEngine::reg_single_match(const std::string& pattern, const st
         }
         return true;
     }
-    
+
     return false;
 }
 
@@ -390,16 +390,16 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& 
                         return false; // ERROR! Current action failed!
                     }
                 }
-                
+
             }
-        } 
-        
+        }
+
     }
 
     if (!DebugVars.empty() && m_UploadData->Debug) {
         DebugMessage(DebugVars);
     }
-    
+
     return true;
 }
 
@@ -441,7 +441,7 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
             DebugMessage("\r\nType:" + Action.Type + "\r\nURL: " + Current.Url);
         }
     }
-        
+
     if (!m_UploadData->UserAgent.empty())
     {
         m_NetworkClient->setUserAgent(m_UploadData->UserAgent);
@@ -467,7 +467,7 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
                 {
                     serverSync_->setAuthPerformed(Result);
                 }
-                
+
             }
             serverSync_->endAuth();
         }
@@ -542,7 +542,7 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
         if (!Result && answer.empty())
         {
             UploadError(false, "Empty response!", &Action);
-        }   
+        }
     }
     return Result;
 }
@@ -553,12 +553,12 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
     std::string _Post = "Post Request to URL: " + Action.Url + "\r\n";
 
     //pcrepp::Pcre reg("(.*?)=(.*?[^\\x5c]{0,1});", "imc");
-    
+
     pcrepp::Pcre reg2("\\\\;(*SKIP)(*FAIL)|;", "imcs");
     std::string str = Txt;
     auto strings = reg2.split(str);
     pcrepp::Pcre reg3("\\\\=(*SKIP)(*FAIL)|=", "imcs");
-   
+
     for (const auto& item : strings) {
         auto tokens = reg3.split(item);
         if (tokens.size() < 2) {
@@ -680,7 +680,7 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
                     value = IuTextUtils::DecodeHtmlEntities(value);
                 }
             }
-            
+
             Result = IuCoreUtils::StrReplace(Result, std::string("$(") + vv + std::string(")"), value);
         }
         else

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -340,40 +340,40 @@ HFONT GetSystemDialogFont(UINT dpi) {
                 UINT fWinIni,
                 UINT dpi
             );
-            
-            static SystemParametersInfoForDpiFunc pSystemParametersInfoForDpi = 
+
+            static SystemParametersInfoForDpiFunc pSystemParametersInfoForDpi =
                 user32.GetProcAddress<SystemParametersInfoForDpiFunc>("SystemParametersInfoForDpi");
-            
+
             if (pSystemParametersInfoForDpi) {
                 // Windows 10 Anniversary Update (1607) и новее
-                if (pSystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS, 
-                                               sizeof(NONCLIENTMETRICS), 
-                                               &ncm, 
-                                               0, 
+                if (pSystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS,
+                                               sizeof(NONCLIENTMETRICS),
+                                               &ncm,
+                                               0,
                                                dpi)) {
                     return CreateFontIndirect(&ncm.lfMessageFont);
                 }
             }
         }
     }
-    
+
     // Fallback
-    if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 
-                            sizeof(NONCLIENTMETRICS), 
-                            &ncm, 
+    if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS,
+                            sizeof(NONCLIENTMETRICS),
+                            &ncm,
                             0)) {
         CClientDC dc(NULL);
         int systemDpi = dc.GetDeviceCaps(LOGPIXELSX);
 
         if (dpi && systemDpi != dpi) {
-            ncm.lfMessageFont.lfHeight = MulDiv(ncm.lfMessageFont.lfHeight, 
-                                               (int)systemDpi, 
+            ncm.lfMessageFont.lfHeight = MulDiv(ncm.lfMessageFont.lfHeight,
+                                               (int)systemDpi,
                                                USER_DEFAULT_SCREEN_DPI);
         }
-        
+
         return CreateFontIndirect(&ncm.lfMessageFont);
     }
-    
+
     return NULL;
 }
 
