@@ -34,7 +34,7 @@
 #include "AboutDialog.h"
 #include "Core/QtServerIconCache.h"
 
-using namespace ImageUploader::Core::OutputGenerator;
+using namespace Uptooda::Core::OutputGenerator;
 
 MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWidget* parent) :
     QMainWindow(parent),

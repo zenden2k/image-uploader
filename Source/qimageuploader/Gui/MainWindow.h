@@ -12,7 +12,7 @@ class UploadEngineManager;
 class UploadTreeModel;
 class ScriptsManager;
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 struct UploadObject;
 }
 class ServerSelectorWidget;
@@ -52,7 +52,7 @@ private slots:
 protected:
 	bool addFileToList(QString fileName);
 	bool addMultipleFilesToList(QStringList fileNames);
-    void uploadTaskToUploadObject(UploadTask* task, ImageUploader::Core::OutputGenerator::UploadObject& obj);
+    void uploadTaskToUploadObject(UploadTask* task, Uptooda::Core::OutputGenerator::UploadObject& obj);
 	void showCodeForIndex(const QModelIndex& index);
 	void quitApp();
     void saveOptions();

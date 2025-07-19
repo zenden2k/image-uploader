@@ -47,6 +47,8 @@ namespace {
 // {86EE6805-4ADE-444C-9886-F67E949DFBAD}
 static const GUID MainTrayIconBaseGUID = { 0x86ee6805, 0x4ade, 0x444c, { 0x98, 0x86, 0xf6, 0x7e, 0x94, 0x9d, 0xfb, 0xad } };
 
+constexpr auto TRAY_MUTEX_NAME = _T("Uptooda_TrayWnd_Mutex");
+
 bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = nullptr)
 {
     MENUITEMINFO MenuItem {};
@@ -703,7 +705,7 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
 void CFloatingWindow::CreateTrayIcon()
 {
     BOOL bFound = FALSE;
-    hMutex = ::CreateMutex(NULL, TRUE, _T("ImageUploader_TrayWnd_Mutex"));
+    hMutex = ::CreateMutex(NULL, TRUE, TRAY_MUTEX_NAME);
     if (GetLastError() == ERROR_ALREADY_EXISTS)
         bFound = TRUE;
     if (hMutex)
@@ -720,7 +722,7 @@ void CFloatingWindow::CreateTrayIcon()
 BOOL CFloatingWindow::IsRunningFloatingWnd() {
     HANDLE hMutex = NULL;
     BOOL bFound = FALSE;
-    hMutex = ::CreateMutex(NULL, TRUE, _T("ImageUploader_TrayWnd_Mutex"));
+    hMutex = ::CreateMutex(NULL, TRUE, TRAY_MUTEX_NAME);
     if (GetLastError() == ERROR_ALREADY_EXISTS)
         bFound = TRUE;
     if (hMutex)
