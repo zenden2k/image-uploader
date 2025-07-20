@@ -114,6 +114,11 @@ LRESULT CMainDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
     return 0;
 }
 
+LRESULT CMainDlg::OnMyDpiChanged(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    ThumbsView.PostMessage(WM_MY_DPICHANGED, wParam, lParam);
+    return 0;
+}
+
 LRESULT CMainDlg::OnBnClickedAddvideo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     WizardDlg->executeFunc(_T("importvideo"));

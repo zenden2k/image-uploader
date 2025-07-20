@@ -103,5 +103,10 @@ std::unique_ptr<Gdiplus::Font> StringToGdiplusFont(LPCTSTR szBuffer);
 CString ImageFormatGUIDToString(GUID guid);
 
 std::pair<std::unique_ptr<Gdiplus::Bitmap>, std::unique_ptr<BYTE[]>> GetIconPixelData(HICON hIcon);
+
+std::unique_ptr<Gdiplus::Bitmap> ConvertBitmapWithPremultipliedAlphaV2(HBITMAP hBitmap);
+
+std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromHBitmap(HBITMAP nativeHBitmap);
+
 }
 #endif

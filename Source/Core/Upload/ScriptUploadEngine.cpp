@@ -33,6 +33,7 @@
 #include "FolderTask.h"
 #include "Parameters/TextParameter.h"
 #include "Parameters/ParameterFactory.h"
+#include "Core/i18n/Translator.h"
 
 namespace {
 
@@ -163,8 +164,7 @@ int CScriptUploadEngine::processTestTask(std::shared_ptr<UploadTask> task) {
     }
     catch (const Sqrat::Exception& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::processTestTask\r\n" + e.Message());
-    }
-    catch (std::exception& e) {
+    } catch (const std::exception& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::processTestTask\r\n" + std::string(e.what()));
     }
     FlushSquirrelOutput();
@@ -393,6 +393,9 @@ int CScriptUploadEngine::doLogin()
         }*/
 
         return res;
+    } catch (const INetworkClient::AbortedException& ex) {
+        serverSync_->setAuthPerformed(false);
+        Log(ErrorInfo::mtWarning, _("Operation was cancelled by user."));
     }
     catch (const std::exception& e)
     {
@@ -415,8 +418,10 @@ int CScriptUploadEngine::doLogout() {
         }
         auto [res, table] = GetOperationResult(func.Evaluate<Object>());
         return res;
-    }
-    catch (std::exception& e)
+    } catch (const INetworkClient::AbortedException& ex) {
+        serverSync_->setAuthPerformed(false);
+        Log(ErrorInfo::mtWarning, _("Operation was cancelled by user."));
+    } catch (const std::exception& e)
     {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogout\r\n" + std::string(e.what()));
     }

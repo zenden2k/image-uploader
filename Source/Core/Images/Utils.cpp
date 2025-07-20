@@ -1611,4 +1611,97 @@ std::pair<std::unique_ptr<Gdiplus::Bitmap>,std::unique_ptr<BYTE[]>> GetIconPixel
     return std::make_pair(std::move(pBitmap), std::move(data));
 }
 
+std::unique_ptr<Gdiplus::Bitmap> CreateAlphaBitmap(Gdiplus::Bitmap* srcBitmap, Gdiplus::PixelFormat targetPixelFormat) {
+    if (!srcBitmap) {
+        return nullptr;
+    }
+
+    auto result = std::make_unique<Gdiplus::Bitmap>(srcBitmap->GetWidth(), srcBitmap->GetHeight(), targetPixelFormat);
+
+    if (!result || result->GetLastStatus() != Gdiplus::Ok) {
+        return nullptr;
+    }
+
+    Gdiplus::Rect bmpBounds(0, 0, srcBitmap->GetWidth(), srcBitmap->GetHeight());
+    Gdiplus::BitmapData srcData, destData;
+
+    if (srcBitmap->LockBits(&bmpBounds, Gdiplus::ImageLockModeRead, srcBitmap->GetPixelFormat(), &srcData) != Gdiplus::Ok) {
+        return nullptr;
+    }
+
+    if (result->LockBits(&bmpBounds, Gdiplus::ImageLockModeWrite, targetPixelFormat, &destData) != Gdiplus::Ok) {
+        srcBitmap->UnlockBits(&srcData);
+        return nullptr;
+    }
+
+    BYTE* srcPtr = static_cast<BYTE*>(srcData.Scan0);
+    BYTE* destPtr = static_cast<BYTE*>(destData.Scan0);
+
+
+    if (srcData.Stride == destData.Stride && srcData.Stride > 0) {
+        size_t totalBytes = abs(srcData.Stride) * srcData.Height;
+        memcpy(destPtr, srcPtr, totalBytes);
+    } else {
+        int srcStride = srcData.Stride;
+        int destStride = destData.Stride;
+        int rowBytes = srcData.Width * 4;
+
+        for (int y = 0; y < srcData.Height; y++) {
+            BYTE* srcRow = srcPtr + (srcStride * y);
+            BYTE* destRow = destPtr + (destStride * y);
+            memcpy(destRow, srcRow, rowBytes);
+        }
+    }
+
+    srcBitmap->UnlockBits(&srcData);
+    result->UnlockBits(&destData);
+
+    return result;
+}
+
+std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromHBitmap(HBITMAP nativeHBitmap) {
+    using namespace Gdiplus;
+    std::unique_ptr<Gdiplus::Bitmap> bmp(Bitmap::FromHBITMAP(nativeHBitmap, 0));
+
+    if (GetPixelFormatSize(bmp->GetPixelFormat()) != 32) {
+        return bmp;
+    }
+    return CreateAlphaBitmap(bmp.get(), PixelFormat32bppARGB);
+}
+
+std::unique_ptr<Gdiplus::Bitmap> ConvertBitmapWithPremultipliedAlphaV2(HBITMAP hBitmap) {
+    BITMAP bmp;
+    if (GetObject(hBitmap, sizeof(BITMAP), &bmp) == 0) {
+        return {};
+    }
+
+    auto ppBitmap = std::make_unique<Gdiplus::Bitmap>(bmp.bmWidth, bmp.bmHeight, PixelFormat32bppPARGB);
+
+    Gdiplus::BitmapData bitmapData;
+    Gdiplus::Rect rect(0, 0, bmp.bmWidth, bmp.bmHeight);
+
+    if (ppBitmap->LockBits(&rect, Gdiplus::ImageLockModeWrite, PixelFormat32bppPARGB, &bitmapData) == Gdiplus::Ok) {
+
+        HDC hdcSrc = CreateCompatibleDC(nullptr);
+        HGDIOBJ hOldBmp = SelectObject(hdcSrc, hBitmap);
+
+        BITMAPINFO bi = { 0 };
+        bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bi.bmiHeader.biWidth = bmp.bmWidth;
+        bi.bmiHeader.biHeight = -bmp.bmHeight; 
+        bi.bmiHeader.biPlanes = 1;
+        bi.bmiHeader.biBitCount = 32;
+        bi.bmiHeader.biCompression = BI_RGB;
+
+        GetDIBits(hdcSrc, hBitmap, 0, bmp.bmHeight, bitmapData.Scan0, &bi, DIB_RGB_COLORS);
+
+        SelectObject(hdcSrc, hOldBmp);
+        DeleteDC(hdcSrc);
+
+        ppBitmap->UnlockBits(&bitmapData);
+        return ppBitmap;
+    }
+    return {};
+}
+
 }

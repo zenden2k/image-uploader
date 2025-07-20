@@ -936,4 +936,29 @@ void DeleteAllToolbarButtons(CToolBarCtrl& toolbar) {
     }
 }
 
+HBITMAP GetAssociatedIconAsBitmap(LPCWSTR filePath, HWND hwnd, int iconSize, SIIGBF flags) {
+    CComPtr<IShellItem> pShellItem;
+
+    HRESULT hr = SHCreateItemFromParsingName(filePath, nullptr,
+        IID_IShellItem, reinterpret_cast<void**>(&pShellItem));
+    if (FAILED(hr)) {
+        return { };
+    }
+
+    CComPtr<IShellItemImageFactory> pImageFactory;
+    hr = pShellItem.QueryInterface(&pImageFactory);
+    if (FAILED(hr)) {
+        return { };
+    }
+
+    HBITMAP hBitmap {};
+    hr = pImageFactory->GetImage({ iconSize, iconSize }, flags, &hBitmap);
+    if (FAILED(hr)) {
+        return {  };
+    }
+
+    return hBitmap;
+}
+
+
 }

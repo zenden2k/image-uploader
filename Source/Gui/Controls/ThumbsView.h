@@ -36,16 +36,13 @@
 struct ThumbsViewItem
 {
     CString FileName;
-    BOOL ThumbOutDate;
-    bool ThumbnailRequested;
-    //CBitmap Image;
-    bool ThumbLoaded;
-    int Index;
+    std::atomic<BOOL> ThumbOutDate;
+    std::atomic<bool> ThumbnailRequested;
+    std::atomic<bool> ThumbLoaded;
 
     ThumbsViewItem() {
         ThumbOutDate = true;
         ThumbnailRequested = false;
-        Index = -1;
         ThumbLoaded = false;
     }
 };
@@ -61,6 +58,7 @@ public:
     BEGIN_MSG_MAP(CThumbsView)
         MESSAGE_HANDLER(WM_MBUTTONUP, OnMButtonUp)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnMyDpiChanged)
         MSG_WM_KEYDOWN(OnKeyDown)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINDRAG, OnLvnBeginDrag)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
@@ -79,6 +77,7 @@ public:
     LRESULT OnItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
     LRESULT OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     using ItemCountChangedCallback = std::function<void(CThumbsView*, bool)>;
 
     void SetOnItemCountChanged(ItemCountChangedCallback&& callback);
@@ -119,6 +118,7 @@ protected:
     bool deletePhysicalFiles_;
     CBitmap defaultImage_;
     void NotifyItemCountChanged(bool selected = true);
+    void createResources();
     std::deque<int> thumbQueue_;
     std::mutex thumbQueueMutex_;
     std::condition_variable thumbQueueCondition_;

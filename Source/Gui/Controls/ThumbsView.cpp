@@ -35,6 +35,7 @@
 #include "Video/VideoGrabber.h"
 #include "Func/MyUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CThumbsView
 CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
@@ -54,24 +55,15 @@ CThumbsView::~CThumbsView()
 
 void CThumbsView::Init(bool Extended)
 {
-    constexpr int THUMBNAIL_WIDTH = 150;
-    constexpr int THUMBNAIL_HEIGHT = 120;
-    CClientDC dc(m_hWnd);
-    float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
-    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
-    thumbnailWidth_ = static_cast<int>(roundf(THUMBNAIL_WIDTH * dpiScaleX_));
-    thumbnailHeight_ = static_cast<int>(roundf(THUMBNAIL_HEIGHT * dpiScaleY_));
-    fullThumbHeight_ = thumbnailHeight_ + (Extended ? static_cast<int>(roundf(20 * dpiScaleY_)) : 0);
-    Start(THREAD_PRIORITY_BELOW_NORMAL);
     ExtendedView = Extended;
+    createResources();
+    Start(THREAD_PRIORITY_BELOW_NORMAL);
+
     ImageView.Create(m_hWnd);
-    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
-    imageList_.Create(thumbnailWidth_, fullThumbHeight_, ILC_COLOR24 | rtlStyle, 0, 3);
-    SetImageList(imageList_, LVSIL_NORMAL);
+
     DWORD style = GetExtendedListViewStyle();
     style = style | LVS_EX_DOUBLEBUFFER | LVS_EX_BORDERSELECT;
     SetExtendedListViewStyle(style);
-    SetIconSpacing(thumbnailWidth_ + static_cast<int>(roundf(5 * dpiScaleX_)), fullThumbHeight_ + static_cast<int>(roundf(25 * dpiScaleY_)));
 }
 
 int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, Gdiplus::Image* Img)
@@ -81,9 +73,6 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
     }
 
     int n = GetItemCount();
-
-    if(imageList_.GetImageCount() < 1)
-        LoadThumbnail(-1, nullptr, nullptr);
 
     AddItem(n, 0, Title, 0);
 
@@ -237,7 +226,7 @@ LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image *img)
 {
     using namespace Gdiplus;
-    if(itemId>GetItemCount()-1)
+    if(itemId >= GetItemCount())
     {
         return false;
     }
@@ -249,6 +238,9 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     {
         filename = /*GetFileName(ItemID);*/tvi->FileName;
     }
+
+    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    float dpiScale = dpi / 96.0f;
     int width, height, imgwidth = 0, imgheight = 0, newwidth=0, newheight=0;
     width = thumbnailWidth_/*rc.right-2*/;
     height = thumbnailHeight_/*rc.bottom-16*/;
@@ -310,11 +302,12 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     }
     if (imgwidth>maxwidth) maxwidth = imgwidth;
     if (imgheight>maxheight) maxheight = imgheight;
-    Graphics g(m_hWnd,true);
-    Bitmap ImgBuffer(thumbwidth, fullThumbHeight_, &g);
-
-
+    //Graphics g(m_hWnd,true);
+    Bitmap ImgBuffer(thumbwidth, fullThumbHeight_);
     Graphics gr(&ImgBuffer);
+
+    gr.SetPageUnit(UnitPixel);
+
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
     gr.Clear(Color(255,255,255,255));
 
@@ -328,7 +321,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         StringFormat format;
         format.SetAlignment(StringAlignmentCenter);
         format.SetLineAlignment(StringAlignmentCenter);
-        Font font(L"Arial", 12, FontStyleBold);
+        Font font(L"Arial", 15 * dpiScale, FontStyleBold, Gdiplus::UnitPixel);
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("List of Images"), TR("Cannot load thumbnail for image."), CString(TR("File:")) + _T(" ") + filename);
         gr.DrawString(TR("Unable to load picture"), -1, &font, bounds, &format, &brush);
     }
@@ -347,40 +340,20 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         if(itemId>=0 && !img && !IuCommonFunctions::IsImage(filename))
         {
             WORD id;
-            // ExtractAssociatedIcon has memory leaks
-            CIcon associatedIcon = ExtractAssociatedIcon(GetModuleHandle(0), const_cast<LPWSTR>(filename.GetString()), &id);
+            int size = MulDiv(64, dpi, USER_DEFAULT_SCREEN_DPI);
 
-            if(associatedIcon) {
-                GuiTools::IconInfo ii = GuiTools::GetIconInfo(associatedIcon);
-                int iconWidth = ii.nWidth;
-                int iconHeight = ii.nHeight;
-                if (iconWidth) {
-                    HDC dc = GetDC();
-
-                    HDC memDC = CreateCompatibleDC(dc);
-                    HBITMAP memBm = CreateCompatibleBitmap(dc,iconWidth,iconHeight);
-                    HGDIOBJ oldBm = SelectObject(memDC, memBm);
-                    RECT r={0,0,iconWidth,iconHeight};
-                    FillRect(memDC, &r, GetSysColorBrush(COLOR_WINDOW));
-
-                    DrawIcon(memDC, 0,0,associatedIcon);
-                    std::unique_ptr<Bitmap>bitmap (Bitmap::FromHBITMAP(memBm,0));
-
-                    gr.DrawImage(/*backBuffer*/bitmap.get(), (int)((width-bitmap->GetWidth())/2)+1, (int)((height-bitmap->GetHeight())/2), (int)bitmap->GetWidth(),(int)bitmap->GetHeight());
-
-                    SelectObject(memDC, oldBm);
-                    DeleteObject(memBm);
-                    DeleteDC(memDC);
-
-                    ReleaseDC(dc);
+            CBitmap associatedIcon = GuiTools::GetAssociatedIconAsBitmap(filename, m_hWnd, size);
+            if (associatedIcon) {
+                std::unique_ptr<Bitmap> bitmap(ImageUtils::GetBitmapFromHBitmap(associatedIcon));
+                if (bitmap) {
+                    gr.DrawImage(bitmap.get(), (width - size) / 2 + 1, (height - size) / 2, size, size);
                 }
-                //DestroyIcon(associatedIcon);
-            }
+            } 
         }
 
-
-       if(bm)
-                gr.DrawImage(/*backBuffer*/bm.get(), (int)((width-newwidth)/2)+1, (int)((height-newheight)/2), (int)newwidth,(int)newheight);
+        if (bm) {
+            gr.DrawImage(/*backBuffer*/ bm.get(), (int)((width - newwidth) / 2) + 1, (int)((height - newheight) / 2), (int)newwidth, (int)newheight);
+        }
 
 
         RectF bounds(0, float(height), float(width), float(fullThumbHeight_ - thumbnailHeight_));
@@ -399,11 +372,10 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
                 StringFormat format;
                 format.SetAlignment(StringAlignmentCenter);
                 format.SetLineAlignment(StringAlignmentCenter);
-                Font font(L"Tahoma", 8, FontStyleRegular);
-                CString Filename = /*GetFileName(ItemID);*/filename;
+                Font font(L"Tahoma", 10 * dpiScale, FontStyleRegular, Gdiplus::UnitPixel);
                 CString Buffer;
                 //int f = MyGetFileSize(GetFileName(ItemID));
-                std::string fileSizeStr = IuCoreUtils::FileSizeToString(IuCoreUtils::GetFileSize(WCstringToUtf8(Filename)));
+                std::string fileSizeStr = IuCoreUtils::FileSizeToString(IuCoreUtils::GetFileSize(WCstringToUtf8(filename)));
                 CString buf2 = Utf8ToWCstring(fileSizeStr);
 
                 if (IuCommonFunctions::IsImage(filename) && bm) {
@@ -673,6 +645,48 @@ void CThumbsView::NotifyItemCountChanged(bool selected) {
     }
 }
 
+void CThumbsView::createResources() {
+    constexpr int THUMBNAIL_WIDTH = 150;
+    constexpr int THUMBNAIL_HEIGHT = 120;
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    auto scale = [&](int n) {
+        return MulDiv(n, dpi, USER_DEFAULT_SCREEN_DPI);
+    };
+    thumbnailWidth_ = scale(THUMBNAIL_WIDTH);
+    thumbnailHeight_ = scale(THUMBNAIL_HEIGHT);
+    fullThumbHeight_ = thumbnailHeight_ + (ExtendedView ? scale(20) : 0);
+    if (imageList_) {
+        SetImageList(nullptr, LVSIL_NORMAL);
+        imageList_.Destroy();
+    }
+    const DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    imageList_.Create(thumbnailWidth_, fullThumbHeight_, ILC_COLOR24 | rtlStyle, 0, 3);
+    SetImageList(imageList_, LVSIL_NORMAL);
+    SetIconSpacing(thumbnailWidth_ + scale(5), fullThumbHeight_ + scale(25));
+
+    LoadThumbnail(-1, nullptr, nullptr);
+    SetRedraw(FALSE);
+    
+    {
+        std::lock_guard<std::mutex> lk(thumbQueueMutex_);
+        thumbQueue_.clear();
+    }
+
+    int count = GetItemCount();
+    for (int i = 0; i < count; i++) {
+        SetItem(i, 0, LVIF_IMAGE, nullptr, 0, 0, 0, 0);
+        auto* tvi = reinterpret_cast<ThumbsViewItem*>(GetItemData(i));
+        if (tvi) {
+            tvi->ThumbnailRequested = false;
+            tvi->ThumbLoaded = false;
+            tvi->ThumbOutDate = true;
+        }
+    }    
+    
+    SetRedraw(TRUE);
+    Invalidate();
+}
+
 bool CThumbsView::CopySelectedItemsToClipboard() const {
     return ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(CMainDlg::MENUITEM_COPYFILETOCLIPBOARD, 0), 0) != FALSE;
 }
@@ -766,6 +780,11 @@ LRESULT CThumbsView::OnDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     } else if (IsVideoFile(FileName)) {
         ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(CMainDlg::MENUITEM_OPENINDEFAULTVIEWER, 0), 0);
     }
+    return 0;
+}
+
+LRESULT CThumbsView::OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createResources();
     return 0;
 }
 

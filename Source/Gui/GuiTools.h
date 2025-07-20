@@ -121,5 +121,7 @@ namespace GuiTools
     bool IsToastImageFormatSupported(const CString& filePath);
 
     void DeleteAllToolbarButtons(CToolBarCtrl& toolbar);
-}
+
+    HBITMAP GetAssociatedIconAsBitmap(LPCWSTR filePath, HWND hwnd, int iconSize, SIIGBF flags = SIIGBF_ICONONLY);
+    }
 #endif
