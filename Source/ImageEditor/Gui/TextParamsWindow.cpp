@@ -28,6 +28,7 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "ImageEditor/Helpers/FontEnumerator.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 TextParamsWindow::TextParamsWindow() : fontSizeComboboxCustomEdit_(this), windowDc_(nullptr)
 {
@@ -102,30 +103,7 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         _T("14"), _T("15"),_T("16"),_T("18"),_T("20"),_T("22"), _T("24"),  _T("26"),  _T("28"),  _T("36"), _T("48"),_T("72")
     );
 
-    RECT toolbarRect;
-    HWND toolbarPlaceholder = GetDlgItem(IDC_TOOLBARPLACEHOLDER);
-    ::GetWindowRect(toolbarPlaceholder, &toolbarRect);
-    ::MapWindowPoints(nullptr, m_hWnd, (LPPOINT)&toolbarRect, 2);
-    int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);
-    int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
-    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
-    toolbarImageList_.Create(iconWidth, iconHeight, ((WinUtils::IsWinXPOrLater()) ? ILC_COLOR32 : ILC_COLOR8 | ILC_MASK) | rtlStyle, 3, 3);
-    /*if ( WinUtils::IsWinXP() || WinUtils::IsVista() )*/ {
-        iconBold_ = GuiTools::LoadSmallIcon(IDI_ICONBOLD);
-        toolbarImageList_.AddIcon(iconBold_);
-        iconItalic_ = GuiTools::LoadSmallIcon(IDI_ICONITALIC);
-        toolbarImageList_.AddIcon(iconItalic_);
-        iconUnderline_ = GuiTools::LoadSmallIcon(IDI_ICONUNDERLINE);
-        toolbarImageList_.AddIcon(iconUnderline_);
-    }
-    textToolbar_.Create(m_hWnd, toolbarRect, _T(""), WS_CHILD | TBSTYLE_LIST| /*|TBSTYLE_CUSTOMERASE|*/TBSTYLE_FLAT| CCS_NORESIZE|CCS_BOTTOM | CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
-
-    textToolbar_.SetButtonStructSize();
-    textToolbar_.SetButtonSize(30,18);
-    textToolbar_.SetImageList(toolbarImageList_);
-    textToolbar_.AddButton(IDC_BOLD, TBSTYLE_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 0, nullptr, 0);
-    textToolbar_.AddButton(IDC_ITALIC, TBSTYLE_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 1, nullptr, 0);
-    textToolbar_.AddButton(IDC_UNDERLINE, TBSTYLE_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 2, nullptr, 0);
+    createToolbar();
     textToolbar_.ShowWindow(SW_SHOW);
 
     return TRUE;
@@ -141,6 +119,11 @@ LRESULT TextParamsWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 LRESULT TextParamsWindow::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     ShowWindow(SW_HIDE);
+    return 0;
+}
+
+LRESULT TextParamsWindow::OnDpiChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    createToolbar();
     return 0;
 }
 
@@ -190,6 +173,67 @@ void TextParamsWindow::OnFontEnumerationFinished()
         fontComboBox_.AddString(fonts_[i].lfFaceName);
     }
     fontComboBox_.SelectString(-1, fontName_);
+}
+
+
+void TextParamsWindow::createToolbar() {
+    RECT toolbarRect;
+    GetDlgItem(IDC_TOOLBARPLACEHOLDER).GetWindowRect(&toolbarRect);
+    ScreenToClient(&toolbarRect);
+
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+    const DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+
+    if (toolbarImageList_) {
+        textToolbar_.SetImageList(nullptr);
+        toolbarImageList_.Destroy();
+    }
+  
+    toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 3, 3);
+
+    CIcon iconBold, iconItalic, iconUnderline;
+    iconBold = GuiTools::LoadSmallIcon(IDI_ICONBOLD, dpi);
+    toolbarImageList_.AddIcon(iconBold);
+    iconItalic = GuiTools::LoadSmallIcon(IDI_ICONITALIC, dpi);
+    toolbarImageList_.AddIcon(iconItalic);
+    iconUnderline = GuiTools::LoadSmallIcon(IDI_ICONUNDERLINE, dpi);
+    toolbarImageList_.AddIcon(iconUnderline);
+
+    TBBUTTONINFO bi {};
+    bi.cbSize = sizeof(bi);
+    bi.dwMask = TBIF_STATE;
+    BYTE boldButtonState = TBSTATE_ENABLED;
+    BYTE italicButtonState = TBSTATE_ENABLED;
+    BYTE underlineButtonState = TBSTATE_ENABLED;
+
+    if (!textToolbar_) {
+        textToolbar_.Create(m_hWnd, toolbarRect, _T(""), WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | CCS_BOTTOM | CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+        textToolbar_.SetButtonStructSize();
+    } else {
+        TBBUTTONINFO bi;
+        memset(&bi, 0, sizeof(bi));
+        bi.cbSize = sizeof(bi);
+        bi.dwMask = TBIF_STATE;
+
+        textToolbar_.GetButtonInfo(IDC_BOLD, &bi);
+        boldButtonState = bi.fsState;
+
+        textToolbar_.GetButtonInfo(IDC_ITALIC, &bi);
+        italicButtonState = bi.fsState;
+
+        textToolbar_.GetButtonInfo(IDC_UNDERLINE, &bi);
+        underlineButtonState = bi.fsState;
+    }
+
+    GuiTools::DeleteAllToolbarButtons(textToolbar_);
+
+    textToolbar_.SetImageList(toolbarImageList_);
+
+    textToolbar_.AddButton(IDC_BOLD, TBSTYLE_CHECK | BTNS_AUTOSIZE, boldButtonState, 0, nullptr, 0);
+    textToolbar_.AddButton(IDC_ITALIC, TBSTYLE_CHECK | BTNS_AUTOSIZE, italicButtonState, 1, nullptr, 0);
+    textToolbar_.AddButton(IDC_UNDERLINE, TBSTYLE_CHECK | BTNS_AUTOSIZE, underlineButtonState, 2, nullptr, 0);
 }
 
 void TextParamsWindow::NotifyParent(DWORD changeMask)

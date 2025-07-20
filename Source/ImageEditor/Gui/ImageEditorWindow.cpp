@@ -444,11 +444,6 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         CenterWindow();
     }
 
-    icon_ = GuiTools::LoadBigIcon(IDR_MAINFRAME);
-    iconSmall_ = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
-
-    SetIcon(icon_, TRUE);
-    SetIcon(iconSmall_, FALSE);
     std::vector<ACCEL> accels = {
         { FVIRTKEY | FCONTROL, 'Z', ID_UNDO },
         { FVIRTKEY | FCONTROL, 'D', ID_UNSELECTALL },
@@ -1876,6 +1871,19 @@ void ImageEditorWindow::showMoreActionsDropdownMenu(Toolbar::Item* item) {
 }
 
 void ImageEditorWindow::createIcons() {
+    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    if (icon_) {
+        icon_.DestroyIcon();
+    }
+    if (iconSmall_) {
+        iconSmall_.DestroyIcon();
+    }
+    icon_ = GuiTools::LoadBigIcon(IDR_MAINFRAME, dpi);
+    iconSmall_ = GuiTools::LoadSmallIcon(IDR_MAINFRAME, dpi);
+
+    SetIcon(icon_, TRUE);
+    SetIcon(iconSmall_, FALSE);
+
     if (bmIconRotateCW_) {
         bmIconRotateCW_.DeleteObject();
     }

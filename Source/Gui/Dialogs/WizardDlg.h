@@ -240,8 +240,8 @@ public:
     bool funcOpenScreenshotFolder();
     bool funcFromClipboard(bool fromCmdLine = false);
     bool funcExit(bool force = false);
-    bool funcRecordScreen();
     // end of functions
+
     bool executeFunc(CString funcName, bool fromCmdLine = false);
     void executeFuncLater(CString funcName);
     bool importVideoFile(const CString& fileName, int prevPage = 0);
@@ -308,8 +308,9 @@ public:
 
 protected:
     bool acceptsDragnDrop() const;
-    CIcon hIcon;
-    CIcon hIconSmall;
+    void createIcons();
+    CIcon windowIcon_;
+    CIcon smallWindowIcon_;
     CHotkeyList m_hotkeys;
     CFolderAdd FolderAdd;
 

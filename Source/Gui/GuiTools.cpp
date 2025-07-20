@@ -481,28 +481,25 @@ int GetWindowLeft(HWND Wnd)
     return WindowRect.left;
 }
 
-std::vector<RECT> monitorsRects;
-BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
-{
-    if (lprcMonitor)
-    {
-        monitorsRects.push_back(*lprcMonitor);
-    }
-    return TRUE;
-}
+void GetScreenBounds(RECT& rect) {
+    std::vector<RECT> monitorsRects;
 
-bool GetScreenBounds(RECT& rect)
-{
-    monitorsRects.clear();
-    EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
+    auto monitorEnumProc = [](HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) -> BOOL {
+        if (lprcMonitor && dwData) {
+            auto* rects = reinterpret_cast<decltype(&monitorsRects)>(dwData);
+            rects->push_back(*lprcMonitor);
+        }
+        return TRUE;
+    };
+
+    EnumDisplayMonitors(nullptr, nullptr, monitorEnumProc, reinterpret_cast<LPARAM>(&monitorsRects));
+
     CRect result;
-    for (size_t i = 0; i < monitorsRects.size(); i++)
-    {
-        CRect Bounds = monitorsRects[i];
-        result.UnionRect(result, Bounds);
+    for (const auto& bounds : monitorsRects) {
+        result.UnionRect(result, &bounds);
     }
+
     rect = result;
-    return true;
 }
 
 HRGN CloneRegion(HRGN source)
@@ -629,31 +626,22 @@ LOGFONT CharFormatToLogFont(const CHARFORMAT & cf)
     return lf;
 }
 
-HICON LoadSmallIcon(int resourceId) {
-    int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);
-    int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
-    if ( iconWidth > 16 ) {
-        iconWidth = 48;
-    }
-
-    if ( iconHeight > 16 ) {
-        iconHeight = 48;
-    }
-
-    return static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId),
-        IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
-}
-
-HICON LoadBigIcon(int resourceId) {
-    int iconWidth = ::GetSystemMetrics(SM_CXICON);
-    int iconHeight = ::GetSystemMetrics(SM_CYICON);
-
+HICON LoadSmallIcon(int resourceId, int dpi) {
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
     HICON result = nullptr;
     LoadIconWithScaleDown(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), iconWidth, iconHeight, &result);
     return result;
+}
 
-    //return static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
+HICON LoadBigIcon(int resourceId, int dpi) {
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYICON, dpi);
+
+    HICON result = nullptr;
+    LoadIconWithScaleDown(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), iconWidth, iconHeight, &result);
+    return result;
 }
 
 void RemoveWindowStyleEx(HWND hWnd, DWORD styleEx) {

@@ -290,11 +290,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     // center the dialog on the screen
     CenterWindow();
-    hIcon = GuiTools::LoadBigIcon(IDR_MAINFRAME);
-    SetIcon(hIcon, TRUE);
-
-    hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
-    SetIcon(hIconSmall, FALSE);
+    createIcons();
 
     // register object for message filtering and idle updates
     CMessageLoop* pLoop = _Module.GetMessageLoop();
@@ -1856,6 +1852,7 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 LRESULT CWizardDlg::OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createIcons();
     // Older Windows versions (before Windows 10 1607/1703) do not support automatic
     // DPI scaling for dialog boxes and controls. To maintain visual consistency,
     // we avoid resizing icons and other elements, leaving the window unscaled.
@@ -2757,4 +2754,20 @@ void CWizardDlg::stopScreenRecording() {
 
 bool CWizardDlg::trayIconEnabled() const {
     return floatWnd_ && floatWnd_->m_hWnd != nullptr;
+}
+
+void CWizardDlg::createIcons() {
+    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    if (windowIcon_) {
+        windowIcon_.DestroyIcon();
+    }
+    if (smallWindowIcon_) {
+        smallWindowIcon_.DestroyIcon();
+    }
+    windowIcon_ = GuiTools::LoadBigIcon(IDR_MAINFRAME, dpi);
+    SetIcon(windowIcon_, TRUE);
+
+    smallWindowIcon_ = GuiTools::LoadSmallIcon(IDR_MAINFRAME, dpi);
+    SetIcon(smallWindowIcon_, FALSE);
+
 }

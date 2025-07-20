@@ -247,17 +247,27 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, co
         captureRect.bottom = captureRect.top + ((captureRect.Height() + 1) & ~1);
     }
 
-    if (!screenRecordingParams_.monitor() && (settings->ScreenRecordingSettings.Backend != ScreenRecordingStruct::ScreenRecordingBackendFFmpeg
-        || settings->ScreenRecordingSettings.FFmpegSettings.VideoSourceId != GDIGrabSource::SOURCE_ID)
-        ) {
-        screenRecordingParams_.setMonitor(MonitorFromRect(captureRect, MONITOR_DEFAULTTONULL));
-        MONITORINFO info;
-        memset(&info, 0, sizeof(info));
-        info.cbSize = sizeof(MONITORINFO);
-        if (GetMonitorInfo(screenRecordingParams_.monitor(), &info)) {
-            captureRect.IntersectRect(captureRect, &info.rcMonitor);
-            //captureRect.OffsetRect(-info.rcMonitor.left, -info.rcMonitor.top);
+    bool isGdiGrab = settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg
+        && settings->ScreenRecordingSettings.FFmpegSettings.VideoSourceId == GDIGrabSource::SOURCE_ID;
+
+    if (!screenRecordingParams_.monitor() && !isGdiGrab) {
+        HMONITOR monitor = MonitorFromRect(captureRect, MONITOR_DEFAULTTONULL);
+        screenRecordingParams_.setMonitor(monitor);
+        if (monitor) {
+            MONITORINFO info;
+            memset(&info, 0, sizeof(info));
+            info.cbSize = sizeof(MONITORINFO);
+            if (GetMonitorInfo(screenRecordingParams_.monitor(), &info)) {
+                captureRect.IntersectRect(captureRect, &info.rcMonitor);
+                // captureRect.OffsetRect(-info.rcMonitor.left, -info.rcMonitor.top);
+            }
         }
+    }
+
+    if (!screenRecordingParams_.monitor() && isGdiGrab) {
+        CRect screenBounds;
+        GuiTools::GetScreenBounds(screenBounds);
+        captureRect.IntersectRect(captureRect, screenBounds);
     }
 
     captureRect.right = captureRect.left + (captureRect.Width() & ~1);

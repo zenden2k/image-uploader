@@ -77,15 +77,15 @@ namespace GuiTools
 
     IconInfo GetIconInfo(HICON hIcon);
 
-    bool GetScreenBounds(RECT& rect);
+    void GetScreenBounds(RECT& rect);
     HRGN CloneRegion(HRGN source);
     HFONT MakeFontBigger(HFONT font);
     HWND CreateToolTipForWindow(HWND hwnd, const CString& text);
     void AddToolTip(HWND hwndTT, HWND hwnd, const CString& text);
     CHARFORMAT LogFontToCharFormat(const LOGFONT & lf);
     LOGFONT CharFormatToLogFont(const CHARFORMAT & cf);
-    HICON LoadSmallIcon(int resourceId);
-    HICON LoadBigIcon(int resourceId);
+    HICON LoadSmallIcon(int resourceId, int dpi = 0);
+    HICON LoadBigIcon(int resourceId, int dpi = 0);
     int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption = _T(""), UINT uType = MB_OK);
     BOOL SetClientRect(HWND hWnd, int x, int y);
     BOOL IsWindowCloaked(HWND hwnd);

@@ -64,6 +64,7 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             MESSAGE_HANDLER(WM_CLOSE, OnClose)
+            MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
             COMMAND_HANDLER(IDC_FONTCOMBO, CBN_SELCHANGE, OnFontSelChange);
             COMMAND_HANDLER(IDC_FONTSIZECOMBO, CBN_SELCHANGE, OnFontSizeSelChange);
             COMMAND_ID_HANDLER(IDC_BOLD, OnBoldClick)
@@ -79,6 +80,7 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
         // Message handlers
         LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnDpiChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnFontSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnFontSizeSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBoldClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -88,6 +90,7 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
 
         CToolBarCtrl textToolbar_;
         void OnFontEnumerationFinished();
+        void createToolbar();
         std::thread fontEnumerationThread_;
         CComboBox fontComboBox_;
         CComboBox fontSizeComboBox_;
@@ -97,7 +100,6 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
         CImageListManaged toolbarImageList_;
         void NotifyParent(DWORD changeMask);
         std::vector<LOGFONT> fonts_;
-        CIcon iconBold_, iconItalic_, iconUnderline_;
 		HDC windowDc_;
         friend class CustomEdit;
 };
