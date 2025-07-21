@@ -158,6 +158,16 @@ public:
         }
     }
 
+    static std::string convertCodecName(const std::string& name) {
+        if (name == "mpeg2video") {
+            return "mpeg2";
+        }
+        if (name == "mpeg1video") {
+            return "mpeg1";
+        }
+        return name;
+    }
+
 
     bool open(const std::string& fileName) {
         int numOfFrames = 5;
@@ -217,6 +227,9 @@ public:
         streamInfo_->width = pars->width;
         streamInfo_->height = pars->height;
         streamInfo_->codecName = pCodec->name;
+
+        const AVCodecDescriptor* desc = avcodec_descriptor_get(pars->codec_id);
+        streamInfo_->codecName = convertCodecName(desc ? desc->name : pCodec->name);
 
         pCodecCtx = avcodec_alloc_context3(pCodec);
 

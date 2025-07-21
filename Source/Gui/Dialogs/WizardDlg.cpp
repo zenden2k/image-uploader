@@ -88,6 +88,8 @@ namespace
 {
 
 constexpr auto HEAD_BITMAP_HEIGHT = 45;
+constexpr auto DRAGNDROP_OVERLAY_ADD_TO_THE_LIST = 1;
+constexpr auto DRAGNDROP_OVERLAY_IMPORT_VIDEO_FILE = 2;
 
 struct TaskDispatcherMessageStruct {
     TaskRunnerTask callback;
@@ -190,6 +192,9 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     m_bHandleCmdLineFunc = false;
     screenshotInitiator_ = siDefault;
     serversChanged_ = false;
+    isFirstRun_ = false;
+    lastScreenshotMonitor_ = nullptr;
+    m_bShowWindow = true;
     using namespace std::placeholders;
     settingsChangedConnection_ = Settings.onChange.connect(std::bind(&CWizardDlg::settingsChanged, this, _1));
 }
@@ -437,17 +442,17 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     if (layeredChildAvailable) {
         SetLayeredWindowAttributes(dragndropOverlay_, 0, 200, LWA_ALPHA);
     }
+
     dragndropOverlay_.SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+    dragndropOverlay_.addItem(DRAGNDROP_OVERLAY_ADD_TO_THE_LIST, 0.7f, TR("Add to the list"));
+    dragndropOverlay_.addItem(DRAGNDROP_OVERLAY_IMPORT_VIDEO_FILE, 0.0f, TR("Import Video File"));
 
     // Set WS_CLIPSIBLINGS style for correct display of CDragndropOverlay on Windows 7
-    HWND exitBtn = GetDlgItem(IDCANCEL);
-    ::SetWindowLong(exitBtn, GWL_STYLE, ::GetWindowLong(exitBtn, GWL_STYLE) | WS_CLIPSIBLINGS);
-    HWND nextBtn = GetDlgItem(IDC_NEXT);
-    ::SetWindowLong(nextBtn, GWL_STYLE, ::GetWindowLong(nextBtn, GWL_STYLE) | WS_CLIPSIBLINGS);
-    HWND prevBtn = GetDlgItem(IDC_PREV);
-    ::SetWindowLong(prevBtn, GWL_STYLE, ::GetWindowLong(prevBtn, GWL_STYLE) | WS_CLIPSIBLINGS);
+    GetDlgItem(IDCANCEL).ModifyStyle(0, WS_CLIPSIBLINGS);
+    GetDlgItem(IDC_NEXT).ModifyStyle(0, WS_CLIPSIBLINGS);
+    GetDlgItem(IDC_PREV).ModifyStyle(0, WS_CLIPSIBLINGS);
 
-    helpButton_.SetWindowLong(GWL_STYLE, helpButton_.GetWindowLong(GWL_STYLE) | WS_CLIPSIBLINGS);
+    helpButton_.ModifyStyle(0, WS_CLIPSIBLINGS);
 
     SetTimer(kNewFilesTimer, 500);
     RegisterLocalHotkeys();
@@ -978,7 +983,7 @@ void CWizardDlg::ProcessDroppedFiles(HDROP hDrop) {
         if (DragQueryFile(hDrop, i, buffer.get(), EXTENDED_MAX_PATH) != 0) {
 
             if ((IsVideoFile(buffer.get()) && n == 1) && !Settings.DropVideoFilesToTheList) {
-                if (enableDragndropOverlay_ && dragndropOverlaySelectedItem_ == CDragndropOverlay::ItemId::kAddToTheList) {
+                if (enableDragndropOverlay_ && dragndropOverlaySelectedItem_ == DRAGNDROP_OVERLAY_ADD_TO_THE_LIST) {
                     goto filehost;
                 }
 
@@ -1192,7 +1197,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                         if(FileWasSaved) // Additing received file to program
                         {
                             if(IsVideoFile(OutFileName) && !(enableDragndropOverlay_
-                                && dragndropOverlaySelectedItem_ == CDragndropOverlay::ItemId::kAddToTheList))
+                                && dragndropOverlaySelectedItem_ == DRAGNDROP_OVERLAY_ADD_TO_THE_LIST))
                             {
 
                                 ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])? 2 : 3);
@@ -1755,8 +1760,7 @@ bool CWizardDlg::funcScreenRecordingDlg()
 }
 
 bool CWizardDlg::funcScreenRecording() {
-    startScreenRecording(screenRecordingParams_);
-    m_bShowWindow = true;
+    m_bShowWindow = startScreenRecording(screenRecordingParams_);
     return true;
 }
 
@@ -2112,14 +2116,14 @@ void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
 }
 
-void CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params, bool forceShowWizardAfter) {
+bool CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params, bool forceShowWizardAfter) {
     if (auto recorderWindow = screenRecorderWindow_.lock()) {
         recorderWindow->stop();
-        return;
+        return false;
     }
 
     if (!IsWindowEnabled()) {
-        return;
+        return false;
     }
 
     auto screenRecorderWindow = boost::make_shared<ScreenRecorderWindow>();
@@ -2134,7 +2138,9 @@ void CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params
         ShowWindow(SW_SHOWNORMAL);
         mainDlg->ThumbsView.SetFocus();
         ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
+        return true;
     }
+    return false;
 }
 
 LRESULT CWizardDlg::OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

@@ -13,7 +13,7 @@ LRESULT CDragndropOverlay::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     return 0;
 }
 
-LRESULT  CDragndropOverlay::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+LRESULT CDragndropOverlay::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     CClientDC dc(m_hWnd);
     LOGFONT lf;
     WinUtils::StringToFont(_T("Arial,15,b,204"), &lf, dc);
@@ -25,13 +25,6 @@ LRESULT  CDragndropOverlay::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     backBufferDc_.CreateCompatibleDC(dc);
     backBufferBm_.CreateCompatibleBitmap(dc, clientRect.Width(), clientRect.Height());
     oldBm_ = backBufferDc_.SelectBitmap(backBufferBm_);
-
-    CRect firstRect = clientRect;
-    firstRect.bottom /= 2;
-    items_.emplace_back(ItemId::kAddToTheList, firstRect, TR("Add to the list"));
-    CRect secondRect = clientRect;
-    secondRect.top = firstRect.bottom;
-    items_.emplace_back(ItemId::kImportVideoFile, secondRect, TR("Import Video File"));
 
     updateBackBuffer();
     return 0;
@@ -57,9 +50,6 @@ void CDragndropOverlay::updateBackBuffer() {
     HFONT oldFont = backBufferDc_.SelectFont(font_);
     int index = 0;
     for (auto& item : items_) {
-        ///CRect firstRect = clientRect;
-        //firstRect.bottom /= 2;
-
         if (activeItemIndex_ == index) {
             CBrush br2;
             br2.CreateSolidBrush(isLayered? RGB(100, 100, 100): RGB(130, 130, 130));
@@ -78,6 +68,24 @@ void CDragndropOverlay::updateBackBuffer() {
     backBufferDc_.SelectFont(oldFont);
 }
 
+void CDragndropOverlay::calculateItemRectangles() {
+    CRect clientRect;
+    GetClientRect(&clientRect);
+    int totalHeight = clientRect.Height(); 
+    int top = 0;
+    for (auto& item : items_) {
+        int bottom;
+        if (item.heighPerc != 0.0f) {
+            bottom = top + static_cast<int>(item.heighPerc * totalHeight);
+        } else {
+            // The last element can take up the rest of the space
+            bottom = totalHeight;
+        }
+        item.rc = { 0, top, clientRect.right, bottom };
+        top = bottom;
+    }
+}
+
 LRESULT CDragndropOverlay::OnEraseBkg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     bHandled = true;
     return TRUE;
@@ -89,6 +97,12 @@ LRESULT CDragndropOverlay::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     
     dragMove(xPos, yPos);
     return 0;
+}
+
+
+void CDragndropOverlay::addItem(ItemId id, float heightPerc, CString text) {
+    items_.emplace_back(id, heightPerc, text);
+    calculateItemRectangles();
 }
 
 void CDragndropOverlay::dragMove(int x, int y) {
@@ -110,17 +124,13 @@ void CDragndropOverlay::dragMove(int x, int y) {
     }
 }
 
-CDragndropOverlay::ItemId CDragndropOverlay::itemAtPos(int x, int y) {
+std::optional<CDragndropOverlay::ItemId> CDragndropOverlay::itemAtPos(int x, int y) {
     POINT pt{ x, y };
-
-    int index = 0;
 
     for (auto& item : items_) {
         if (PtInRect(&item.rc, pt)) {
             return item.id;
         }
-
-        index++;
     }
-    return ItemId::kInvalid;
+    return std::nullopt;
 }

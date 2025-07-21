@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include <boost/signals2.hpp>
 
 #include "atlheaders.h"
@@ -253,7 +255,7 @@ public:
 
     bool CanShowWindow() override;
     void UpdateAvailabilityChanged(bool Available) override;
-    void startScreenRecording(const ScreenRecordingRuntimeParams& params, bool forceShowWizardAfter = false);
+    bool startScreenRecording(const ScreenRecordingRuntimeParams& params, bool forceShowWizardAfter = false);
 
     //    IUnknown methods
     STDMETHODIMP_(ULONG) AddRef() override;
@@ -361,7 +363,7 @@ protected:
     boost::signals2::signal<void(bool)> onRepeatScreenRecordingAvailabilityChanged_;
     CDragndropOverlay dragndropOverlay_;
     bool enableDragndropOverlay_ = false;
-    CDragndropOverlay::ItemId dragndropOverlaySelectedItem_ = CDragndropOverlay::ItemId::kInvalid;
+    std::optional<CDragndropOverlay::ItemId> dragndropOverlaySelectedItem_;
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
     std::unique_ptr<CNetworkDebugDlg> networkDebugDlg_;
 #endif

@@ -2,6 +2,7 @@
 #define IU_GUI_COMPONENTS_DRAGDNROPOVERLAY_H
 
 #include <vector>
+#include <optional>
 
 #include "atlheaders.h"
 
@@ -9,13 +10,17 @@ class CDragndropOverlay :
 	public CWindowImpl <CDragndropOverlay>
 {
 public:
-	enum class ItemId { kInvalid, kAddToTheList, kImportVideoFile };
+    using ItemId = int;
 	struct Item {
         ItemId id;
-		RECT rc;
+        RECT rc {};
 		CString text;
+        float heighPerc;
 
-		Item(ItemId i, const RECT& r, CString t): id(i), rc(r), text(t){
+		Item(ItemId i, float height, CString t)
+            : id(i)
+            , heighPerc(height)
+            , text(t) {
 		    
 		}
 	};
@@ -39,8 +44,9 @@ public:
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
+    void addItem(ItemId id, float heightPerc, CString text);
 	void dragMove(int x, int y);
-    ItemId itemAtPos(int x, int y);
+    std::optional<ItemId> itemAtPos(int x, int y);
 private:
 	CFont font_;
 	CDC backBufferDc_;
@@ -49,6 +55,7 @@ private:
 	void updateBackBuffer();
 	std::vector<Item> items_;
 	int activeItemIndex_ = -1;
+    void calculateItemRectangles();
 };
 
 #endif
