@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-07-20 11:22+0300\n"
-"PO-Revision-Date: 2025-03-20 05:43+0000\n"
+"PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ko/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.13-dev\n"
 
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/Mp3AudioCodec.h:35
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/OpusAudioCodec.h:30
@@ -3068,8 +3068,6 @@ msgstr "URL 단축"
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:653
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:223
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:347
-#, fuzzy
-#| msgid "Shorten a link"
 msgid "Shorten a Link"
 msgstr "링크 단축"
 
