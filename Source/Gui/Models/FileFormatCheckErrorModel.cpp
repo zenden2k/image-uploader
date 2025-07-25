@@ -24,6 +24,9 @@ FileFormatCheckErrorModel::~FileFormatCheckErrorModel() {
 }
 
 std::string FileFormatCheckErrorModel::getItemText(int row, int column) const {
+    if (row < 0 || row >= items_.size()) {
+        return {};
+    }
     const auto& modelData = items_[row];
     if (column == 0) {
         return std::to_string(row + 1);

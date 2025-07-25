@@ -125,7 +125,7 @@ _xdg_mime_cache_new_from_file (const char *file_name)
 
   /* Open the file and map it into memory */
   do {
-    fd = open (file_name, O_RDONLY|_O_BINARY, 0);
+      fd = XDG_OPEN(file_name, O_RDONLY | _O_BINARY, 0);
   } while (fd == -1 && errno == EINTR);
 
   if (fd < 0)

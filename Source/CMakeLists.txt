@@ -28,6 +28,10 @@ set(IU_ENABLE_ASAN OFF CACHE BOOL "Enable address sanitizer")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
+if (MSVC)
+	SET(NUGET_PACKAGES_REFERENCES "CrashRpt.CPP_2.0.20;")
+endif()
+
 include(cmake/common.cmake)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -38,6 +42,9 @@ add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 if (MSVC)   
 #    add_definitions("/MP")
     add_compile_options(/wd4091) # disable warning C4091: 'typedef ': ignored on left of '*' when no variable is declared
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 endif()
 
 if (IU_STATIC_RUNTIME)#AND IU_PROFILE_HOST STREQUAL "" 
@@ -129,7 +136,7 @@ endif()
 
 
 if (IU_ENABLE_WEBVIEW2)
-    SET(WEBVIEW2_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1")
+    string(APPEND NUGET_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1;")
 endif()
 
 	
@@ -251,7 +258,7 @@ if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE)
 	find_package(ffmpeg REQUIRED)
 endif()
   
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 

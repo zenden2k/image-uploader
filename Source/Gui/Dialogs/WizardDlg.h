@@ -339,7 +339,7 @@ protected:
     HMONITOR lastScreenshotMonitor_;
     std::vector<std::function<void(bool)>> lastRegionAvailabilityChangeCallbacks_;
     std::shared_ptr<DefaultLogger> logger_;
-    std::unique_ptr<CStatusDlg> statusDlg_;
+    std::shared_ptr<CStatusDlg> statusDlg_;
     std::vector<TaskRunnerTask> scheduledTasks_;
     std::mutex scheduledTasksMutex_;
     std::shared_ptr<CFloatingWindow> floatWnd_;

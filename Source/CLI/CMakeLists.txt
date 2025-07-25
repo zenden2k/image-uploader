@@ -13,7 +13,10 @@ add_executable(CLI
     ${RESOURCE_LIST}
 )
 
-configure_webview2_target(CLI)
+if (MSVC)
+    configure_webview2_target(CLI)
+    configure_nuget_packages(CLI)
+endif()
 
 set_target_properties(CLI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/CLI/)
 set_target_properties(CLI PROPERTIES OUTPUT_NAME "uptooda-cli")

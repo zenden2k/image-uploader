@@ -334,8 +334,8 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 			mainDlg->AddToFileList(task->outFileName(), L"", true, nullptr, true);
 		}
 	});
-	CStatusDlg dlg(task);
-	if (dlg.executeTask(m_hWnd, 0) == IDOK) {
+    auto dlg = CStatusDlg::create(task);
+	if (dlg->executeTask(m_hWnd, 0) == IDOK) {
 		return 1;
 	}
 	return 0;

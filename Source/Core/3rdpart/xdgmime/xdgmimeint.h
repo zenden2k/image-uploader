@@ -63,9 +63,11 @@ const char    *_xdg_binary_or_text_fallback(const void *data, size_t len);
     #include "Core/Utils/IOUtf8_win.h"
     #define XDG_STAT stat_utf8
     #define XDG_FOPEN fopen_utf8
+    #define XDG_OPEN open_utf8
 #else
     #define XDG_STAT stat
     #define XDG_FOPEN fopen
+    #define XDG_OPEN open
 #endif
 
 #endif /* __XDG_MIME_INT_H__ */

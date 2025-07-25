@@ -658,16 +658,6 @@ constexpr auto DefaultMimeType = "application/octet-stream";
 
 std::string GetFileMimeType(const std::string& fileName) {
     std::lock_guard<std::mutex> lk(xdgMimeMutex);
-    /* FILE* f = FopenUtf8(fileName.c_str(), "rb");
-    if (!f) {
-        return DefaultMimeType;
-    }
-    char buffer[256] {};
-    size_t readBytes = fread(buffer, 1, sizeof(buffer), f);
-    fclose(f);
-    int resultPrio = 0;*/
-
-    /*auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);*/
     struct stat st;
 
     auto* mime = xdg_mime_get_mime_type_for_file(fileName.c_str(), &st);
@@ -675,21 +665,6 @@ std::string GetFileMimeType(const std::string& fileName) {
         return DefaultMimeType;
     }
     std::string result = mime;
-    /* if (result == DefaultMimeType) {
-        return GetFileMimeTypeByName(fileName)
-    }*/
-
-    /* if (result == "image/x-png") {
-        result = "image/png";
-    } else if (result == "image/pjpeg") {
-        result = "image/jpeg";
-    } else if (result == "application/octet-stream") {
-        if (byBuff[0] == 'R' && byBuff[1] == 'I' && byBuff[2] == 'F' && byBuff[3] == 'F'
-            && byBuff[8] == 'W' && byBuff[9] == 'E' && byBuff[10] == 'B' && byBuff[11] == 'P') {
-            result = "image/webp";
-        }
-    }*/
-
     return result;
 }
 

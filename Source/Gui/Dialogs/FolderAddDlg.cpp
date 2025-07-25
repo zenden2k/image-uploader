@@ -12,11 +12,10 @@
 CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg): 
     count(0), 
     m_bImagesOnly(false),
-    m_pWizardDlg(WizardDlg),
-    findfile(nullptr)
-{
+    m_pWizardDlg(WizardDlg), findfile(nullptr)
+    , dlg(CStatusDlg::create()) {
+    
     m_bSubDirs = true;
-    m_szPath[0] = '\0';
     memset(&wfd, 0, sizeof(wfd));
 }
 
@@ -26,10 +25,10 @@ void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)
     m_bImagesOnly = ImagesOnly;
     RECT rc = { 0, 0, 0, 0 };
     m_bSubDirs = SubDirs;
-    if (!dlg.m_hWnd) {
-        dlg.Create(m_pWizardDlg->m_hWnd, rc);
+    if (!dlg->m_hWnd) {
+        dlg->Create(m_pWizardDlg->m_hWnd, rc);
     }
-    dlg.SetWindowTitle(CString(ImagesOnly ? TR("Searching for picture files...") : TR("Collecting files...")));
+    dlg->SetWindowTitle(CString(ImagesOnly ? TR("Searching for picture files...") : TR("Collecting files...")));
     m_Paths.RemoveAll();
     m_Paths.Copy(Paths);
     findfile = 0;
@@ -43,7 +42,7 @@ void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)
 
 int CFolderAdd::ProcessDir(CString currentDir, bool bRecursive /* = true  */)
 {
-    dlg.SetInfo(CString(TR("Processing folder:")), currentDir);
+    dlg->SetInfo(CString(TR("Processing folder:")), currentDir);
     CString strWildcard = currentDir + "\\*";
 
     _tfinddata_t s_Dir;
@@ -54,7 +53,7 @@ int CFolderAdd::ProcessDir(CString currentDir, bool bRecursive /* = true  */)
         return 1;
 
     do {
-        if (dlg.NeedStop()) { _findclose(hDir); return 0; }
+        if (dlg->NeedStop()) { _findclose(hDir); return 0; }
 
         if (s_Dir.name[0] != '.' && (s_Dir.attrib & _A_SUBDIR) && bRecursive == true) {
             ProcessDir(currentDir + '\\' + s_Dir.name, bRecursive);
@@ -104,7 +103,7 @@ DWORD CFolderAdd::Run()
 
                     count++;
             }
-        if (dlg.NeedStop()) break;
+        if (dlg->NeedStop()) break;
     }
 
     ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
@@ -112,7 +111,7 @@ DWORD CFolderAdd::Run()
     });
     
     
-    dlg.Hide();
+    dlg->Hide();
 
     EnableWindow(m_pWizardDlg->m_hWnd, true);
 
@@ -134,8 +133,8 @@ DWORD CFolderAdd::Run()
     ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
         m_pWizardDlg->endAddFiles();
     });
-    dlg.DestroyWindow();
-    dlg.m_hWnd = NULL;
+    dlg->DestroyWindow();
+    dlg->m_hWnd = NULL;
 
     return 0;
 }

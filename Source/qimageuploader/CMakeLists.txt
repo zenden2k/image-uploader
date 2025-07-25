@@ -81,6 +81,7 @@ target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} gdi32 dwmapi gdiplus)
     configure_webview2_target(${PROJECT_NAME})
+	configure_nuget_packages(${PROJECT_NAME})
 endif()
 
 target_link_libraries(qimageuploader iu_core iu_video ${COMMON_LIBS_LIST})

@@ -392,6 +392,7 @@ target_link_libraries(GUI PRIVATE iu_core iu_history iu_video iu_capture
 )
 
 configure_webview2_target(GUI)
+configure_nuget_packages(GUI)
 
 set_target_properties(GUI PROPERTIES OUTPUT_NAME "uptooda")
 

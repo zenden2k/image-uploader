@@ -25,64 +25,75 @@
 #include "Gui/GuiTools.h"
 #include "Core/Utils/CoreUtils.h"
 
-CStatusDlg::CStatusDlg(std::shared_ptr<BackgroundTask> task):
+CStatusDlg::CStatusDlg(PrivateToken, std::shared_ptr<BackgroundTask> task)
+    :
     canBeStopped_(true),
 	task_(std::move(task)) {
-
-    init();
-
-    finishFuture_ = finishPromise_.get_future();
-
-    taskFinishedConnection_ = task_->onTaskFinished.connect([this](BackgroundTask*, BackgroundTaskResult taskResult) {
-        finishPromise_.set_value(taskResult);
-
-        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, taskResult] {
-            ProcessFinished();
-            if (!IsWindow()) {
-                return;
-            }
-            EndDialog(taskResult == BackgroundTaskResult::Success ? IDOK : IDCANCEL);
-        });
-    });
-
-    taskProgressConnection_ = task_->onProgress.connect([&](BackgroundTask*, int pos, int max, const std::string& status) {
-        CString statusW = U2W(status);
-
-        if (!IsWindow()) {
-            SetInfo(statusW, _T(""));
-            return;
-        }
-
-        ServiceLocator::instance()->taskRunner()->runInGuiThread([=] {
-            updateTitle(statusW);
-
-            if (pos < 0) {
-                if ((progressBar_.GetStyle() & PBS_MARQUEE) == 0) {
-                    progressBar_.SetWindowLong(GWL_STYLE, progressBar_.GetStyle() | PBS_MARQUEE);
-                }
-                progressBar_.SetMarquee(TRUE);
-            }
-            else {
-                if ((progressBar_.GetStyle() & PBS_MARQUEE) == PBS_MARQUEE) {
-                    progressBar_.SetWindowLong(GWL_STYLE, progressBar_.GetStyle() & ~PBS_MARQUEE);
-                    progressBar_.SetMarquee(FALSE);
-                }
-
-                progressBar_.SetRange(0, max);
-                progressBar_.SetPos(pos);
-            }
-        });
-    });
 }
 
-CStatusDlg::CStatusDlg(bool canBeStopped):
+CStatusDlg::CStatusDlg(PrivateToken, bool canBeStopped)
+    :
     canBeStopped_(canBeStopped)
 {
-    init();
 }
 
 void CStatusDlg::init() {
+    if (task_) {
+        try {
+            finishFuture_ = finishPromise_.get_future();
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << ex.what();
+        }
 
+        taskFinishedConnection_ = task_->onTaskFinished.connect([pthis = shared_from_this()](BackgroundTask*, BackgroundTaskResult taskResult) {
+            try {
+                pthis->finishPromise_.set_value(taskResult);
+            } catch (const std::exception& ex) {
+                LOG(ERROR) << ex.what();
+            }
+
+            pthis->ProcessFinished();
+            ServiceLocator::instance()->taskRunner()->runInGuiThread([pthis, taskResult] {
+                pthis->ProcessFinished();
+                if (!pthis->IsWindow()) {
+                    return;
+                }
+
+                pthis->EndDialog(taskResult == BackgroundTaskResult::Success ? IDOK : IDCANCEL);
+            });
+        });
+
+        taskProgressConnection_ = task_->onProgress.connect([pthis = shared_from_this()](BackgroundTask*, int pos, int max, const std::string& status) {
+            CString statusW = U2W(status);
+
+            if (!pthis->IsWindow()) {
+                pthis->SetInfo(statusW, _T(""));
+                return;
+            }
+
+            ServiceLocator::instance()->taskRunner()->runInGuiThread([pthis, pos, max, statusW] {
+                pthis->updateTitle(statusW);
+
+                if (!pthis->IsWindow()) {
+                    return;
+                }
+                if (pos < 0) {
+                    if ((pthis->progressBar_.GetStyle() & PBS_MARQUEE) == 0) {
+                        pthis->progressBar_.SetWindowLong(GWL_STYLE, pthis->progressBar_.GetStyle() | PBS_MARQUEE);
+                    }
+                    pthis->progressBar_.SetMarquee(TRUE);
+                } else {
+                    if ((pthis->progressBar_.GetStyle() & PBS_MARQUEE) == PBS_MARQUEE) {
+                        pthis->progressBar_.SetWindowLong(GWL_STYLE, pthis->progressBar_.GetStyle() & ~PBS_MARQUEE);
+                        pthis->progressBar_.SetMarquee(FALSE);
+                    }
+
+                    pthis->progressBar_.SetRange(0, max);
+                    pthis->progressBar_.SetPos(pos);
+                }
+            });
+        });
+    }
 }
 
 CStatusDlg::~CStatusDlg()
@@ -190,6 +201,18 @@ int CStatusDlg::executeTask(HWND parent, int timeoutMs) {
 
     // Task is taking long - show dialog
     return DoModal(parent);
+}
+
+std::shared_ptr<CStatusDlg> CStatusDlg::create(std::shared_ptr<BackgroundTask> task) {
+    auto result = std::make_shared<CStatusDlg>(PrivateToken{}, std::move(task));
+    result->init();
+    return result;
+}
+
+std::shared_ptr<CStatusDlg> CStatusDlg::create(bool canBeStopped /*= true*/) {
+    auto result = std::make_shared<CStatusDlg>(PrivateToken{}, canBeStopped);
+    result->init();
+    return result;
 }
 
 void CStatusDlg::updateTitle(const std::string& title) {

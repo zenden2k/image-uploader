@@ -33,12 +33,12 @@
 
 // CStatusDlg
 
-class CStatusDlg :
-    public CCustomDialogIndirectImpl<CStatusDlg>
-{
-    public:
-        explicit CStatusDlg(std::shared_ptr<BackgroundTask> task);
-        explicit CStatusDlg(bool canBeStopped = true);
+class CStatusDlg : public CCustomDialogIndirectImpl<CStatusDlg>, public std::enable_shared_from_this<CStatusDlg> {
+private:
+    struct PrivateToken { };
+public:
+    CStatusDlg(PrivateToken, bool canBeStopped = true);
+    CStatusDlg(PrivateToken, std::shared_ptr<BackgroundTask> task);
         ~CStatusDlg();
         enum { IDD = IDD_STATUSDLG };
         enum { kUpdateTimer = 1};
@@ -63,6 +63,10 @@ class CStatusDlg :
         void Hide();
 
         int executeTask(HWND parent, int timeoutMs = 300);
+
+        static std::shared_ptr<CStatusDlg> create(bool canBeStopped = true);
+        static std::shared_ptr<CStatusDlg> create(std::shared_ptr<BackgroundTask> task);
+
 
     private:
         void init();

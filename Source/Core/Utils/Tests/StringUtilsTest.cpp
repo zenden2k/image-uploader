@@ -48,6 +48,8 @@ TEST_F(StringUtilsTest, SplitSV) {
 }
 
 TEST_F(StringUtilsTest, PatternMatch_BasicMatches) {
+    TestMatch("*", "dsf", 0, true);
+    TestMatch("?", "s", 0, true);
     TestMatch("abc", "abc", 0, true);
     TestMatch("a*c", "abc", 0, true);
     TestMatch("a?c", "abc", 0, true);

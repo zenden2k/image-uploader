@@ -19,10 +19,9 @@ private:
     bool m_bSubDirs;
     bool m_bImagesOnly;
     CWizardDlg *m_pWizardDlg;
-    TCHAR m_szPath[MAX_PATH];
     WIN32_FIND_DATA wfd;
     HANDLE findfile;
-    CStatusDlg dlg;
+    std::shared_ptr<CStatusDlg> dlg;
     int ProcessDir(CString currentDir, bool bRecursive /* = true  */);
 };
 

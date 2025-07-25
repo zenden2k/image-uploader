@@ -45,7 +45,10 @@ endif()
 
 add_executable(Tests ${SRC_LIST})
 
-configure_webview2_target(Tests)
+if (MSVC)
+    configure_webview2_target(Tests)
+    configure_nuget_packages(Tests)
+endif()
 
 set_target_properties(Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
 if(WIN32 AND IU_ENABLE_FFMPEG AND IU_FFMPEG_STANDALONE)

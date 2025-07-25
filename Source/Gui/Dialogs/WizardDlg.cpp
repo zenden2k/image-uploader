@@ -405,7 +405,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     }
 
     if (!isFirstRun_ && !Settings.HistorySettings.HistoryConverted) {
-        statusDlg_.reset(new CStatusDlg(false));
+        statusDlg_ = CStatusDlg::create(false);
         statusDlg_->SetAppWindow(true);
         statusDlg_->SetInfo(TR("Converting history"), TR("Please wait while your history is being converted..."));
 
@@ -910,22 +910,14 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
     GetClientRect(&rc);
     int width=rc.right-rc.left;
     CClientDC dc(m_hWnd);
-    int dpiX, dpiY;
+    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    float dpiScale = dpi / 96.0f;
 
-    if (DPIHelper::IsPerMonitorDpiV2Supported()) {
-        dpiX = DPIHelper::GetDpiForWindow(m_hWnd);
-        dpiY = dpiX;
-    } else {
-        dpiX = dc.GetDeviceCaps(LOGPIXELSX);
-        dpiY = dc.GetDeviceCaps(LOGPIXELSY);
-    }
-
-    int height = MulDiv(HEAD_BITMAP_HEIGHT, dpiY, USER_DEFAULT_SCREEN_DPI);
+    int height = MulDiv(HEAD_BITMAP_HEIGHT, dpi, USER_DEFAULT_SCREEN_DPI);
 
     RectF bounds(0.0,0.0, float(width), height);
 
-    Graphics g(m_hWnd,true);
-    std::unique_ptr<Bitmap> BackBuffer = std::make_unique<Bitmap>(width, height, &g);
+    std::unique_ptr<Bitmap> BackBuffer = std::make_unique<Bitmap>(width, height);
     Graphics gr(BackBuffer.get());
 
     LinearGradientBrush
@@ -940,7 +932,7 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
     StringFormat format;
     format.SetAlignment(StringAlignmentCenter);
     format.SetLineAlignment(StringAlignmentCenter);
-    Gdiplus::Font font(L"Arial", 12, FontStyleBold);
+    Gdiplus::Font font(L"Arial", 15 * dpiScale, FontStyleBold, Gdiplus::UnitPixel);
 
     if(PageID == 3)
         gr.DrawString(TR("Image Settings and Server Selection"), -1, &font, bounds, &format, &br2);
@@ -2685,11 +2677,12 @@ void  CWizardDlg::endAddFiles() {
 bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer) {
     auto* mainDlg = getPage<CMainDlg>(CWizardDlg::wpMainPage);
 
+    // Must be kept alive until fileFormatDlg is destroyed
     auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, imageServer, fileServer);
 
-    CStatusDlg dlg(task);
+    auto dlg = CStatusDlg::create(task);
 
-    if (dlg.executeTask(m_hWnd) == IDOK && task->result() == BackgroundTaskResult::Success) {
+    if (dlg->executeTask(m_hWnd) == IDOK && task->result() == BackgroundTaskResult::Success) {
         std::string message = task->message();
         std::vector<BadFileFormat> errors = std::move(task->errors());
 

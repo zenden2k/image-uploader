@@ -342,9 +342,11 @@ endif()
 
 if (WIN32)
     target_link_libraries(iu_core PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon Dwmapi)
+	configure_webview2_target(iu_core)
+	configure_nuget_packages(iu_core)
 endif()
 
-configure_webview2_target(iu_core)
+
 
 #if(MSVC)
 #    target_compile_options(iu_core PRIVATE "/MP")

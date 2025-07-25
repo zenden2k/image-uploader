@@ -16,7 +16,15 @@
      limitations under the License.
 */
 
+#include <CrashRpt.h>
+crash_rpt::CrashRpt g_crashRpt(
+    "7b4202e6-8294-4be5-a18d-69c097167b46", // GUID assigned to this application.
+    L"Uptooda", // Application name that will be used in message box.
+    L"Sergey Svistunov" // Company name that will be used in message box.
+);
+
 #include "atlheaders.h"
+
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
 
@@ -183,6 +191,10 @@ public:
                 = { cacheDir, nullptr };
             xdg_mime_set_dirs(dirs);
             free(cacheDir);
+        }
+
+        if (dotenv::getenv("IU_CRASH_TEST") == "1") {
+            *((int*)0) = 0;
         }
 
         ServiceLocator* serviceLocator = ServiceLocator::instance();

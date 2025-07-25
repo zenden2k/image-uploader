@@ -2,6 +2,9 @@ extern "C" {
 #include "IOUtf8_win.h"
 }
 
+#include <io.h>
+#include <fcntl.h>
+
 #include "Core/Utils/CoreUtils.h"
 
 FILE* fopen_utf8(char const* fileName, char const* mode)
@@ -27,4 +30,22 @@ int stat_utf8(char const* const _FileName, struct stat* const _Stat)
 #else
     return stat(IuCoreUtils::Utf8ToSystemLocale(_FileName).c_str(), _Stat);
 #endif
+}
+
+int open_utf8(const char* file_name, int flags, int mode) {
+    if (file_name == nullptr) {
+        return -1;
+    }
+
+    try {
+        std::wstring wide_filename = IuCoreUtils::Utf8ToWstring(file_name);
+
+#ifdef _MSC_VER
+        return _wopen(wide_filename.c_str(), flags, mode);
+#else
+        return open(file_name, flags, mode);
+#endif
+    } catch (...) {
+        return -1;
+    }
 }
