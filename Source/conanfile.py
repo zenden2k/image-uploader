@@ -8,7 +8,7 @@ class ImageUploaderRecipe(ConanFile):
     generators = "CMakeToolchain", "CMakeDeps"
     default_options = {
         "libcurl/*:with_libssh2": True,
-#        "libcurl/*:with_libidn": True,
+        "libcurl/*:with_libidn": True,
         "ffmpeg/*:shared": False,
 		"ffmpeg/*:disable_all_encoders": True,
 		"ffmpeg/*:disable_all_muxers": True,
@@ -47,8 +47,8 @@ class ImageUploaderRecipe(ConanFile):
             self.options["ffmpeg/*"].with_libsvtav1 = False
             self.options["megaio/*"].with_mediainfo = False
 
-        if self.settings.os != "Windows" or self.settings.arch != "armv8":
-            self.options["libcurl/*"].with_libidn = True
+        #if self.settings.os != "Windows" or self.settings.arch != "armv8":
+        #    self.options["libcurl/*"].with_libidn = True
         #if self.settings.os == "Windows":
         #   self.options["qt/*"].qtimageformats = True    
             
