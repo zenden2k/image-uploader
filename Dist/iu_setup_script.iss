@@ -94,9 +94,11 @@ Name: "{code:GetDataFolder}\Uptooda\Favicons"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Uptooda\Update"; Permissions: users-modify
 [Files]
 Source: "..\Build\Gui\Release\uptooda.exe"; DestDir: "{app}"; Flags: ignoreversion
+#if IU_ARCH != "arm64"
 Source: "..\Build\Gui\Release\sendrpt.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Build\Gui\Release\dbghelp.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Build\Gui\Release\crashrpt.dll"; DestDir: "{app}"; Flags: ignoreversion
+#endif
 Source: "curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\locale\*"; Excludes: "*.po"; DestDir: "{app}\Lang\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
