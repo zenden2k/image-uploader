@@ -30,7 +30,7 @@ GIT_BRANCH = os.getenv("UPTOODA_BUILD_BRANCH", "master")
 PARALLEL_JOBS = os.getenv("UPTOODA_BUILD_PARALLEL_JOBS", "6")
 DOWNLOAD_CA_BUNDLE = True
 DRDUMP_APP_GUID = "7b4202e6-8294-4be5-a18d-69c097167b46"
-UPLOAD_TO_DRDUMP = get_bool_env("UPTOODA_BUILD_UPLOAD_TO_DRDUMP")
+UPLOAD_TO_DRDUMP = get_bool_env("UPTOODA_BUILD_UPLOAD_TO_DRDUMP", True)
 # --- Script requirements ---
 # git
 # cmake
@@ -833,13 +833,13 @@ for idx, target in enumerate(BUILD_TARGETS):
             json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI" + appname_suffix +")")
 
             if UPLOAD_TO_DRDUMP:
-                command = ["SYMUPLOAD", DRDUMP_APP_GUID, version_header_defines["IU_APP_VER_CLEAN"] + "." + build_number, "0", ".\GUI\Release\*.pdb"]
+                command = ["SYMUPLOAD", DRDUMP_APP_GUID, version_header_defines["IU_APP_VER_CLEAN"] + "." + build_number, "0", ".\\GUI\\Release\\*.pdb"]
                 proc = subprocess.run(command)
                 if proc.returncode !=0:
                     print("Failed to upload PDB files to DrDump server")
                     exit(1)
 
-                command = ["SYMUPLOAD", DRDUMP_APP_GUID, version_header_defines["IU_APP_VER_CLEAN"] + "." + build_number, "0", ".\GUI\Release\*.exe"]
+                command = ["SYMUPLOAD", DRDUMP_APP_GUID, version_header_defines["IU_APP_VER_CLEAN"] + "." + build_number, "0", ".\\GUI\\Release\\*.exe"]
                 proc = subprocess.run(command)
                 if proc.returncode !=0:
                     print("Failed to upload EXE files to DrDump server")
