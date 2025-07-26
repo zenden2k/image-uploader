@@ -26,16 +26,16 @@
 #include "Func/myutils.h"
 
 // CScreenshotSettingsPagePage
-CScreenshotSettingsPagePage::CScreenshotSettingsPagePage()
+CScreenshotSettingsPage::CScreenshotSettingsPage()
 {
 
 }
 
-CScreenshotSettingsPagePage::~CScreenshotSettingsPagePage()
+CScreenshotSettingsPage::~CScreenshotSettingsPage()
 {
 }
 
-LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CScreenshotSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_GROUPPARAMS, "Additional settings");
@@ -53,13 +53,11 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     TRC(IDC_FOREGROUNDWHENSHOOTING, "Bring window to foreground when selected by mouse");
     TRC(IDC_PARAMETERSHINTLABEL, "%y - year, %m - month, %d - day\n%h - hour, %n - minute, %s - seconds\n %i - image index,\n%width% - width of image,  %height% - height of image");
     TRC(IDC_ADDSHADOW, "Capture with shadow");
-    TRC(IDC_ALLOWALTTABINIMAGEEDITOR, "Allow Alt+Tab in fullscreen editor");
     CString removeCornersText = TR("Clear window transparent corners")+CString(_T(" (Windows Vista/7)"));
     SetDlgItemText(IDC_REMOVECORNERS, removeCornersText);
     TRC(IDC_REMOVEBACKGROUND, "Clear window's background");
     TRC(IDC_AEROONLY, "Aero only (Windows Vista or later)");
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
-    TRC(IDC_ALLOWFULLSCREENEDITORCHECK, "Allow editing images in fullscreen mode");
     TRC(IDC_CAPTURECURSORCHECKBOX2, "Capture cursor");
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
@@ -102,8 +100,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     SetDlgItemInt(IDC_DELAYEDIT, Delay);
     SetDlgItemInt(IDC_WINDOWHIDINGDELAY, Settings.ScreenshotSettings.WindowHidingDelay);
     SendDlgItemMessage(IDC_FORMATLIST, CB_SETCURSEL, Format, 0);
-    GuiTools::SetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR, Settings.ImageEditorSettings.AllowAltTab);
-    GuiTools::SetCheck(m_hWnd, IDC_ALLOWFULLSCREENEDITORCHECK, Settings.ImageEditorSettings.AllowEditingInFullscreen);
+
     bool isVista = WinUtils::IsVistaOrLater();
     ::EnableWindow(GetDlgItem(IDC_AEROONLY), isVista);
     ::EnableWindow(GetDlgItem(IDC_REMOVECORNERS), isVista);
@@ -112,7 +109,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     return 1;  // Let the system set the focus
 }
 
-bool CScreenshotSettingsPagePage::apply()
+bool CScreenshotSettingsPage::apply()
 {
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
     if(!WinUtils::CheckFileName(fileName))
@@ -144,13 +141,10 @@ bool CScreenshotSettingsPagePage::apply()
     Settings.ScreenshotSettings.UseOldRegionScreenshotMethod = GuiTools::GetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD);
     Settings.ScreenshotSettings.CaptureCursor = GuiTools::GetCheck(m_hWnd, IDC_CAPTURECURSORCHECKBOX2);
 
-    Settings.ImageEditorSettings.AllowAltTab = GuiTools::GetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR);
-    Settings.ImageEditorSettings.AllowEditingInFullscreen = GuiTools::GetCheck(m_hWnd, IDC_ALLOWFULLSCREENEDITORCHECK);
-
     return true;
 }
 
-LRESULT CScreenshotSettingsPagePage::OnScreenshotsFolderSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT CScreenshotSettingsPage::OnScreenshotsFolderSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     CString path = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFOLDEREDIT));
 

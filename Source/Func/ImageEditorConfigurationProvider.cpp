@@ -18,6 +18,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     fillTextBackground_ = settings->ImageEditorSettings.FillTextBackground;
     arrowMode_ = settings->ImageEditorSettings.ArrowType;
     invertSelection_ = settings->ImageEditorSettings.InvertSelection;
+    closeWindowAfterActionInFullScreen_ = settings->ImageEditorSettings.CloseWindowAfterActionInFullScreen;
 }
 
 void ImageEditorConfigurationProvider::saveConfiguration()
@@ -36,5 +37,6 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     settings->ImageEditorSettings.StepBackgroundColor = stepBackgroundColor_;
     settings->ImageEditorSettings.ArrowType = arrowMode_;
     settings->ImageEditorSettings.InvertSelection = invertSelection_;
+    settings->ImageEditorSettings.CloseWindowAfterActionInFullScreen = closeWindowAfterActionInFullScreen_;
 }
 

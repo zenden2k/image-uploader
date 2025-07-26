@@ -28,13 +28,33 @@ class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>, CMessageFilter
 public:
     DECLARE_WND_CLASS_EX(_T("ImageEditorWindow"), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE)
     enum {
-        ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
-        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_ROTATECLOCKWISE,
+        ID_UNDO = 1000,
+        ID_CLOSE,
+        ID_ADDTOWIZARD,
+        ID_UPLOAD,
+        ID_SHARE,
+        ID_SAVE,
+        ID_SAVEAS,
+        ID_COPYBITMAPTOCLIBOARD,
+        ID_COPYBITMAPTOCLIBOARD_ALT,
+        ID_COPYBITMAPTOCLIBOARDASDATAURI,
+        ID_COPYBITMAPTOCLIBOARDASDATAURI_ALT,
+        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML,
+        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML_ALT,
+        ID_UNSELECTALL,
+        ID_INCREASEPENSIZE,
+        ID_DECREASEPENSIZE,
+        ID_PRINTIMAGE,
+        ID_SEARCHBYIMAGE,
+        ID_SEARCHBYIMAGE_ALT,
+        ID_ROTATECLOCKWISE,
         ID_ROTATECOUNTERCLOCKWISE, ID_FLIPVERTICAL, ID_FLIPHORIZONTAL, ID_MOREACTIONS, ID_CONTINUE,
         ID_SEARCHBYIMAGE_START = 1400,
         ID_SEARCHBYIMAGE_END = 1499,
+        ID_SEARCHBYIMAGE_ALT_START = 1500,
+        ID_SEARCHBYIMAGE_ALT_END = 1599,
         ID_DELETESELECTED, ID_RECORDSCREEN,
-        ID_PEN = 1600,
+        ID_PEN = 1700,
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_PIXELATERECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
         ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_STEPNUMBER, ID_MOVE /* ID_MOVE should be last */
     };
@@ -121,12 +141,17 @@ public:
         COMMAND_ID_HANDLER( ID_SAVE, OnClickedSave )
         COMMAND_ID_HANDLER( ID_SAVEAS, OnClickedSaveAs )
         COMMAND_ID_HANDLER( ID_COPYBITMAPTOCLIBOARD, OnClickedCopyToClipboard )
+        COMMAND_ID_HANDLER( ID_COPYBITMAPTOCLIBOARD_ALT, OnClickedCopyToClipboard )
         COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURI, OnClickedCopyToClipboardAsDataUri)
+        COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURI_ALT, OnClickedCopyToClipboardAsDataUri)
         COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, OnClickedCopyToClipboardAsDataUriHtml)
+        COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURIHTML_ALT, OnClickedCopyToClipboardAsDataUriHtml)
         COMMAND_ID_HANDLER(ID_UNSELECTALL, OnUnselectAll)
         COMMAND_ID_HANDLER(ID_PRINTIMAGE, OnPrintImage)
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGE, OnSearchByImage)
+        COMMAND_ID_HANDLER(ID_SEARCHBYIMAGE_ALT, OnSearchByImage)
         COMMAND_RANGE_HANDLER(ID_SEARCHBYIMAGE_START, ID_SEARCHBYIMAGE_END, OnSearchByImage)
+        COMMAND_RANGE_HANDLER(ID_SEARCHBYIMAGE_ALT_START, ID_SEARCHBYIMAGE_ALT_END, OnSearchByImage)
         COMMAND_ID_HANDLER(ID_DELETESELECTED, OnDeleteSelected)
         COMMAND_ID_HANDLER(ID_ROTATECLOCKWISE, OnRotateClockwise)
         COMMAND_ID_HANDLER(ID_ROTATECOUNTERCLOCKWISE, OnRotateCounterClockwise)
@@ -259,7 +284,7 @@ public:
         void updatePixelLabels();
         bool OnSaveAs();
         void saveSettings();
-        bool CopyBitmapToClipboardAndClose(ClipboardFormat format = ClipboardFormat::None);
+        bool copyBitmapToClipboard(ClipboardFormat format = ClipboardFormat::None, bool closeFlag = true);
         BOOL PreTranslateMessage(MSG* pMsg) override;
         bool OnClickedSave();
         void onClose();
@@ -274,6 +299,9 @@ public:
 
         void showMoreActionsDropdownMenu(Toolbar::Item* item);
         void createIcons();
+
+        bool checkCloseWindowAfterAction();
+        bool canCloseAfterAction();
 };
 
 class ConfigurationProvider {
@@ -287,6 +315,7 @@ public:
         arrowMode_ = 0;
         invertSelection_ = false;
         blurRadius_ = 1.0f;
+        closeWindowAfterActionInFullScreen_ = false;
     }
     virtual ~ConfigurationProvider() = default;
     virtual void saveConfiguration() {}
@@ -335,6 +364,15 @@ public:
     int getArrowMode() const {
         return arrowMode_;
     }
+
+    void setCloseWindowAfterActionInFullScreen(bool enable) {
+        closeWindowAfterActionInFullScreen_ = enable;
+    }
+
+    bool getCloseWindowAfterActionInFullScreen() const {
+        return closeWindowAfterActionInFullScreen_;
+    }
+
 protected:
     Gdiplus::Color foregroundColor_, backgroundColor_,
         stepForegroundColor_, stepBackgroundColor_;
@@ -344,6 +382,7 @@ protected:
     int arrowMode_;
     LOGFONT font_;
     bool allowAltTab_;
+    bool closeWindowAfterActionInFullScreen_;  
     ServerProfile searchEngine_;
     bool fillTextBackground_;
     bool invertSelection_;

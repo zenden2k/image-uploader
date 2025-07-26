@@ -16,12 +16,15 @@
      limitations under the License.
 */
 
+#ifdef NDEBUG
 #include <CrashRpt.h>
+
 crash_rpt::CrashRpt g_crashRpt(
     "7b4202e6-8294-4be5-a18d-69c097167b46", // GUID assigned to this application.
     L"Uptooda", // Application name that will be used in message box.
     L"Sergey Svistunov" // Company name that will be used in message box.
 );
+#endif
 
 #include "atlheaders.h"
 

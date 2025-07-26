@@ -670,14 +670,17 @@ void Canvas::addMovableElement(MovableElement* element)
         if ( element->getType() == ElementType::etBlurringRectangle || element->getType() == ElementType::etPixelateRectangle) {
             blurRectanglesCount_ ++;
         }
-        auto historyItem = std::make_unique<UndoHistoryItem>();
-        historyItem->type = UndoHistoryItemType::uitElementAdded;
-        UndoHistoryItemElement uhie;
-        uhie.pos = elementsOnCanvas_.size();
-        uhie.movableElement = element;
-        historyItem->elements.push_back(uhie);
-        addUndoHistoryItem(std::move(historyItem));
-        setDocumentModified(true);
+        if (element->getType() != ElementType::etCrop) {
+            auto historyItem = std::make_unique<UndoHistoryItem>();
+            historyItem->type = UndoHistoryItemType::uitElementAdded;
+            UndoHistoryItemElement uhie;
+            uhie.pos = elementsOnCanvas_.size();
+            uhie.movableElement = element;
+            historyItem->elements.push_back(uhie);
+            addUndoHistoryItem(std::move(historyItem));
+            setDocumentModified(true);
+        }
+
         elementsToDelete_.push_back(element);
     }
 }

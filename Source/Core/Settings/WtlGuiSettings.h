@@ -34,6 +34,7 @@ struct ImageEditorSettingsStruct {
     bool FillTextBackground = false;
     bool InvertSelection = false;
     int ArrowType;
+    bool CloseWindowAfterActionInFullScreen = false; // Close after copying or searching
 };
 
 struct TrayIconSettingsStruct {

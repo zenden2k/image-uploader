@@ -73,6 +73,7 @@ set(SRC_LIST
     Dialogs/ScreenshotDlg.cpp
     Dialogs/ScreenshotSettingsPage.cpp
     Dialogs/ScreenRecordingSettingsPage.cpp
+    Dialogs/ImageEditorSettingsPage.cpp
     Dialogs/ScreenRecordingDlg.cpp
     Dialogs/FFmpegSettingsPage.cpp
     Dialogs/DXGISettingsPage.cpp
@@ -238,6 +239,7 @@ set(HEADER_LIST
     Dialogs/ScreenshotDlg.h
     Dialogs/ScreenshotSettingsPage.h
     Dialogs/ScreenRecordingSettingsPage.h
+    Dialogs/ImageEditorSettingsPage.h
     Dialogs/ScreenRecordingDlg.h
     Dialogs/FFmpegSettingsPage.h
     Dialogs/DXGISettingsPage.h

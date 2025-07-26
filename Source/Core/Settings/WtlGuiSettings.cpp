@@ -796,6 +796,7 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, InvertSelection);
 
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
+    imageEditor.nm_bind(ImageEditorSettings, CloseWindowAfterActionInFullScreen);
     screenshot.nm_bind(ImageEditorSettings, AllowEditingInFullscreen);
     //screenshot.nm_bind(ImageEditorSettings, SearchEngine);
     SettingsNode& image = mgr_["Image"];

@@ -449,7 +449,9 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         { FVIRTKEY | FCONTROL, 'D', ID_UNSELECTALL },
         { FVIRTKEY | FCONTROL, 'S', ID_SAVE },
         { FVIRTKEY | FCONTROL, 'C', ID_COPYBITMAPTOCLIBOARD },
+        { FVIRTKEY | FCONTROL | FSHIFT, 'C', ID_COPYBITMAPTOCLIBOARD_ALT },
         { FVIRTKEY | FCONTROL, 'F', ID_SEARCHBYIMAGE },
+        { FVIRTKEY | FCONTROL | FSHIFT, 'F', ID_SEARCHBYIMAGE_ALT },
         { FVIRTKEY | FCONTROL, 'P', ID_PRINTIMAGE },
         { FVIRTKEY, VK_RETURN, IDOK },
         { FVIRTKEY, VK_DELETE, ID_DELETESELECTED },
@@ -986,17 +988,32 @@ void ImageEditorWindow::createToolbars()
         //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
         horizontalToolbar_.addButton(Toolbar::Item(TR("Save"), loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, TR("Save") + CString(_T(" (Ctrl+S)")), sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
 
-        std::wstring copyButtonHint = str(boost::wformat(TR("Copy to clipboard and close (%s)")) % L"Ctrl+C");
-        horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, copyButtonHint.c_str(), Toolbar::itComboButton));
+        
+        bool doClose = checkCloseWindowAfterAction();
+        const std::string secondLine = doClose ? _("Pressing this button while holding Shift will not close the window.") : _("Pressing this button while holding Shift will close the window.");
+        std::string copyFormatStr = doClose ? _("Copy to clipboard and close (%s)") : _("Copy to clipboard (%s)"); 
+        if (canCloseAfterAction()) {
+            copyFormatStr += "\r\n\r\n";
+            copyFormatStr += secondLine;
+        }
+
+        const std::string copyButtonHint = str(IuStringUtils::FormatNoExcept(copyFormatStr) % "Ctrl+C");
+        horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, U2W(copyButtonHint), Toolbar::itComboButton));
 
         if (displayMode_ == wdmFullscreen) {
             horizontalToolbar_.addButton(Toolbar::Item(TR("Record"), loadToolbarIcon(IDB_ICONRECORD), ID_RECORDSCREEN, TR("Record") + CString(_T(" (Ctrl+R)")), Toolbar::itButton));
         }
-        CString itemText;
-        CString searchEngineName = U2W(searchEngine_.serverName());
-        itemText.Format(TR("Search on %s"), searchEngineName.GetString());
 
-        horizontalToolbar_.addButton(Toolbar::Item(itemText, loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, itemText + CString(_T(" (Ctrl+F)")), Toolbar::itComboButton));
+        const std::string searchButtonText = str(IuStringUtils::FormatNoExcept(_("Search on %s")) % searchEngine_.serverName());
+        std::string searchFormatStr = doClose  ? _("Search on %1% and close (%2%)") : _("Search on %1% (%2%)");
+        if (canCloseAfterAction()) {
+            searchFormatStr += "\r\n\r\n";
+            searchFormatStr += secondLine;
+        }
+
+        const std::string searchButtonHint = str(IuStringUtils::FormatNoExcept(searchFormatStr) % searchEngine_.serverName() % "Ctrl+F");
+
+        horizontalToolbar_.addButton(Toolbar::Item(U2W(searchButtonText), loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, U2W(searchButtonHint), Toolbar::itComboButton));
         horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONROTATEFLIP), ID_MOREACTIONS, TR("Rotate or flip"), Toolbar::itComboButton));
 
         horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
@@ -1406,20 +1423,23 @@ LRESULT ImageEditorWindow::OnClickedSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, H
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT ImageEditorWindow::OnClickedCopyToClipboard(WORD wNotifyCode, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    CopyBitmapToClipboardAndClose(ClipboardFormat::Bitmap);
+    bool closeFlag = wID == ID_COPYBITMAPTOCLIBOARD_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
+    copyBitmapToClipboard(ClipboardFormat::Bitmap, closeFlag);
 
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUri(WORD, WORD, HWND, BOOL&) {
-    CopyBitmapToClipboardAndClose(ClipboardFormat::DataUri);
+LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUri(WORD wNotifyCode, WORD wID, HWND, BOOL&) {
+    bool closeFlag = wID == ID_COPYBITMAPTOCLIBOARDASDATAURI_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
+    copyBitmapToClipboard(ClipboardFormat::DataUri, wID == ID_COPYBITMAPTOCLIBOARDASDATAURI_ALT);
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUriHtml(WORD, WORD, HWND, BOOL&) {
-    CopyBitmapToClipboardAndClose(ClipboardFormat::DataUriHtml);
+LRESULT ImageEditorWindow::OnClickedCopyToClipboardAsDataUriHtml(WORD wNotifyCode, WORD wID, HWND, BOOL&) {
+    bool closeFlag = wID == ID_COPYBITMAPTOCLIBOARDASDATAURIHTML_ALT || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
+    copyBitmapToClipboard(ClipboardFormat::DataUriHtml, closeFlag);
     return 0;
 }
 
@@ -1439,8 +1459,20 @@ LRESULT ImageEditorWindow::OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl
 }
 
 LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    if (wID != ID_SEARCHBYIMAGE) {
-        int serverIndex = wID - ID_SEARCHBYIMAGE_START;
+    int serverIndex = -1;
+    bool closeFlag = false;
+    if (wID >= ID_SEARCHBYIMAGE_START && wID <= ID_SEARCHBYIMAGE_END) {
+        serverIndex = wID - ID_SEARCHBYIMAGE_START;
+    } else if (wID >= ID_SEARCHBYIMAGE_ALT_START && wID <= ID_SEARCHBYIMAGE_ALT_END) {
+        serverIndex = wID - ID_SEARCHBYIMAGE_ALT_START;
+        closeFlag = true;
+    } else {
+        closeFlag = (wID == ID_SEARCHBYIMAGE_ALT);
+    }
+
+    closeFlag = closeFlag || (wNotifyCode != 1 && (GetKeyState(VK_SHIFT) & 0x8000) != 0);
+
+    if (serverIndex != -1) {
         int i = 0;
         auto* engineList = ServiceLocator::instance()->engineList();
         for (const auto& engine : *engineList) {
@@ -1459,7 +1491,6 @@ LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWnd
         return 0;
     }
 
-    const bool shiftPressed = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
     updateSearchButton();
     const CString fileName = saveToTempFile();
     if (fileName.IsEmpty()) {
@@ -1469,7 +1500,7 @@ LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWnd
     auto uploadManager = ServiceLocator::instance()->uploadManager();
     CSearchByImageDlg dlg(uploadManager, searchEngine_, fileName);
     if (dlg.DoModal(m_hWnd) == IDOK) {
-        if (displayMode_ == wdmFullscreen && !shiftPressed) {
+        if (canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
             EndDialog(drSearch);
         }
     }
@@ -1581,12 +1612,12 @@ void ImageEditorWindow::saveSettings()
     }
 }
 
-bool ImageEditorWindow::CopyBitmapToClipboardAndClose(ClipboardFormat format) {
+bool ImageEditorWindow::copyBitmapToClipboard(ClipboardFormat format, bool closeFlag) {
     if (GetFocus() != m_view.m_hWnd) {
         ::SetFocus(m_view.m_hWnd);
     }
     const bool res = saveDocument(format);
-    if (res && displayMode_ == wdmFullscreen &&  (GetKeyState(VK_SHIFT) & 0x8000)) {
+    if (res && canCloseAfterAction() && (closeFlag ^ checkCloseWindowAfterAction())) {
         EndDialog(drCopiedToClipboard);
     }
     return res;
@@ -1907,6 +1938,15 @@ void ImageEditorWindow::createIcons() {
     if (bmIconFlipVertical_) {
         bmIconFlipVertical_.DeleteObject();
     }
+}
+
+bool ImageEditorWindow::checkCloseWindowAfterAction() {
+    return displayMode_ == wdmFullscreen && configurationProvider_->getCloseWindowAfterActionInFullScreen() && sourceFileName_.IsEmpty();
+}
+
+
+bool ImageEditorWindow::canCloseAfterAction() {
+    return displayMode_ == wdmFullscreen && sourceFileName_.IsEmpty();
 }
 
 LRESULT ImageEditorWindow::OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

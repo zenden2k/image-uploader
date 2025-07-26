@@ -23,6 +23,7 @@ load_dotenv()
 IS_RELEASE = get_bool_env("UPTOODA_BUILD_RELEASE")
 TEST_MODE = get_bool_env("UPTOODA_BUILD_TEST_MODE")
 BUILD_DOCS = True
+PDB_DIR = "PDB"
 OUTDIR = "Releases" if IS_RELEASE else "Packages" 
 APP_NAME = "Uptooda"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
@@ -89,7 +90,8 @@ BUILD_TARGETS = [
         'shell_ext_64bit_arch': 'x64',
         'run_tests': True,
         'ffmpeg_standalone' : False,
-        'supported_os': 'Windows 7/8/10/11'
+        'supported_os': 'Windows 7/8/10/11',
+        'upload_pdb': True
     },  
     {
         'os': "Windows",
@@ -108,7 +110,8 @@ BUILD_TARGETS = [
         'ffmpeg_standalone' : False,
         'installer_arch': 'x64',
         'run_tests': True,
-        'supported_os': 'Windows 7/8/10/11 (64 bit)'
+        'supported_os': 'Windows 7/8/10/11 (64 bit)',
+        'upload_pdb': True
     }, 
     {
         'os': "Windows",
@@ -126,6 +129,39 @@ BUILD_TARGETS = [
         'installer_arch': 'arm64',
         'supported_os': 'Windows 10/11 (ARM64)'
     },
+    {
+        'os': "Linux",
+        'compiler': "gcc",
+        'build_type': "Release",
+        'arch': 'x86_64',
+        'host_profile': 'default',
+        'build_profile': 'default',
+        'cmake_generator': 'Ninja Multi-Config', 
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_BUILD_QIMAGEUPLOADER=On"],
+        'deb_package_arch': 'amd64',
+        'build_qt_gui': True,
+        'run_tests': True,
+        'supported_os': 'Linux (amd64)',
+        'objcopy': 'objcopy'
+    },
+    {
+        'os': "Linux",
+        'compiler': "gcc",
+        'build_type': "Release",
+        'arch': 'aarch64',
+        'host_profile': '',
+        'build_profile': 'default',
+        'cmake_generator': 'Ninja Multi-Config', 
+        'cmake_args': ["-DCMAKE_TOOLCHAIN_FILE=../Conan/Toolchains/aarch64-linux-gnu.toolchain.cmake"], 
+        'deb_package_arch': 'arm64',
+        'build_qt_gui': False,
+        'run_tests': False,
+        'supported_os': 'Linux (arm64)',
+        'objcopy': 'aarch64-linux-gnu-objcopy'
+    },
+]
+
+"""
     {
         'os': "Windows",
         'compiler': "VS2019",
@@ -181,39 +217,9 @@ BUILD_TARGETS = [
         'supported_os': 'Windows 10/11 (ARM64)',
         'lite': True
     },
-    {
-        'os': "Linux",
-        'compiler': "gcc",
-        'build_type': "Release",
-        'arch': 'x86_64',
-        'host_profile': 'default',
-        'build_profile': 'default',
-        'cmake_generator': 'Ninja Multi-Config', 
-        'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_BUILD_QIMAGEUPLOADER=On"],
-        'deb_package_arch': 'amd64',
-        'build_qt_gui': True,
-        'run_tests': True,
-        'supported_os': 'Linux (amd64)',
-        'objcopy': 'objcopy'
-    },
-    {
-        'os': "Linux",
-        'compiler': "gcc",
-        'build_type': "Release",
-        'arch': 'aarch64',
-        'host_profile': '',
-        'build_profile': 'default',
-        'cmake_generator': 'Ninja Multi-Config', 
-        'cmake_args': ["-DCMAKE_TOOLCHAIN_FILE=../Conan/Toolchains/aarch64-linux-gnu.toolchain.cmake"], 
-        'deb_package_arch': 'arm64',
-        'build_qt_gui': False,
-        'run_tests': False,
-        'supported_os': 'Linux (arm64)',
-        'objcopy': 'aarch64-linux-gnu-objcopy'
-    },
-]
+"""
 
-#BUILD_TARGETS = [BUILD_TARGETS[6]]
+#BUILD_TARGETS = [BUILD_TARGETS[2]]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
@@ -560,7 +566,9 @@ if not os.path.exists:
     sys.exit(1)
 
 mkdir_if_not_exists(OUTDIR)
+mkdir_if_not_exists(PDB_DIR)
 outdir_abs = os.path.abspath(OUTDIR)
+pdbdir_abs = os.path.abspath(PDB_DIR)
 repo_dir = COMMON_BUILD_FOLDER + "/Repo"
 
 if not TEST_MODE:
@@ -727,13 +735,13 @@ for idx, target in enumerate(BUILD_TARGETS):
         command = ["cmake", "--build", ".", "-j", PARALLEL_JOBS, "--config", target.get("build_type")]
         if target.get("os") == "Linux":
             command =  ['wsl', '-e'] + command
-            
+                
         print("Running command:", " ".join(command))
         proc = subprocess.run(command)
         if proc.returncode !=0:
             print("Build failed")
             exit(1)
-
+        
         if target.get("run_tests"):
             command = ["Tests/Release/Tests"]
             if target.get("os") == "Linux":
@@ -766,6 +774,8 @@ for idx, target in enumerate(BUILD_TARGETS):
             relative_path = r"/Windows/" + get_out_arch_name(target) + '/'
             package_os_dir = new_build_dir + relative_path
             mkdir_if_not_exists(package_os_dir)
+            pdb_os_dir = pdbdir_abs + "/" + app_ver+ "-build-" + build_number + relative_path; 
+            mkdir_if_not_exists(pdb_os_dir)
 
             # Creating archive
             command =  repo_dir_abs + used_dist_dir + r"create_portable.bat"
@@ -829,10 +839,12 @@ for idx, target in enumerate(BUILD_TARGETS):
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
-
             json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI" + appname_suffix +")")
 
-            if UPLOAD_TO_DRDUMP:
+
+            shutil.copyfile("GUI\\Release\\Uptooda.pdb", pdb_os_dir  + "/Uptooda.pdb")
+            
+            if UPLOAD_TO_DRDUMP and target.get("upload_pdb"):
                 command = ["SYMUPLOAD", DRDUMP_APP_GUID, version_header_defines["IU_APP_VER_CLEAN"] + "." + build_number, "0", ".\\GUI\\Release\\*.pdb"]
                 proc = subprocess.run(command)
                 if proc.returncode !=0:

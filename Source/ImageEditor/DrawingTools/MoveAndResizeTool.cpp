@@ -29,6 +29,10 @@
 
 namespace ImageEditor {
 
+bool PointsEqual(const POINT& a, const POINT& b) {
+    return a.x == b.x && a.y == b.y;
+}
+
 CropOverlay* MoveAndResizeTool::cropOverlay_ = 0;
 
 MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : AbstractDrawingTool( canvas ) {
@@ -258,8 +262,8 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
         POINT newStartPoint_ = currentElement_->getStartPoint();
         POINT newEndPoint_ = currentElement_->getEndPoint();
 
-        if (!elementJustCreated_ && (memcmp(&newStartPoint_, &originalStartPoint_, sizeof(newStartPoint_)) || memcmp(
-            &newEndPoint_, &originalEndPoint_, sizeof(newEndPoint_)))) {
+        if (!elementJustCreated_ && currentElement_->getType() != ElementType::etCrop &&
+            (!PointsEqual(newStartPoint_, originalStartPoint_) || !PointsEqual(newEndPoint_, originalEndPoint_))) {
 
             auto uhi = std::make_unique<Canvas::UndoHistoryItem>();
             uhi->type = Canvas::UndoHistoryItemType::uitElementPositionChanged;

@@ -17,28 +17,24 @@
     limitations under the License.
 
 */
-#ifndef SCREENSHOTSETTINGSPAGE_H
-#define SCREENSHOTSETTINGSPAGE_H
 
 #pragma once
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include <atlcrack.h>
 #include "SettingsPage.h"
 
-class CScreenshotSettingsPage :    public CDialogImpl<CScreenshotSettingsPage>,
+class CImageEditorSettingsPage :    public CDialogImpl<CImageEditorSettingsPage>,
                                      public CSettingsPage
 {
     public:
-        CScreenshotSettingsPage();
-        ~CScreenshotSettingsPage();
-        enum { IDD = IDD_SCREENSHOTSETTINGSPAGE};
+        CImageEditorSettingsPage();
+        ~CImageEditorSettingsPage();
+        enum { IDD = IDD_IMAGEEDITORSETTINGS};
 
     protected:
-        BEGIN_MSG_MAP(CScreenshotSettingsPage)
+        BEGIN_MSG_MAP(CImageEditorSettingsPage)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-            COMMAND_HANDLER(IDC_SCREENSHOTSFOLDERSELECT, BN_CLICKED, OnScreenshotsFolderSelect)
         END_MSG_MAP()
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -46,8 +42,5 @@ class CScreenshotSettingsPage :    public CDialogImpl<CScreenshotSettingsPage>,
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         bool apply() override;
-        LRESULT OnScreenshotsFolderSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 };
 
-
-#endif // SCREENSHOTSETTINGSPAGE_H

@@ -24,6 +24,7 @@
 #include "HotkeySettings.h"
 #include "ScreenshotSettingsPage.h"
 #include "ScreenRecordingSettingsPage.h"
+#include "ImageEditorSettingsPage.h"
 #include "ThumbSettingsPage.h"
 #include "GeneralSettings.h"
 #include "ConnectionSettingsPage.h"
@@ -202,18 +203,19 @@ bool CSettingsDlg::apply()  {
 
 void CSettingsDlg::fillListBox() {
     m_SettingsPagesListBox.ResetContent();
-    m_SettingsPagesListBox.AddString(TR("General"));
-    m_SettingsPagesListBox.AddString(TR("Servers"));
-    m_SettingsPagesListBox.AddString(TR("Images"));
-    m_SettingsPagesListBox.AddString(TR("Thumbnails"));
-    m_SettingsPagesListBox.AddString(TR("Screen Capture"));
-    m_SettingsPagesListBox.AddString(TR("Screen Recording"));
-    m_SettingsPagesListBox.AddString(TR("Video"));
-    m_SettingsPagesListBox.AddString(TR("Connection"));
-    m_SettingsPagesListBox.AddString(TR("Uploading"));
-    m_SettingsPagesListBox.AddString(TR("Integration"));
-    m_SettingsPagesListBox.AddString(TR("Tray icon"));
-    m_SettingsPagesListBox.AddString(TR("Hotkeys"));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "General")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Servers")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Images")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Thumbnails")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Screen Capture")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Image Editor")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Screen Recording")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Video")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Connection")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Uploading")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Integration")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Tray icon")));
+    m_SettingsPagesListBox.AddString(U2WC(_c("settings.menu", "Hotkeys")));
 }
 
 template<typename T, typename... Args> std::unique_ptr<T> createPageObject(HWND hWnd, RECT& rc, Args&&... args) {
@@ -237,7 +239,9 @@ bool CSettingsDlg::CreatePage(SettingsPage pageId)
             case spThumbnails:
                 return createPageObject<CThumbSettingsPage>(m_hWnd, rc);
             case spScreenshot:
-                return createPageObject<CScreenshotSettingsPagePage>(m_hWnd, rc);
+                return createPageObject<CScreenshotSettingsPage>(m_hWnd, rc);
+            case spImageEditor:
+                return createPageObject<CImageEditorSettingsPage>(m_hWnd, rc);
             case spScreenRecording:
                 return createPageObject<CScreenRecordingSettingsPage>(m_hWnd, rc);
             case spVideo:

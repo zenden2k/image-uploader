@@ -13,6 +13,9 @@
 #define tr(s) boost::locale::translate(s)
 #endif
 #define _(s) boost::locale::translate(s)
+#define _c(context, str) boost::locale::translate(context, str)
+#define _n(single, plural, n) boost::locale::translate(single, plural, n)
+#define _nc(context, single, plural, n) boost::locale::translate(context, single, plural, n)
 
 #ifdef _WIN32
     // TR() - macro which translates wide string literal to current language
