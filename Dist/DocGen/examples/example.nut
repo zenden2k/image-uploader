@@ -1,3 +1,19 @@
+/**
+ * Global network client
+ * @var nm
+ * @type NetworkClient
+ */
+
+/**
+ * @var ServerParams
+ * @type ServerSettingsStruct
+ */
+
+/**
+ * @var Sync
+ * @type ServerSync
+ */
+
 const BASE_URL = "http://example.com";
 
 function _PrintError(t, txt) {
@@ -8,12 +24,17 @@ function _PrintError(t, txt) {
     WriteLog("error", errorMessage);
 }
 
-// This is the function that performs the upload of the file
-// @param string pathToFile
-// @param UploadParams options
-// @return int - success(1), failure(0)
-
+/** 
+* This is the function that performs the upload of the file
+* @param string pathToFile
+* @param UploadParams options
+* @return int - success(1), failure(0)
+*/
 function UploadFile(pathToFile, options) {
+    /** 
+     * @var task
+     * @type FileUploadTaskWrapper
+     */
     local task = options.getTask().getFileTask();
     local apiToken = ServerParams.getParam("apiToken");
 
@@ -90,16 +111,18 @@ function UploadFile(pathToFile, options) {
     return ResultCode.Success;
 }
 
-// Authenticating on remote server (optional function)
-// @var CFolderList list
-// @return int - success(1), failure(0)
+/** 
+* Authenticating on remote server (optional function)
+* @var CFolderList list
+* @return int - success(1), failure(0)
+*/
 function Authenticate() {
     if (ServerParams.getParam("token") != "") {
         return ResultCode.Success;
     }
 
-    local username = ServerParams.getParam("Login"); // Predefined parameter, no need to define it in GetServerParamList
-    local password = ServerParams.getParam("Password"); // Predefined parameter, no need to define it in GetServerParamList
+    local username = ServerParams.getParam("Login"); // Login is a predefined parameter, no need to define it in GetServerParamList function
+    local password = ServerParams.getParam("Password"); // Password is a predefined parameter, no need to define it in GetServerParamList function
 
     // Performing request
     // ...
@@ -111,10 +134,12 @@ function Authenticate() {
     return ResultCode.Failure;
 }
 
-// Optional function:
-// Retrieving folder (album) list from server
-// @var CFolderList list
-// @return int - success(1), failure(0)
+/** 
+* Optional function:
+* Retrieving folder (album) list from server
+* @var CFolderList list
+* @return int - success(1), failure(0)
+*/
 function GetFolderList(list) {
     nm.doGet(BASE_URL + "/albums");
     local obj = ParseJSON(nm.responseBody());
@@ -150,12 +175,12 @@ function GetFolderList(list) {
     return ResultCode.Failure;
 }
 
-
-// Create an folder or an album (optional function)
-// @var CFolderItem parentAlbum
-// @var CFolderItem album
-// @return int - success(1), failure(0)
-//
+/** 
+* Create an folder or an album (optional function)
+* @var CFolderItem parentAlbum
+* @var CFolderItem album
+* @return int - success(1), failure(0)
+*/
 function CreateFolder(parentAlbum, album) {
     local req = {
         title = album.getTitle(),
@@ -187,24 +212,28 @@ function CreateFolder(parentAlbum, album) {
     return ResultCode.Failure;
 }
 
-
-// Modify a folder or an album (update name, description) (optional function)
-// @var CFolderItem album
-// @return int - success(1), failure(0)
-//
+/** 
+* Modify a folder or an album (update name, description) (optional function)
+* @var CFolderItem album
+* @return int - success(1), failure(0)
+*/
 function ModifyFolder(album) {
     // TODO: Your code
     return ResultCode.Success;
 }
 
-// A function that returns a list of types of access restrictions to an album: (optional function)
-// private, public, only for friends, etc.
-// @return array
+/** 
+* A function that returns a list of types of access restrictions to an album: (optional function)
+* private, public, only for friends, etc.
+* @return array
+*/
 function GetFolderAccessTypeList() {
     return ["Private", "Public"];
 }
 
-// optional function
+/** 
+* optional function
+*/
 function GetServerParamList() {
     return {
         apiToken = "API Token",
@@ -215,5 +244,31 @@ function GetServerParamList() {
             title = "Email notification on download",
             type = "boolean" // checkbox
         },
+        expiration = {
+            title = "Expiration",
+            type = "choice",
+            items = [
+                {
+                    id = "",
+                    label = Never"
+                },
+                {
+                    id = "PT5M",
+                    label = "15 minutes"
+                },
+                {
+                    id = "PT30M",
+                    label = "30 minutes"
+                },
+                {
+                    id = "PT1H",
+                    label = "1 hour"
+                }
+            ]
+        },
+        privateKeyPath = {
+            title = "Private key path",
+            type = "filename"
+        } 
     }
 }

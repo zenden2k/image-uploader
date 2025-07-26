@@ -794,6 +794,7 @@ int Toolbar::AutoSize() {
     for (size_t i = 0; i < buttons_.size(); i++) {
         CreateToolTipForItem(i);
     }
+    tooltip_.SetMaxTipWidth(MulDiv(300, dpiX_, USER_DEFAULT_SCREEN_DPI));
 
     CRect clientRect;
     GetClientRect(&clientRect);
@@ -1032,6 +1033,7 @@ void Toolbar::CreateToolTipForItem(size_t index)
         return;
     }
 
+    
     for (const auto& hint : hints) {
         TOOLINFO ti = {};
         ti.cbSize = sizeof(TOOLINFO);

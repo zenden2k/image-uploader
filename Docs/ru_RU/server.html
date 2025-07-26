@@ -2,14 +2,14 @@
 <html lang="ru">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<title>Image Uploader - программа для быстрой загрузки изображений</title>
+	<title>Uptooda - программа для быстрой загрузки изображений</title>
 	<link href="../default.css" rel="stylesheet" type="text/css" />
 	<link href="../prettify/prettify.css" rel="stylesheet" type="text/css" />
 </head>
 <body onload="prettyPrint()">
 <script type="text/javascript" src="../prettify/prettify.js"></script>
 <div id="header">
-<h1>Image Uploader</h1> <div id="version"></div>
+<h1>Uptooda</h1> <div id="version"></div>
 </div>
  <div id="menu">
     <ul>
@@ -41,11 +41,11 @@
 </ol>
 <hr>
 <h2 id="введение">Введение</h2>
-<p>Image Uploader позволяет добавлять поддержку новых серверов через XML файлы конфигурации. Эта документация поможет вам создать собственные серверы для загрузки изображений и файлов.</p>
+<p>Uptooda позволяет добавлять поддержку новых серверов через XML файлы конфигурации. Эта документация поможет вам создать собственные серверы для загрузки изображений и файлов.</p>
 <h3 id="где-размещать-файлы">Где размещать файлы</h3>
 <ul>
 <li><strong>Портативная версия</strong>: <code>Data\Servers\</code></li>
-<li><strong>Установленная версия</strong>: <code>%appdata%\Image Uploader\Servers\</code></li>
+<li><strong>Установленная версия</strong>: <code>%appdata%\Uptooda\Servers\</code></li>
 </ul>
 <blockquote>
 <p>⚠️ <strong>Важно</strong>: Не редактируйте файл <code>servers.xml</code> напрямую - он перезаписывается при обновлениях.</p>
@@ -871,7 +871,7 @@ A: Используйте инструменты разработчика бра
 <p><strong>Q: Можно ли использовать один XML для нескольких серверов?</strong>
 A: Да, один файл может содержать несколько узлов <code>&lt;Server&gt;</code>.</p>
 <p><strong>Q: Поддерживается ли HTTPS?</strong>
-A: Да, Image Uploader поддерживает HTTPS полностью.</p>
+A: Да, Uptooda поддерживает HTTPS полностью.</p>
 <h3 id="технические-вопросы">Технические вопросы</h3>
 <p><strong>Q: Как передать файл в POST запросе?</strong>
 A: Используйте <code>%filename%</code> в параметре PostParams:</p>
@@ -918,7 +918,7 @@ A: Заключите в <code>$()</code>:</p>
 A: Нет, RegExp не поддерживает переменные. Используйте фиксированные паттерны.</p>
 <hr>
 <h2 id="заключение">Заключение</h2>
-<p>Создание XML файлов для Image Uploader требует понимания API целевого сервера и базовых принципов HTTP. Следуйте этой документации, тестируйте каждый шаг и не бойтесь экспериментировать с отладкой.</p>
+<p>Создание XML файлов для Uptooda требует понимания API целевого сервера и базовых принципов HTTP. Следуйте этой документации, тестируйте каждый шаг и не бойтесь экспериментировать с отладкой.</p>
 <p>Для получения дополнительной помощи:</p>
 <ul>
 <li>Изучите существующие XML файлы в папке серверов</li>
