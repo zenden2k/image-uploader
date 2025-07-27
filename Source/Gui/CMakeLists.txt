@@ -128,7 +128,7 @@ set(SRC_LIST
     ../Func/MyDropSource.cpp
     ../Func/MyEngineList.cpp
     ../Func/MyUtils.cpp
-    ../Func/SystemUtils.cpp
+    ../Func/ClipboardUtils.cpp
     ../Func/WebUtils.cpp
     ../ImageEditor/Canvas.cpp
     ../ImageEditor/Document.cpp
@@ -298,7 +298,7 @@ set(HEADER_LIST
     ../Func/MyDropSource.h
     ../Func/MyEngineList.h
     ../Func/MyUtils.h
-    ../Func/SystemUtils.h
+    ../Func/ClipboardUtils.h
     ../Func/WebUtils.h
     ../ImageEditor/Canvas.h
     ../ImageEditor/Document.h

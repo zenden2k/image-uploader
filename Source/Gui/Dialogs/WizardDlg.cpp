@@ -48,6 +48,7 @@
 #include "Gui/Dialogs/ShortenUrlDlg.h"
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Func/WinUtils.h"
+#include "Func/ClipboardUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Gui/Dialogs/QuickSetupDlg.h"
 #include "ImageEditor/Gui/ImageEditorWindow.h"
@@ -166,6 +167,88 @@ bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName
     return true;
 }
 
+std::optional<CString> SaveClipboardBinaryData(UINT format, const CString& extension, HWND hwnd, bool raiseError = true) {
+    for (int i = 0; i < 4; i++) {
+        if (OpenClipboard(hwnd)) {
+            HGLOBAL hglb = GetClipboardData(format);
+            if (!hglb) {
+                if (raiseError) {
+                    LOG(ERROR) << "GetClipboardData call failed for format " << format << ". ErrorCode=" << ::GetLastError();
+                }
+                CloseClipboard();
+                return std::nullopt;
+            }
+
+            SIZE_T dataSize = GlobalSize(hglb);
+            LPVOID lpData = GlobalLock(hglb);
+
+            if (!lpData || dataSize == 0) {
+                if (raiseError) {
+                    LOG(ERROR) << "GlobalLock failed or empty data. ErrorCode=" << ::GetLastError();
+                }
+                GlobalUnlock(hglb);
+                CloseClipboard();
+                return std::nullopt;
+            }
+
+            CString tempFilePath = WinUtils::GetUniqFileName(AppParams::instance()->tempDirectoryW() + L"\\clipboard." + extension);
+
+            HANDLE hFile = CreateFile(tempFilePath, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+            if (hFile == INVALID_HANDLE_VALUE) {
+                if (raiseError) {
+                    LOG(ERROR) << "Failed to create temp file: " << tempFilePath << ". ErrorCode=" << ::GetLastError();
+                }
+                GlobalUnlock(hglb);
+                CloseClipboard();
+                return std::nullopt;
+            }
+
+            DWORD bytesWritten;
+            BOOL writeResult = WriteFile(hFile, lpData, static_cast<DWORD>(dataSize), &bytesWritten, nullptr);
+            CloseHandle(hFile);
+
+            GlobalUnlock(hglb);
+            CloseClipboard();
+
+            if (!writeResult || bytesWritten != dataSize) {
+                if (raiseError) {
+                    DWORD lastError = ::GetLastError();
+                    LOG(ERROR) << "Failed to write data to temp file: " << tempFilePath << ". ErrorCode=" << lastError << std::endl
+                               << WinUtils::ErrorCodeToString(lastError);
+                }
+
+                DeleteFile(tempFilePath);
+                return std::nullopt;
+            }
+
+            return tempFilePath;
+        }
+        Sleep(50); // Clipboard may be owned by another application, wait and try again
+    }
+
+    if (raiseError) {
+        DWORD lastError = ::GetLastError();
+        CString message;
+        HWND clipboardOwner = GetClipboardOwner();
+        if (clipboardOwner) {
+            CString windowTitle = GuiTools::GetWindowText(clipboardOwner);
+            TCHAR windowClassName[256] = _T("");
+            GetClassName(clipboardOwner, windowClassName, 255);
+            DWORD processId;
+            GetWindowThreadProcessId(clipboardOwner, &processId);
+            message += _T("\r\n");
+            message += WinUtils::ErrorCodeToString(lastError);
+            message += _T("\r\nClipboard is owned by window:\r\n");
+            message += _T("Title: '") + windowTitle + _T("'\r\n");
+            message += _T("Class: '") + CString(windowClassName) + _T("'\r\n");
+            message += _T("Process: '") + WinUtils::GetProcessName(processId) + _T("' (PID=") + WinUtils::IntToStr(processId) + _T(")\r\n");
+        }
+        LOG(ERROR) << "OpenClipboard call failed. ErrorCode=" << lastError << message;
+    }
+
+    return std::nullopt;
+}
+
 }
 
 // CWizardDlg
@@ -220,6 +303,19 @@ void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
 }
 
 bool CWizardDlg::pasteFromClipboard() {
+    UINT pngFormat = RegisterClipboardFormat(_T("PNG"));
+    if (IsClipboardFormatAvailable(pngFormat)) {
+        auto res = SaveClipboardBinaryData(pngFormat, "png", m_hWnd);
+        if (res) {
+            CreatePage(wpMainPage);
+            CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+            if (MainDlg) {
+                MainDlg->AddToFileList(*res, L"", true, nullptr, true);
+                return true;
+            }
+        }
+    }
+
     if (IsClipboardFormatAvailable(CF_BITMAP)) {
         if (!OpenClipboard()) {
             return false;
@@ -2369,8 +2465,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             IuCommonFunctions::screenshotIndex++;
             if ( CopyToClipboard )
             {
-                CClientDC dc(m_hWnd);
-                if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) {
+                if (ClipboardUtils::CopyBitmapToClipboard(result.get(), m_hWnd)) {
                     if (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD
                         && !dialogResult) {
                         bitmapToCopy = result;
@@ -2459,7 +2554,8 @@ bool CWizardDlg::funcFreeformScreenshot()
 
 bool CWizardDlg::IsClipboardDataAvailable()
 {
-    bool IsClipboard = IsClipboardFormatAvailable(CF_BITMAP)!=FALSE;
+    UINT pngFormat = RegisterClipboardFormat(_T("PNG"));
+    bool IsClipboard = IsClipboardFormatAvailable(CF_BITMAP) || IsClipboardFormatAvailable(pngFormat);
 
     if(!IsClipboard)
     {

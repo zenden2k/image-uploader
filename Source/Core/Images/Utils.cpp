@@ -412,34 +412,6 @@ void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color )
     source.UnlockBits( &bdSrc );
 }
 
-bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserveAlpha)
-{
-    if ( OpenClipboard(hwnd) ){
-        EmptyClipboard();
-        if ( !preserveAlpha )
-            Gdip_RemoveAlpha(*bm,Color(255,255,255,255));
-        HBITMAP out=0;
-        bm->GetHBITMAP(Color(255,255,255,255),&out);
-        CDC origDC,  destDC;
-        origDC.CreateCompatibleDC(dc);
-        CBitmap destBmp;
-        destBmp.CreateCompatibleBitmap(dc, bm->GetWidth(), bm->GetHeight());
-        HBITMAP oldOrigBmp = origDC.SelectBitmap(out);
-        destDC.CreateCompatibleDC(dc);
-        HBITMAP oldDestBmp = destDC.SelectBitmap(destBmp);
-        destDC.BitBlt(0,0,bm->GetWidth(),bm->GetHeight(),origDC,0,0,SRCCOPY);
-        destDC.SelectBitmap(oldDestBmp);
-        origDC.SelectBitmap(oldOrigBmp);
-        SetClipboardData(CF_BITMAP, destBmp);
-        CloseClipboard();
-        DeleteObject(out);
-        return true;
-    } else {
-        LOG(ERROR) << ("Cannot copy image to clipboard.") << std::endl << WinUtils::GetLastErrorAsString();
-    }
-    return false;
-}
-
 void DrawGradient(Graphics& gr, Rect rect, Color& Color1, Color& Color2)
 {
     Bitmap bm(rect.Width, rect.Height, &gr);

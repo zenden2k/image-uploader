@@ -41,7 +41,6 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
 std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName, bool* isAnimated);
 Gdiplus::Color StringToColor(const std::string& str);
 CComPtr<IStream> CreateMemStream(const BYTE* pInit, UINT cbInit);
-bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserveAlpha = true);
 void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color);
 
 /**

@@ -9,6 +9,7 @@
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
+#include "Func/ClipboardUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "ImageEditor/MovableElements.h"
 #include "Gui/Dialogs/SearchByImageDlg.h"
@@ -181,8 +182,7 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveA
             return false;
         }
     } else if (clipboardFormat  == ClipboardFormat::Bitmap ) {
-        CClientDC dc(m_hWnd);
-        ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
+        ClipboardUtils::CopyBitmapToClipboard(resultingBitmap_.get(), m_hWnd, true);
         return true;
     } else if (clipboardFormat == ClipboardFormat::DataUri || clipboardFormat == ClipboardFormat::DataUriHtml) {
         try {

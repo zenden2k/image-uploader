@@ -28,7 +28,7 @@
 #include "Core/Utils/StringUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/CmdLine.h"
-#include "Func/SystemUtils.h"
+#include "Func/ClipboardUtils.h"
 #include "Func/WinUtils.h"
 #include "Func/MyUtils.h"
 #include "ImageEditor/Gui/ImageEditorWindow.h"
@@ -701,9 +701,9 @@ LRESULT CMainDlg::OnCopyFileToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
     if ( selectedFiles.size() == 1) {
         // If just one file is selected, copy it in two different formats
-        SystemUtils::CopyFileAndImageToClipboard(selectedFiles[0]);
+        ClipboardUtils::CopyFileAndImageToClipboard(selectedFiles[0], m_hWnd);
     } else {
-        SystemUtils::CopyFilesToClipboard(selectedFiles);
+        ClipboardUtils::CopyFilesToClipboard(selectedFiles, m_hWnd);
     }
 
     return 0;
