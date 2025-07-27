@@ -1243,12 +1243,12 @@ LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WO
     serverSelectorControl.setShowImageProcessingParams(false);
     serverSelectorControl.setTitle(TR("URL shortening server"));
     serverSelectorControl.setServerProfile(Settings.urlShorteningServer);
-    RECT clientRect;
-    m_ShorteningServerButton.GetClientRect(&clientRect);
-    m_ShorteningServerButton.ClientToScreen(&clientRect);
-    POINT pt = { clientRect.left, clientRect.bottom };
+    RECT buttonRect;
+    m_ShorteningServerButton.GetClientRect(&buttonRect);
+    m_ShorteningServerButton.ClientToScreen(&buttonRect);
+    
     serverSelectorControl.setOnChangeCallback(std::bind(&CUploadSettings::shorteningUrlServerChanged, this, std::placeholders::_1));
-    serverSelectorControl.showPopup(m_hWnd, pt);
+    serverSelectorControl.showPopup(m_hWnd, buttonRect);
     Settings.urlShorteningServer = serverSelectorControl.serverProfile();
     updateUrlShorteningCheckboxLabel();
     return 0;

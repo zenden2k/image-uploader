@@ -73,7 +73,7 @@ class CFileDownloader
         std::atomic<bool> isRunning_;
         std::shared_ptr<INetworkClientFactory> networkClientFactory_;
         bool createFileBeforeDownloading_;
-        int ProgressFunc (INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
+        int ProgressFunc(INetworkClient* userData, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow);
         void memberThreadFunc();
         bool getNextJob(DownloadFileListItem& item);
 

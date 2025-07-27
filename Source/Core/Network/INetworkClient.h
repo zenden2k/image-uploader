@@ -38,7 +38,7 @@ class INetworkClient {
     public:
         virtual ~INetworkClient() = default;
 
-        typedef std::function<int(INetworkClient*, double, double, double, double)> ProgressCallback;
+        typedef std::function<int(INetworkClient*, int64_t, int64_t, int64_t, int64_t)> ProgressCallback;
 
         class ProxyProvider {
         public:

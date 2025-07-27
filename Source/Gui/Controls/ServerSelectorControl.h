@@ -98,7 +98,7 @@ virtual ~CServerSelectorControl();
     void notifyServerListChanged();
     void updateServerList();
     bool isAccountChosen() const;
-    int showPopup(HWND parent, POINT pt);
+    int showPopup(HWND parent, const RECT& anchorRect);
     bool exitPopup(int nCommandId);
     enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4};
 

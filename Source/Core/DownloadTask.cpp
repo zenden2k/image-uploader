@@ -22,7 +22,7 @@ void DownloadTask::run() {
     isInProgress_ = true;
     std::unique_ptr<INetworkClient> nm(factory_->create());
     using namespace std::placeholders;
-    nm->setProgressCallback([this](INetworkClient* /* userData*/, double /*dltotal*/, double /*dlnow*/, double/* ultotal*/, double /*ulnow*/) -> int {
+    nm->setProgressCallback([this](INetworkClient* /* userData*/, int64_t /*dltotal*/, int64_t /*dlnow*/, int64_t /* ultotal*/, int64_t /*ulnow*/) -> int {
         if (isCanceled_) {
             return -1;
         }
@@ -69,14 +69,10 @@ void DownloadTask::run() {
         if (f) {
             fclose(f);
         } else {
-            char buf[256] = {'\0'};
-#ifdef _WIN32
-            strerror_s(buf, sizeof(buf), errno);
-#else
-            strerror_r(errno, buf, sizeof(buf));
-#endif
+            std::error_code ec(errno, std::generic_category());
+
             LOG(ERROR) << "Unable to create file:" << std::endl << filePath << std::endl
-                << "Error: " << buf;
+                << "Error: " << ec.message();
             return;
         }
         std::string url = file.url;

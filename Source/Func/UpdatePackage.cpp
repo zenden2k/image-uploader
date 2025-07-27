@@ -654,16 +654,15 @@ bool CUpdateManager::AreUpdatesAvailable() const
     return (m_updateList.size() != 0);
 }
 
-int CUpdateManager::progressCallback(INetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
-{
+int CUpdateManager::progressCallback(INetworkClient* clientp, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow) {
     CUpdateManager * um = this;
     CString text;
     CString buf1, buf2;
-    buf1 = U2W(IuCoreUtils::FileSizeToString(int64_t(dlnow)));
-    buf2 = U2W(IuCoreUtils::FileSizeToString(int64_t(dltotal)));
+    buf1 = U2W(IuCoreUtils::FileSizeToString(dlnow));
+    buf2 = U2W(IuCoreUtils::FileSizeToString(dltotal));
     int percent = 0;
     if(dltotal != 0 )
-    percent = int((dlnow/ dltotal) * 100);
+    percent = int(((double)dlnow/ dltotal) * 100);
     if(percent > 100) percent = 0;
     text.Format(TR("Downloaded %s of %s (%d %%)"), static_cast<LPCTSTR>(buf1), static_cast<LPCTSTR>(buf2), percent);
     um->updateStatus(nCurrentIndex, text);

@@ -240,16 +240,15 @@ size_t NetworkClient::private_header_writer(char *data, size_t size, size_t nmem
     return size * nmemb;
 }
 
-int NetworkClient::ProgressFunc(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
-{
+int NetworkClient::private_progress_func(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
     auto* nm = static_cast<NetworkClient*>(clientp);
     if(nm && nm->m_progressCallbackFunc)
     {
         if  (nm->chunkOffset_>=0 && nm->chunkSize_>0 && nm->m_currentActionType == ActionType::atUpload) {
-            ultotal = static_cast<double>(nm->m_CurrentFileSize);
+            ultotal = nm->m_CurrentFileSize;
             ulnow = nm->chunkOffset_ + ulnow;
         } else if( ((ultotal<=0 && nm->m_CurrentFileSize>0)) && nm->m_currentActionType == ActionType::atUpload)
-            ultotal = double(nm->m_CurrentFileSize);
+            ultotal = nm->m_CurrentFileSize;
         return nm->m_progressCallbackFunc(nm, dltotal, dlnow, ultotal, ulnow);
     }
     return 0;
@@ -272,6 +271,9 @@ NetworkClient::NetworkClient()
     chunk_ = nullptr;
     curlShare_ = nullptr;
     m_CurrentFileSize = -1;
+    m_currentUploadDataSize = -1;
+    m_currentActionType = ActionType::atNone;
+    curl_result = CURLE_OK;
     m_uploadingFile = nullptr;
     *m_errorBuffer = 0;
     m_progressCallbackFunc = nullptr;
@@ -292,9 +294,10 @@ NetworkClient::NetworkClient()
     curl_easy_setopt(curl_handle, CURLOPT_WRITEHEADER, &m_headerFuncData);
     curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, m_errorBuffer);
 
-    curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, &ProgressFunc);
+    curl_easy_setopt(curl_handle, CURLOPT_XFERINFODATA, this);
+    curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, &private_progress_func);
     curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 0L);
-    curl_easy_setopt(curl_handle, CURLOPT_PROGRESSDATA, this);
+
     curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
@@ -302,14 +305,6 @@ NetworkClient::NetworkClient()
 
     //curl_easy_setopt(curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2);
 
-    /*
-    TODO: use new progress callbacks
-#if LIBCURL_VERSION_NUM >= 0x072000
-
-    curl_easy_setopt(curl_handle, CURLOPT_XFERINFOFUNCTION, xferinfo);
-    curl_easy_setopt(curl_handle, CURLOPT_XFERINFODATA, file);
-#endif
-     */
 #if defined(_WIN32) && defined(USE_OPENSSL)
     curl_easy_setopt(curl_handle, CURLOPT_CAINFO, initializer.certFileName.c_str());
 #endif

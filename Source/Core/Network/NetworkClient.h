@@ -277,7 +277,7 @@ class NetworkClient: public INetworkClient
         };
 
         static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
-        static int ProgressFunc(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+        static int private_progress_func(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
         static size_t private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in);
         size_t private_writer(char *data, size_t size, size_t nmemb);
         size_t private_header_writer(char *data, size_t size, size_t nmemb);

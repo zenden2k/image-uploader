@@ -58,7 +58,7 @@ class CUploader {
         bool isFatalError() const;
     protected:
         InfoProgress m_PrInfo;
-        int pluginProgressFunc(INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
+        int pluginProgressFunc(INetworkClient* userData, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow);
 
         bool m_bShouldStop;
         StatusType m_CurrentStatus;

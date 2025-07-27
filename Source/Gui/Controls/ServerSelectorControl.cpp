@@ -765,8 +765,7 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
     return 0;
 }
 
-int CServerSelectorControl::showPopup(HWND parent, POINT pt)
-{
+int CServerSelectorControl::showPopup(HWND parent, const RECT& anchorRect) {
     // Code from \Program Files\Microsoft SDKs\Windows\v7.1\Samples\winui\shell\legacysamples\fakemenu\fakemenu.cpp
     isChildWindow_ = false;
     if (Create(parent) == NULL) {
@@ -774,7 +773,72 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
         return 0;
     }
     int nRet(-1);
-    SetWindowPos(0, pt.x, pt.y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER|SWP_NOSIZE);
+    CRect windowRect;
+    GetWindowRect(windowRect);
+    int popupWidth = windowRect.Width();
+    int popupHeight = windowRect.Height();
+    
+    int x = anchorRect.left;
+    int y = anchorRect.bottom + 2;
+
+    HMONITOR hMonitor = MonitorFromRect(windowRect, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO mi = { 0 };
+    mi.cbSize = sizeof(mi);
+    if (GetMonitorInfo(hMonitor, &mi)) {
+        // Check monitor work area boundaries
+        RECT workArea = mi.rcWork;
+        // Adjust horizontal position
+        if (x + popupWidth > workArea.right) {
+            // Doesn't fit on the right - shift left
+            x = anchorRect.right - popupWidth;
+            // If still doesn't fit, align to screen right edge
+            if (x < workArea.left) {
+                x = workArea.right - popupWidth;
+            }
+        }
+        // Check that window doesn't go beyond left boundary
+        if (x < workArea.left) {
+            x = workArea.left;
+        }
+        // Adjust vertical position
+        if (y + popupHeight > workArea.bottom) {
+            // Doesn't fit below - show above the button
+            y = anchorRect.top - popupHeight;
+            // If doesn't fit above either
+            if (y < workArea.top) {
+                // Place next to button on the right
+                if (anchorRect.right + popupWidth <= workArea.right) {
+                    x = anchorRect.right;
+                    y = anchorRect.top;
+                }
+                // Or on the left
+                else if (anchorRect.left - popupWidth >= workArea.left) {
+                    x = anchorRect.left - popupWidth;
+                    y = anchorRect.top;
+                }
+                // As last resort - center in work area
+                else {
+                    x = workArea.left + (workArea.right - workArea.left - popupWidth) / 2;
+                    y = workArea.top + (workArea.bottom - workArea.top - popupHeight) / 2;
+                }
+            }
+        }
+        // Final boundary check
+        if (x < workArea.left) {
+            x = workArea.left;
+        }
+        if (y < workArea.top) {
+            y = workArea.top;
+        }
+        if (x + popupWidth > workArea.right) {
+            x = workArea.right - popupWidth;
+        }
+        if (y + popupHeight > workArea.bottom) {
+            y = workArea.bottom - popupHeight;
+        }
+    }
+
+    SetWindowPos(0, x, y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
     ShowWindow(SW_SHOWNOACTIVATE);
 
     //BOOL bMenuDestroyed(FALSE);
@@ -788,6 +852,7 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
     // Go into a message loop that filters all the messages it receives
     // and route the interesting ones to the color picker window.
     MSG msg;
+    POINT pt {};
     while (GetMessage(&msg, NULL, 0, 0))
     {
         // If our owner stopped being the active window (e.g. the user

@@ -1969,9 +1969,9 @@ LRESULT CWizardDlg::OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         }
     }
     if (CurPage >= 0 && CurPage < std::size(Pages)) {
-        CBitmapHandle oldBm = headBitmap_.SetBitmap(Pages[CurPage]->HeadBitmap);
+        HBITMAP oldBm = headBitmap_.SetBitmap(Pages[CurPage]->HeadBitmap);
         if (oldBm) {
-            oldBm.DeleteObject();
+            DeleteObject(oldBm);
         }
     }
     if (helpButtonIcon_) {
