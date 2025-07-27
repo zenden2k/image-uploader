@@ -677,16 +677,12 @@ bool CWizardDlg::ParseCmdLine()
 
 	CString FileName;
 
-	if(CmdLine.GetNextFile(FileName, nIndex))
-	{
-		if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")) && !CmdLine.IsOption(_T("quick")))
-		{
-			ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
-            CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
-			dlg->SetFileName(FileName);
-			return true;
-		}
-	}
+	if (CmdLine.IsOption(_T("importvideo")) && CmdLine.GetNextFile(FileName, nIndex)) {
+        ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
+        CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
+        dlg->SetFileName(FileName);
+        return true;
+    }
 	nIndex = 0;
 	CStringList Paths;
 	while(CmdLine.GetNextFile(FileName, nIndex))

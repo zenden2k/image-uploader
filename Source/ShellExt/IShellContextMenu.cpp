@@ -414,7 +414,7 @@ HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 		break;
 	case MENUITEM_IMPORTVIDEO:
 		{
-			IULaunchCopy(m_FileList);
+            IULaunchCopy(m_FileList, _T("/importvideo"));
 
 			return S_OK;
 		}

@@ -90,7 +90,7 @@ BUILD_TARGETS = [
         'shell_ext_64bit_arch': 'x64',
         'run_tests': True,
         'ffmpeg_standalone' : False,
-        'supported_os': 'Windows 7/8/10/11',
+        'supported_os': 'Windows 7/8/8.1/10/11',
         'upload_pdb': True
     },  
     {
@@ -110,7 +110,7 @@ BUILD_TARGETS = [
         'ffmpeg_standalone' : False,
         'installer_arch': 'x64',
         'run_tests': True,
-        'supported_os': 'Windows 7/8/10/11 (64 bit)',
+        'supported_os': 'Windows 7/8/8.1/10/11 (64 bit)',
         'upload_pdb': True
     }, 
     {
@@ -177,7 +177,7 @@ BUILD_TARGETS = [
         'shell_ext_64bit_arch': 'x64',
         'run_tests': True,
         'ffmpeg_standalone' : False,
-        'supported_os': 'Windows 7/8/10/11',
+        'supported_os': 'Windows 7/8/8.1/10/11',
         'lite': True
     },  
     {
@@ -197,7 +197,7 @@ BUILD_TARGETS = [
         'ffmpeg_standalone' : False,
         'installer_arch': 'x64',
         'run_tests': True,
-        'supported_os': 'Windows 7/8/10/11 (64 bit)',
+        'supported_os': 'Windows 7/8/8.1/10/11 (64 bit)',
         'lite': True
     }, 
     {

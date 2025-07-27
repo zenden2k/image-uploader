@@ -119,9 +119,9 @@ Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Uptooda\Upd
 Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Uptooda\Update"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Uptooda\Thumbnails"; Flags: ignoreversion
 Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Uptooda\Utils"; Flags: ignoreversion
-Source: "{userappdata}\Image Uploader\Settings.xml"; DestDir: "{userappdata}\Uptooda"; Tasks: importiusettings; Flags: external onlyifdoesntexist 
-Source: "{userappdata}\Image Uploader\Servers\*.xml"; DestDir: "{userappdata}\Uptooda\Servers"; Tasks: importiusettings; Flags: external onlyifdoesntexist
-Source: "{userappdata}\Image Uploader\History\history.db"; DestDir: "{userappdata}\Uptooda\History"; Tasks: importiusettings; Flags: external onlyifdoesntexist
+Source: "{userappdata}\Image Uploader\Settings.xml"; DestDir: "{userappdata}\Uptooda"; Tasks: importiusettings; Flags: external onlyifdoesntexist uninsneveruninstall
+Source: "{userappdata}\Image Uploader\Servers\*.xml"; DestDir: "{userappdata}\Uptooda\Servers"; Tasks: importiusettings; Flags: external onlyifdoesntexist uninsneveruninstall
+Source: "{userappdata}\Image Uploader\History\history.db"; DestDir: "{userappdata}\Uptooda\History"; Tasks: importiusettings; Flags: external onlyifdoesntexist uninsneveruninstall
 
 ;Source: "{tmp}\gdiplus.dll"; DestDir: "{app}"; Flags: external; 
 
