@@ -121,6 +121,7 @@ Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Uptooda\Thumbna
 Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Uptooda\Utils"; Flags: ignoreversion
 Source: "{userappdata}\Image Uploader\Settings.xml"; DestDir: "{userappdata}\Uptooda"; Tasks: importiusettings; Flags: external onlyifdoesntexist 
 Source: "{userappdata}\Image Uploader\Servers\*.xml"; DestDir: "{userappdata}\Uptooda\Servers"; Tasks: importiusettings; Flags: external onlyifdoesntexist
+Source: "{userappdata}\Image Uploader\History\history.db"; DestDir: "{userappdata}\Uptooda\History"; Tasks: importiusettings; Flags: external onlyifdoesntexist
 
 ;Source: "{tmp}\gdiplus.dll"; DestDir: "{app}"; Flags: external; 
 

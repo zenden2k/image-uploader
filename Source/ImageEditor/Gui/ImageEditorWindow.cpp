@@ -336,8 +336,7 @@ void ImageEditorWindow::setAskBeforeClose(bool ask)
     askBeforeClose_ = ask;
 }
 
-ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode)
-{
+ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode, bool forceShowParent) {
     if (currentDoc_->isNull()) {
         GuiTools::LocalizedMessageBox(nullptr, _T("Invalid image file."), APP_NAME, MB_ICONERROR);
         return drCancel;
@@ -582,11 +581,16 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     saveSettings();
     if ( parent ) {
         ::EnableWindow(parent, true);
+        if (forceShowParent) {
+            ::ShowWindow(parent, SW_SHOWNORMAL);
+        }
+
+        ::SetActiveWindow(parent);
     }
     ShowWindow(SW_HIDE);
-    if ( parent ) {
+
+    if (parent) {
         ::SetForegroundWindow(parent);
-        ::SetActiveWindow(parent);
         ::SetFocus(parent); 
     }
     loop.RemoveMessageFilter(this);

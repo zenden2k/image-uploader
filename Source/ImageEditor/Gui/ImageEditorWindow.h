@@ -103,7 +103,7 @@ public:
     void setServerDisplayName(const CString & serverName);
     void setAskBeforeClose(bool ask);
 
-    DialogResult DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode = wdmAuto);
+    DialogResult DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode = wdmAuto, bool forceShowParent = false);
 
     BEGIN_MSG_MAP(ImageEditorWindow)
         MESSAGE_HANDLER(WM_NCCREATE, OnNcCreate)

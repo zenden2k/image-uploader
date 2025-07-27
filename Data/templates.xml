@@ -5,7 +5,7 @@
            Put your own templates in the file 
                Data\user_templates.xml  (if you are using portable version)
 	         or 
-               %appdata%\Image Uploader\user_templates.xml    (if you have used installer)
+               %appdata%\Uptooda\user_templates.xml    (if you have used installer)
            Create an xml file there with the same structure as this file.
 		   
            ************************ Russian ****************************************
@@ -15,7 +15,7 @@
            Добавляйте свои шаблоны в файл
                 Data\user_templates.xml  (если вы используете портативную версию)
                  или 
-                %appdata%\Image Uploader\user_templates.xml    (если вы использовали инсталлятор)
+                %appdata%\Uptooda\user_templates.xml    (если вы использовали инсталлятор)
     --> 
 <Templates>
 	<!--<Template Name="Markdown">
