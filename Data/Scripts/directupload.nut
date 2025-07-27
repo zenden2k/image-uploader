@@ -30,7 +30,7 @@ function _AnonymousUpload(fileName, options) {
     nm.addQueryParam("file", "data:" + mimeType + ";base64," + Base64Encode(GetFileContents(fileName)));
     nm.addQueryParam("filename", fname);
     nm.addQueryParam("showtext", "0");
-    
+    nm.setUploadAction();
     nm.doUploadMultipartData();
 
     if (nm.responseCode() != 200) {
@@ -104,6 +104,7 @@ function UploadFile(fileName, options) {
     nm.addQueryParam("gal_id", albumId);
     nm.addQueryParam("gal_nm", album.getTitle());
     nm.addQueryParam("st_g", "0");
+    nm.setUploadAction();
     nm.doUploadMultipartData();
 
     if (nm.responseCode() != 200) {

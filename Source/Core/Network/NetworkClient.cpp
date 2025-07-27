@@ -921,6 +921,10 @@ void NetworkClient::enableResponseCodeChecking(bool enable)
     enableResponseCodeChecking_ = enable;
 }
 
+void NetworkClient::setUploadAction() {
+    m_currentActionType = ActionType::atUpload;
+}
+
 void NetworkClient::setErrorLogId(const std::string& str) {
     errorLogIdString_ = str;
 }

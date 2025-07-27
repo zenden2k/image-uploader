@@ -424,7 +424,7 @@ class CAbstractUploadEngine
         // Events
         void setOnNeedStopCallback(std::function<bool()> cb);
         void setOnProgressCallback(std::function<void(InfoProgress)> cb);
-        void setOnStatusChangedCallback(std::function<void(StatusType, int, std::string)> cb);
+        void setOnStatusChangedCallback(std::function<void(StatusType, int, const std::string&)> cb);
         void setOnDebugMessageCallback(std::function<void(const std::string&, bool)> cb);
         void setOnErrorMessageCallback(ErrorMessageCallback cb);
         DISALLOW_COPY_AND_ASSIGN(CAbstractUploadEngine);
@@ -440,10 +440,10 @@ class CAbstractUploadEngine
 
         std::function<bool()> onNeedStop_;
         std::function<void(InfoProgress)> onProgress_;
-        std::function<void(StatusType, int, std::string)> onStatusChanged_;
+        std::function<void(StatusType, int, const std::string&)> onStatusChanged_;
         std::function<void(const std::string&, bool)> onDebugMessage_;
         bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
-        bool ErrorMessage(ErrorInfo);
+        bool ErrorMessage(const ErrorInfo&);
         virtual bool needStop();
         virtual void SetStatus(StatusType status, const std::string& param = "");
 };

@@ -329,7 +329,7 @@ msgstr "Добавлять видеофайлы в список после пе�
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:45
 msgid "Add watermark"
-msgstr "Добавить водяной знак"
+msgstr "Добавить логотип"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:45
 msgid "Adding directory as server"
@@ -3669,7 +3669,7 @@ msgstr "Вести наблюдение за буфером обмена"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:52
 msgid "Watermark"
-msgstr "Водяной знак"
+msgstr "Логотип"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:51
 msgid "Watermark position:"

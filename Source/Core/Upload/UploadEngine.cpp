@@ -301,7 +301,7 @@ bool CAbstractUploadEngine::DebugMessage(const std::string& message, bool isServ
     return true;
 }
 
-bool CAbstractUploadEngine::ErrorMessage(ErrorInfo ei)
+bool CAbstractUploadEngine::ErrorMessage(const ErrorInfo& ei)
 {
     if (onErrorMessage_) {
         onErrorMessage_(ei);
@@ -373,7 +373,7 @@ void CAbstractUploadEngine::setOnProgressCallback(std::function<void(InfoProgres
     onProgress_ = cb;
 }
 
-void CAbstractUploadEngine::setOnStatusChangedCallback(std::function<void(StatusType, int, std::string)> cb) {
+void CAbstractUploadEngine::setOnStatusChangedCallback(std::function<void(StatusType, int, const std::string&)> cb) {
     onStatusChanged_ = cb;
 }
 

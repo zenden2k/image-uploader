@@ -120,6 +120,7 @@ class INetworkClient {
         virtual void setMaxUploadSpeed(uint64_t speed){}
         virtual void setMaxDownloadSpeed(uint64_t speed) {}
         virtual void cleanupAfter() {}
+        virtual void setUploadAction() {};
 };
 
 class INetworkClientFactory {

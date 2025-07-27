@@ -221,6 +221,11 @@ class NetworkClient: public INetworkClient
          */
         void enableResponseCodeChecking(bool enable) override;
 
+        /**
+         * Tells application that next request will perform file upload
+         */
+        void setUploadAction() override;
+
         /*! @cond PRIVATE */
         void setProgressCallback(const ProgressCallback& func) override;
         void setProxy(const std::string& host, int port, int type) override;

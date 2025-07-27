@@ -98,4 +98,6 @@ class MockINetworkClient : public INetworkClient {
       std::string(const std::string& url));
   MOCK_METHOD1(urlDecode,
       std::string(const std::string& url));
+  MOCK_METHOD0(setUploadAction,
+      void());
 };

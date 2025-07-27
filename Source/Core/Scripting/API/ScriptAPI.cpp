@@ -124,7 +124,8 @@ void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
         Func("getCurlInfoDouble", &INetworkClient::getCurlInfoDouble).
         Func("getCurlResult", &INetworkClient::getCurlResult).
         Func("getCurlResultString", &INetworkClient::getCurlResultString).
-        Func("setReferer", &INetworkClient::setReferer));
+        Func("setReferer", &INetworkClient::setReferer).
+        Func("setUploadAction", &INetworkClient::setUploadAction));
 }
 
 namespace SimpleXmlExtend
