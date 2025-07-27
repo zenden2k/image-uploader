@@ -46,22 +46,73 @@ bool CUploadEngineData::hasType(ServerType type) const
     return (TypeMask & type) == type;
 }
 
-bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized) const {
+bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, std::string_view userType) const {
     if (MaxFileSize > 0 && fileSize > MaxFileSize) {
         return false;
     }
+
+    for (const auto& group : this->ForbiddenFormatGroups) {
+        if ((group.MaxFileSize > 0 && fileSize > group.MaxFileSize)
+            || (group.MinFileSize > 0 && fileSize < group.MinFileSize)) {
+            continue;
+        }
+
+        if (!group.acceptsUserType(userType)) {
+            continue;
+        }
+
+        for (const auto& format : group.Formats) {
+            if ((format.MaxFileSize > 0 && fileSize > format.MaxFileSize)
+                || (format.MinFileSize > 0 && fileSize < format.MinFileSize)) {
+                continue;
+            }
+
+            bool mimeMatches = false;
+            bool fileNameMatches = false;
+            if (!format.MimeTypes.empty()) {
+                for (const auto& type : format.MimeTypes) {
+                    if (IuStringUtils::Match(type, mimeType)) {
+                        mimeMatches = true;
+                        break;
+                    }
+                }
+                if (!mimeMatches) {
+                    continue;
+                }
+            }
+            if (!format.FileNameWildcards.empty()) {
+                for (const auto& wildcard : format.FileNameWildcards) {
+                    if (IuStringUtils::Match(wildcard, fileName)) {
+                        fileNameMatches = true;
+                        break;
+                    }
+                }
+                if (!fileNameMatches) {
+                    continue;
+                }
+            }
+            if (mimeMatches || fileNameMatches) {
+                return false;
+            }
+        }
+    }
+
     if (this->SupportedFormatGroups.empty()) {
         return true;
     }
+
     for (const auto& group : this->SupportedFormatGroups) {
-        if (group.MaxFileSize > 0 && fileSize > group.MaxFileSize) {
+        if ((group.MaxFileSize > 0 && fileSize > group.MaxFileSize)
+            || (group.MinFileSize > 0 && fileSize < group.MinFileSize)) {
             continue;
         }
-        if (group.Authorized && !authorized) {
+        if (!group.acceptsUserType(userType)) {
             continue;
         }
+
         for (const auto& format : group.Formats) {
-            if (format.MaxFileSize > 0 && fileSize > format.MaxFileSize) {
+            if ((format.MaxFileSize > 0 && fileSize > format.MaxFileSize)
+                || (format.MinFileSize > 0 && fileSize < format.MinFileSize)) {
                 continue;
             }
             bool mimeMatches = false;
@@ -372,3 +423,15 @@ ScriptAPI::UrlShorteningTaskWrapper UploadParams::getUrlShorteningTask() {
     auto urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task_);
     return urlShorteningTask;
 }*/
+
+bool FileFormatGroup::acceptsUserType(std::string_view userType) const {
+    if (UserTypes.empty()) {
+        return true;
+    }
+    for (const auto& currentType : UserTypes) {
+        if (currentType == "*" || IuStringUtils::Match(currentType, userType)) {
+            return true;
+        }
+    }
+    return false;    
+}

@@ -34,6 +34,32 @@ namespace IuStringUtils
     std::string Replace(const std::string& text, const std::string& s, const std::string& d);
     void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount = -1);
     std::vector<std::string_view> SplitSV(std::string_view strv, std::string_view delims, int maxCount = -1);
+
+    template <typename OutputIterator>
+    void SplitTo(const std::string& str, const std::string& delimiters,
+        OutputIterator output, int maxCount = -1) {
+        // Skip delimiters at beginning
+        std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+        // Find first "non-delimiter"
+        std::string::size_type pos = str.find_first_of(delimiters, lastPos);
+        int counter = 0;
+
+        while (std::string::npos != pos || std::string::npos != lastPos) {
+            counter++;
+            if (maxCount > 0 && counter == maxCount) {
+                *output++ = str.substr(lastPos, str.length());
+                break;
+            } else {
+                // Found a token, add it via iterator
+                *output++ = str.substr(lastPos, pos - lastPos);
+            }
+            // Skip delimiters. Note the "not_of"
+            lastPos = str.find_first_not_of(delimiters, pos);
+            // Find next "non-delimiter"
+            pos = str.find_first_of(delimiters, lastPos);
+        }
+    }
+
     std::string Join(const std::vector<std::string>& strings, const std::string& delim);
     std::string Tail(std::string const& source, size_t length);
 

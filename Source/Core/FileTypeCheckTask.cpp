@@ -62,8 +62,8 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
             CUploadEngineData* uploadEngineData = serverProfile.uploadEngineData();
             ServerSettingsStruct* sss = settings->getServerSettings(serverProfile, false);
             bool isAuthorized = !serverProfile.profileName().empty() && sss && sss->authData.DoAuth && !sss->authData.Login.empty();
-           
-            if (uploadEngineData && !uploadEngineData->supportsFileFormat(IuStringUtils::ToLower(onlyName), sf.mimeType, sf.fileSize, isAuthorized)) {
+            std::string userType { isAuthorized ? UserTypes::REGISTERED : UserTypes::ANONYMOUS };
+            if (uploadEngineData && !uploadEngineData->supportsFileFormat(IuStringUtils::ToLower(onlyName), sf.mimeType, sf.fileSize, userType)) {
                 badItems++;
                 if (badItems > MAX_BAD_ITEMS) {
                     message_ += "\n..."; 

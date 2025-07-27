@@ -29,7 +29,7 @@
 <li><a href="#%D0%B1%D1%8B%D1%81%D1%82%D1%80%D1%8B%D0%B9-%D1%81%D1%82%D0%B0%D1%80%D1%82">Быстрый старт</a></li>
 <li><a href="#%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0-xml-%D1%84%D0%B0%D0%B9%D0%BB%D0%B0">Структура XML файла</a></li>
 <li><a href="#%D1%83%D0%B7%D0%B5%D0%BB-server">Узел Server</a></li>
-<li><a href="#%D1%83%D0%B7%D0%B5%D0%BB-supportedformats">Узел SupportedFormats</a></li>
+<li><a href="#%D1%83%D0%B7%D0%B5%D0%BB-info">Узел Info</a></li>
 <li><a href="#%D1%83%D0%B7%D0%B5%D0%BB-actions">Узел Actions</a></li>
 <li><a href="#%D1%83%D0%B7%D0%B5%D0%BB-result">Узел Result</a></li>
 <li><a href="#%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0-%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D1%85">Система переменных</a></li>
@@ -81,9 +81,11 @@
 <pre class="prettyprint">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
 &lt;Servers&gt;
     &lt;Server Name=&quot;название_сервера&quot; [атрибуты]&gt;
-        &lt;SupportedFormats&gt;
-            &lt;!-- Поддерживаемые форматы файлов --&gt;
-        &lt;/SupportedFormats&gt;
+        &lt;Info&gt;
+            &lt;SupportedFormats&gt;
+                &lt;!-- Поддерживаемые форматы файлов --&gt;
+            &lt;/SupportedFormats&gt;
+        &lt;/Info&gt;
         &lt;Actions&gt;
             &lt;!-- Действия для загрузки --&gt;
         &lt;/Actions&gt;
@@ -235,15 +237,16 @@
         PasswordLabel=&quot;Password&quot;&gt;
 </pre>
 <hr>
-<h2 id="узел-supportedformats">Узел SupportedFormats</h2>
+<h2 id="узел-info">Узел Info</h3>
+<h3 id="узел-supportedformats">Узел SupportedFormats</h3>
 <p>Определяет поддерживаемые форматы файлов (версия ≥ 1.4.1).</p>
 <pre class="prettyprint">&lt;SupportedFormats&gt;
-    &lt;FormatGroup MaxFileSize=&quot;10485760&quot; Authorized=&quot;0&quot;&gt;
+    &lt;FormatGroup MaxFileSize=&quot;10485760&quot; UserTypes=&quot;anon&quot;&gt;
         &lt;Format MimeType=&quot;image/jpeg,image/jpg&quot;&gt;*.jpg,*.jpeg&lt;/Format&gt;
         &lt;Format MimeType=&quot;image/png&quot;&gt;*.png&lt;/Format&gt;
         &lt;Format MimeType=&quot;image/gif&quot;&gt;*.gif&lt;/Format&gt;
     &lt;/FormatGroup&gt;
-    &lt;FormatGroup MaxFileSize=&quot;52428800&quot; Authorized=&quot;1&quot;&gt;
+    &lt;FormatGroup MaxFileSize=&quot;52428800&quot; UserTypes=&quot;reg&quot;&gt;
         &lt;Format MimeType=&quot;video/*&quot;&gt;*.mp4,*.avi,*.mov&lt;/Format&gt;
     &lt;/FormatGroup&gt;
 &lt;/SupportedFormats&gt;
@@ -253,7 +256,10 @@
 <h3 id="атрибуты-formatgroup">Атрибуты FormatGroup</h3>
 <ul>
 <li><code>MaxFileSize</code> - максимальный размер файлов в группе (в байтах)</li>
-<li><code>Authorized</code> - доступно только авторизованным пользователям (<code>0</code> или <code>1</code>)</li>
+<li><code>MinFileSize</code> - минимальный размер файлов в группе (в байтах)</li>
+<li><code>UserTypes</code> - содержит список типов пользователей через запятую. Может содержать wildcards. Если UserTypes не задан, эта группа применяется для любого типа пользователя.
+Предопределенные типы: <code>reg</code> - любой зарегистрированный пользователь, <code>anon</code> - аноним.
+</li>
 </ul>
 <h3 id="пример-с-условиями">Пример с условиями</h3>
 <pre class="prettyprint">&lt;SupportedFormats&gt;
@@ -264,8 +270,15 @@
         &lt;Format MimeType=&quot;image/gif&quot;&gt;*.gif&lt;/Format&gt;
     &lt;/FormatGroup&gt;
     
-    &lt;!-- Только для авторизованных --&gt;
-    &lt;FormatGroup MaxFileSize=&quot;52428800&quot; Authorized=&quot;1&quot;&gt;
+    &lt;!-- Для любых авторизованных --&gt;
+    &lt;FormatGroup MaxFileSize=&quot;52428800&quot; UserTypes=&quot;reg&quot;&gt;
+        &lt;Format MimeType=&quot;video/mp4&quot;&gt;*.mp4&lt;/Format&gt;
+        &lt;Format MimeType=&quot;video/avi&quot;&gt;*.avi&lt;/Format&gt;
+        &lt;Format MimeType=&quot;application/*&quot;&gt;*.zip,*.rar&lt;/Format&gt;
+    &lt;/FormatGroup&gt;
+
+    &lt;!-- Только для премиум-пользователей --&gt;
+    &lt;FormatGroup MaxFileSize=&quot;1000000000&quot; UserTypes=&quot;premium&quot;&gt;
         &lt;Format MimeType=&quot;video/mp4&quot;&gt;*.mp4&lt;/Format&gt;
         &lt;Format MimeType=&quot;video/avi&quot;&gt;*.avi&lt;/Format&gt;
         &lt;Format MimeType=&quot;application/*&quot;&gt;*.zip,*.rar&lt;/Format&gt;
@@ -273,6 +286,8 @@
 
 &lt;/SupportedFormats&gt;
 </pre>
+<h3 id="узел-forbiddenformats">Узел ForbiddenFormats</h3>
+<p>Определяет запрещенные форматы файлов (версия ≥ 1.4.4). Структура аналогична узлу SupportedFormats.</p>
 <hr>
 <h2 id="узел-actions">Узел Actions</h2>
 <p>Содержит последовательность действий для загрузки файла.</p>

@@ -22,47 +22,51 @@
            Создайте там XML файл с такой же структурой, как у текущего файла.
     -->
     <Server Name="ImageBan.ru" Authorize="2" Plugin="imageban" WebsiteUrl="https://imageban.ru" RegistrationUrl="https://imageban.ru/u/register">
-        <SupportedFormats>
-            <FormatGroup>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-            </FormatGroup>
-            <FormatGroup>
-                <Format MimeType="video/webm">*.webm</Format>
-            </FormatGroup>
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>
+                <FormatGroup>
+                    <Format MimeType="video/webm">*.webm</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="imgur.com" Type="image" Types="image file" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
         RegistrationUrl="https://imgur.com/register" MaxThreads="1">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="10485760">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/tiff">*.tiff</Format>
-            </FormatGroup>
-            <FormatGroup MaxFileSize="209715200">
-                <Format MimeType="video/mp4">*.mp4</Format>
-                <Format MimeType="video/webm">*.webm</Format>
-                <Format MimeType="video/mpeg">*.mpeg,*.vob,*.mpg</Format>
-                <!--<Format MimeType="video/x-msvideo">*.avi</Format>-->
-                <!--<Format MimeType="video/quicktime">*.mov</Format>-->
-                <Format MimeType="video/x-matroska,application/x-matroska">*.mkv</Format>
-                <!--<Format MimeType="video/x-flv">*.flv</Format>-->
-                <Format MimeType="video/x-ms-wmv,application/vnd.ms-asf">*.wmv</Format>
-            </FormatGroup>
-            <!-- 
-            <FormatGroup Authorized="1">
-                <Format MimeType="video/quicktime">*.mov</Format>
-            </FormatGroup>	
-            -->	 
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="10485760">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/tiff">*.tiff</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="209715200">
+                    <Format MimeType="video/mp4">*.mp4</Format>
+                    <Format MimeType="video/webm">*.webm</Format>
+                    <Format MimeType="video/mpeg">*.mpeg,*.vob,*.mpg</Format>
+                    <!--<Format MimeType="video/x-msvideo">*.avi</Format>-->
+                    <!--<Format MimeType="video/quicktime">*.mov</Format>-->
+                    <Format MimeType="video/x-matroska,application/x-matroska">*.mkv</Format>
+                    <!--<Format MimeType="video/x-flv">*.flv</Format>-->
+                    <Format MimeType="video/x-ms-wmv,application/vnd.ms-asf">*.wmv</Format>
+                </FormatGroup>
+                <!-- 
+                <FormatGroup UserTypes="reg">
+                    <Format MimeType="video/quicktime">*.mov</Format>
+                </FormatGroup>	
+                -->	 
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -75,25 +79,27 @@
     </Server>
     <Server Name="directupload.net" Authorize="1" MaxFileSize="67108864" DefaultForTypes="image" Plugin="directupload" SupportsFolders="1" 
         WebsiteUrl="https://www.directupload.eu" RegistrationUrl="https://www.directupload.eu/index.php?mode=register">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="8388608">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/heif,image/heic">*.heif,*.heic</Format>
-            </FormatGroup>	 
-            <FormatGroup MaxFileSize="67108864" Authorized="1">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/heif,image/heic">*.heif,*.heic</Format>
-                <Format MimeType="application/pdf,application/x-pdf">*.pdf</Format>
-            </FormatGroup>
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="8388608">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/heif,image/heic">*.heif,*.heic</Format>
+                </FormatGroup>	 
+                <FormatGroup MaxFileSize="67108864" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/heif,image/heic">*.heif,*.heic</Format>
+                    <Format MimeType="application/pdf,application/x-pdf">*.pdf</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
@@ -106,16 +112,18 @@
         <Result ImageUrlTemplate="stub" />
     </Server>
     <Server Name="fastpic.ru" MaxFileSize="26214400" Debug="0" Plugin="fastpic" WebsiteUrl="https://fastpic.org">
-        <SupportedFormats>
-            <FormatGroup>
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/avif">*.avif</Format>
-            </FormatGroup>	 
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/avif">*.avif</Format>
+                </FormatGroup>	 
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -126,48 +134,54 @@
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="imageup.ru" Authorize="2" Plugin="imageup" WebsiteUrl="https://imageup.ru" RegistrationUrl="https://imageup.ru/registration.html">
-        <SupportedFormats>
-            <FormatGroup>
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/tiff">*.tiff,*.tif</Format>
-            </FormatGroup>	 
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/tiff">*.tiff,*.tif</Format>
+                </FormatGroup>	 
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="turboimagehost.com" Authorize="1" Plugin="turboimagehost" SupportsFolders="1" WebsiteUrl="https://www.turboimagehost.com" RegistrationUrl="https://www.turboimagehost.com/signup.tu">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="20971520">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-            </FormatGroup>	 
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="20971520">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>	 
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="imgfoto.host" Authorize="2" Plugin="imgfoto" WebsiteUrl="https://imgfoto.host/" RegistrationUrl="https://imgfoto.host/signup" NeedPassword="0">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="5242880">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-            </FormatGroup>	
-            <FormatGroup MaxFileSize="10485760" Authorized="1">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-            </FormatGroup>	  
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="5242880">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>	
+                <FormatGroup MaxFileSize="10485760" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>	  
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -199,27 +213,29 @@
     </Server>
     <Server Name="flickr.com" FileHost="1" NeedPassword="0" Authorize="2" Debug="0" Plugin="flickr" SupportsFolders="1" WebsiteUrl="https://flickr.com"
         RegistrationUrl="https://identity.flickr.com/sign-up">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="209715200" Authorized="1">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/tiff">*.tiff,*.tif</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-            </FormatGroup>
-            <FormatGroup MaxFileSize="1073741824" Authorized="1">
-                <Format MimeType="video/mp4">*.mp4</Format>
-                <Format MimeType="video/x-msvideo">*.avi</Format>
-                <Format MimeType="video/x-ms-wmv">*.wmv</Format>
-                <Format MimeType="video/quicktime">*.mov</Format>
-                <Format MimeType="video/mpeg">*.mpeg,*.mpg</Format>
-                <Format MimeType="video/mp4">*.mp4</Format>
-                <Format MimeType="video/3gpp">*.3gp</Format>
-                <Format MimeType="video/mp2t">*.m2ts</Format>
-                <Format MimeType="video/ogg">*.ogg</Format>
-                <Format MimeType="video/ogg">*.ogv</Format>
-            </FormatGroup>
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="209715200" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/tiff">*.tiff,*.tif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="1073741824" UserTypes="reg">
+                    <Format MimeType="video/mp4">*.mp4</Format>
+                    <Format MimeType="video/x-msvideo">*.avi</Format>
+                    <Format MimeType="video/x-ms-wmv">*.wmv</Format>
+                    <Format MimeType="video/quicktime">*.mov</Format>
+                    <Format MimeType="video/mpeg">*.mpeg,*.mpg</Format>
+                    <Format MimeType="video/mp4">*.mp4</Format>
+                    <Format MimeType="video/3gpp">*.3gp</Format>
+                    <Format MimeType="video/mp2t">*.m2ts</Format>
+                    <Format MimeType="video/ogg">*.ogg</Format>
+                    <Format MimeType="video/ogg">*.ogv</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -496,13 +512,15 @@
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)" />
     </Server>
     <Server Name="dubz.co" Authorize="1" Type="file" Plugin="dubz" WebsiteUrl="https://dubz.co/" RegistrationUrl="https://dubz.co/register" LoginLabel="Email">
-        <SupportedFormats>	
-            <FormatGroup MaxFileSize="100000000">
-                <Format MimeType="video/mp4">*.mp4</Format>
-                <Format MimeType="video/quicktime">*.mov</Format>
-                <Format MimeType="audio/mpeg">*.mp3</Format>
-            </FormatGroup>
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>	
+                <FormatGroup MaxFileSize="100000000">
+                    <Format MimeType="video/mp4">*.mp4</Format>
+                    <Format MimeType="video/quicktime">*.mov</Format>
+                    <Format MimeType="audio/mpeg">*.mp3</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
@@ -519,19 +537,21 @@
     </Server>
     <Server Name="imgspace.online" Types="image file" Authorize="2" MaxFileSize="100000000" WebsiteUrl="https://imgspace.online/" 
             RegistrationUrl="https://imgspace.online/signup" PasswordLabel="API key">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="100000000" Authorized="1">
-                <Format MimeType="image/avif">*.avif</Format>
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-                <Format MimeType="video/mp4">*.mp4</Format>
-                <Format MimeType="video/webm">*.webm</Format>
-                <Format MimeType="video/quicktime">*.mov</Format>
-            </FormatGroup>	  
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="100000000" UserTypes="reg">
+                    <Format MimeType="image/avif">*.avif</Format>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="video/mp4">*.mp4</Format>
+                    <Format MimeType="video/webm">*.webm</Format>
+                    <Format MimeType="video/quicktime">*.mov</Format>
+                </FormatGroup>	  
+            </SupportedFormats>
+        </Info>
         <Actions>
             <Action Type="upload" Url="https://imgspace.online/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD)">
                 <Call Function="json" Arg1="image.image.url" AssignVars="ImageUrl:0;"/>
@@ -544,15 +564,17 @@
     </Server>
     <Server Name="gifyu.com" MaxFileSize="50000000" WebsiteUrl="https://gifyu.com/" 
             RegistrationUrl="https://gifyu.com/signup">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="50000000">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-            </FormatGroup>	  
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="50000000">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>	  
+            </SupportedFormats>
+        </Info>
         <Actions>
             <Action Type="upload" Url="https://gifyu.com/api/1/upload/?key=9aa9c4dedd20aeb9a63e41676e061820" PostParams="source=%filename%;">
                 <Call Function="json" Arg1="image.url" AssignVars="ImageUrl:0;"/>
@@ -647,18 +669,20 @@
     </Server>
     <!-- Chevereto v4 uploader -->
     <Server Name="freeimghost.net" Authorize="2" FileHost="1" MaxFileSize="52428800" Plugin="freeimghost.net" WebsiteUrl="https://freeimghost.net/" RegistrationUrl="https://freeimghost.net/signup" PasswordLabel="API key">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="52428800" Authorized="1">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-                <Format MimeType="video/quicktime">*.mov</Format>
-                <Format MimeType="video/mp4">*.mp4</Format>
-                <Format MimeType="video/webm">*.webm</Format>
-            </FormatGroup>
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="52428800" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="video/quicktime">*.mov</Format>
+                    <Format MimeType="video/mp4">*.mp4</Format>
+                    <Format MimeType="video/webm">*.webm</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>    
         <Actions>
             <!--<Action Type="upload" Url="https://freeimghost.net/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD);">
                 <Call Function="json" Arg1="image.url_viewer" AssignVars="ViewUrl:0;" Required="1"/>
@@ -671,15 +695,17 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
     <Server Name="radikal.cloud" Authorize="2" MaxFileSize="10485760" WebsiteUrl="https://radikal.cloud/" RegistrationUrl="https://radikal.cloud/signup" PasswordLabel="API key">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="10485760" Authorized="1">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-            </FormatGroup>
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="10485760" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
             <Action Type="upload" Url="https://radikal.cloud/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD);">
                 <Call Function="json" Arg1="image.url_viewer" AssignVars="ViewUrl:0;" Required="1"/>
@@ -706,53 +732,59 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
     <Server Name="thumbsnap.com" FileHost="1" Authorize="2" MaxFileSize="50331648" Plugin="thumbsnap" WebsiteUrl="https://thumbsnap.com/" RegistrationUrl="https://thumbsnap.com/users/signup" PasswordLabel="API key">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="50331648" Authorized="1">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-                <Format MimeType="image/webp">*.webp</Format>
-                <Format MimeType="image/tiff">*.tiff,*.tif</Format>
-                <Format MimeType="image/svg+xml">*.svg</Format>
-                <Format MimeType="image/bmp">*.bmp</Format>
-                <Format MimeType="video/mp4">*.mp4</Format>
-                <Format MimeType="video/x-msvideo">*.avi</Format>
-                <Format MimeType="video/quicktime">*.mov,*.qt</Format>
-                <Format MimeType="video/x-matroska">*.mkv</Format>
-            </FormatGroup>
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="50331648" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/tiff">*.tiff,*.tif</Format>
+                    <Format MimeType="image/svg+xml">*.svg</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="video/mp4">*.mp4</Format>
+                    <Format MimeType="video/x-msvideo">*.avi</Format>
+                    <Format MimeType="video/quicktime">*.mov,*.qt</Format>
+                    <Format MimeType="video/x-matroska">*.mkv</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
         <Server Name="8upload.com" Authorize="1" MaxFileSize="50331648" Plugin="8upload" WebsiteUrl="https://8upload.com/" RegistrationUrl="https://8upload.com/myaccount/registration.php">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="12582912">
-                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                <Format MimeType="image/png">*.png</Format>
-                <Format MimeType="image/gif">*.gif</Format>
-            </FormatGroup>
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="12582912">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
     <Server Name="savefiles.com" MaxFileSize="21474836480" FileHost="1" Authorize="2" Plugin="savefiles" SupportsFolders="1" WebsiteUrl="https://savefiles.com/" RegistrationUrl="https://savefiles.com/?op=registration" PasswordLabel="API key" MaxThreads="1">
-        <SupportedFormats>
-            <FormatGroup MaxFileSize="21474836480" Authorized="1">
-                <Format MimeType="video/mp4">*.mp4</Format>
-                <Format MimeType="video/x-matroska">*.mkv</Format>
-                <Format MimeType="video/x-msvideo">*.avi</Format>
-                <Format MimeType="video/webm">*.webm</Format>
-                <Format MimeType="video/mp2t">*.ts</Format>
-                <Format MimeType="video/mpeg">*.mpg,*.mpeg</Format>
-                <Format MimeType="video/x-ms-vob">*.vob</Format>
-                <Format MimeType="video/x-flv">*.flv</Format>
-                <Format MimeType="video/x-ms-wmv">*.wmv</Format>
-                <Format MimeType="video/3gpp">*.3gp</Format>
-                <Format MimeType="video/quicktime">*.mov</Format>
-            </FormatGroup>
-        </SupportedFormats>
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="21474836480" UserTypes="reg">
+                    <Format MimeType="video/mp4">*.mp4</Format>
+                    <Format MimeType="video/x-matroska">*.mkv</Format>
+                    <Format MimeType="video/x-msvideo">*.avi</Format>
+                    <Format MimeType="video/webm">*.webm</Format>
+                    <Format MimeType="video/mp2t">*.ts</Format>
+                    <Format MimeType="video/mpeg">*.mpg,*.mpeg</Format>
+                    <Format MimeType="video/x-ms-vob">*.vob</Format>
+                    <Format MimeType="video/x-flv">*.flv</Format>
+                    <Format MimeType="video/x-ms-wmv">*.wmv</Format>
+                    <Format MimeType="video/3gpp">*.3gp</Format>
+                    <Format MimeType="video/quicktime">*.mov</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>

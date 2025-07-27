@@ -30,6 +30,13 @@ set(Boost_USE_MULTITHREADED ON)
 
 if (MSVC)
 	SET(NUGET_PACKAGES_REFERENCES "CrashRpt.CPP_2.0.20;")
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/Uptooda.sln.startup.json")
+        configure_file(
+            "${CMAKE_SOURCE_DIR}/Uptooda.sln.startup.json"
+            "${CMAKE_BINARY_DIR}/Uptooda.sln.startup.json"
+            COPYONLY
+        )
+    endif()
 endif()
 
 include(cmake/common.cmake)

@@ -27,6 +27,7 @@
 #include <string_view>
 #include <map>
 #include <random>
+#include <unordered_set>
 
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
@@ -92,6 +93,11 @@ struct ActionFunc {
     }
 };
 
+namespace UserTypes {
+    constexpr std::string_view ANONYMOUS = "anon";
+    constexpr std::string_view REGISTERED = "reg";
+}
+
 struct UploadAction
 {
     int Index;
@@ -123,12 +129,16 @@ struct FileFormat {
     std::vector<std::string> MimeTypes;
     std::vector<std::string> FileNameWildcards;
     int64_t MaxFileSize = 0;
+    int64_t MinFileSize = 0; // forbidden formats
 };
 
 struct FileFormatGroup {
     std::vector<FileFormat> Formats;
-    int64_t MaxFileSize = 0;
-    bool Authorized = false;
+    int64_t MaxFileSize = 0; // allowed formats
+    int64_t MinFileSize = 0; // forbidden formats
+    std::unordered_set<std::string> UserTypes;
+
+    bool acceptsUserType(std::string_view userType) const;
 };
 
 /**
@@ -209,6 +219,7 @@ class CUploadEngineData
         std::string ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate, DeleteUrlTemplate, EditUrlTemplate;
         std::vector<UploadAction> Actions;
         std::vector<FileFormatGroup> SupportedFormatGroups;
+        std::vector<FileFormatGroup> ForbiddenFormatGroups;
         std::string LoginLabel, PasswordLabel;
         std::string UserAgent;
         std::string Engine;
@@ -218,7 +229,7 @@ class CUploadEngineData
         bool UploadToTempServer;
         int TypeMask;
         bool hasType(ServerType type) const;
-        bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized = false) const;
+        bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, std::string_view userType) const;
         CUploadEngineData();
 
         static ServerType ServerTypeFromString(const std::string& serverType);

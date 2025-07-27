@@ -167,10 +167,18 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
                 }
             }
         }
-        //            UE.ImageHost = (UE.TypeMask & CUploadEngineData::TypeImageServer);
-        SimpleXmlNode supportedFormatsNode = cur.GetChild("SupportedFormats", false);
-        if (!supportedFormatsNode.IsNull()) {
-            loadFormats(supportedFormatsNode, UE, UE.SupportedFormatGroups);
+
+        SimpleXmlNode infoNode = cur.GetChild("Info", false);
+        if (!infoNode.IsNull()) {
+            SimpleXmlNode supportedFormatsNode = infoNode.GetChild("SupportedFormats", false);
+            if (!supportedFormatsNode.IsNull()) {
+                loadFormats(supportedFormatsNode, UE, UE.SupportedFormatGroups);
+            }
+
+            SimpleXmlNode forbiddenFormatsNode = infoNode.GetChild("ForbiddenFormats", false);
+            if (!forbiddenFormatsNode.IsNull()) {
+                loadFormats(forbiddenFormatsNode, UE, UE.ForbiddenFormatGroups);
+            }
         }
 
         std::vector<SimpleXmlNode> actions;
@@ -285,8 +293,10 @@ void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, 
     node.each([&](int k, SimpleXmlNode& groupNode) -> bool {
         if (groupNode.Name() == "FormatGroup") {
             FileFormatGroup group;
-            group.Authorized = groupNode.AttributeBool("Authorized");
+            std::string userTypes = groupNode.Attribute("UserTypes");
+            IuStringUtils::SplitTo(userTypes, ",", std::inserter(group.UserTypes, group.UserTypes.end()));
             group.MaxFileSize = groupNode.AttributeInt64("MaxFileSize");
+            group.MinFileSize = groupNode.AttributeInt64("MinFileSize");
 
             groupNode.each([&](int k, SimpleXmlNode& formatNode) -> bool {
                 if (formatNode.Name() == "Format") {
@@ -294,6 +304,7 @@ void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, 
                     IuStringUtils::Split(formatNode.Attribute("MimeType"), ",", format.MimeTypes);
                     IuStringUtils::Split(formatNode.Text(), ",", format.FileNameWildcards);
                     format.MaxFileSize = formatNode.AttributeInt64("MaxFileSize");
+                    format.MinFileSize = formatNode.AttributeInt64("MinFileSize");
                     group.Formats.push_back(std::move(format));
                 }
                 return false;
