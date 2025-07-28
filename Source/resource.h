@@ -201,6 +201,7 @@
 #define IDD_IMAGEEDITORSETTINGS         345
 #define IDB_PNG13                       346
 #define IDB_ICONFLIPVERTICAL            346
+#define IDD_SERVERLISTPOPUP             346
 #define IDB_ICONPAUSE                   348
 #define IDB_ICONOK                      349
 #define IDB_PNG14                       350
@@ -229,6 +230,7 @@
 #define IDC_UPLOADTABLE                 1002
 #define IDC_TOOLBROWSEBUTTON            1002
 #define IDC_AUDIOSOURCESLISTVIEW        1002
+#define IDC_SERVERLISTCONTROL           1002
 #define IDC_KEEPASIS                    1003
 #define IDC_TOOLSOURCEFILE              1003
 #define IDC_KEEPPROPORTIONS             1004
@@ -379,6 +381,7 @@
 #define IDC_SUMMARYRADIOBUTTON          1043
 #define IDC_JUSTURLRADIO                1043
 #define IDC_VIDEOQUALITYRADIO           1043
+#define IDC_IMAGERADIO                  1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
@@ -391,6 +394,7 @@
 #define IDC_USELASTCODETYPERADIO        1044
 #define IDC_VIDEOBITRATELABEL           1044
 #define IDC_VIDEOBITRATERADIO           1044
+#define IDC_FILERADIO                   1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045
@@ -405,6 +409,7 @@
 #define IDC_FRAMERATEEDIT               1045
 #define IDC_GRABINFOLABEL               1046
 #define IDC_RADIO4                      1046
+#define IDC_ALLTYPESRADIO               1046
 #define IDC_BUTTON3                     1047
 #define IDC_GRABBERPARAMS               1047
 #define IDC_SELECTCOLOR                 1047

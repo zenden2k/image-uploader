@@ -4,23 +4,27 @@
 #pragma once
 #include "atlheaders.h"
 
-namespace ServersListTool {
-class ServersCheckerModel;
+class ServerListModel;
+class WinServerIconCache;
 
 class CServerListView :
     public CWindowImpl<CServerListView, CListViewCtrl> {
 public:
-    CServerListView(ServersCheckerModel* model);
+    using TParent = CWindowImpl<CServerListView, CListViewCtrl>;
+    CServerListView(ServerListModel* model, WinServerIconCache* serverIconCache);
     ~CServerListView();
     DECLARE_WND_SUPERCLASS(_T("CServerListView"), CListViewCtrl::GetWndClassName())
 
     BEGIN_MSG_MAP(CServerListView)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_GETDISPINFO, OnGetDispInfo)
-        REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnListViewNMCustomDraw)
+        REFLECTED_NOTIFY_CODE_HANDLER(LVN_ODFINDITEM, OnOdFindItem)
+        //REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnListViewNMCustomDraw)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteItem)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnItemChanged)
     END_MSG_MAP()
+
+    BOOL SubclassWindow(HWND hWnd);
 
     void Init();
     // Handler prototypes:
@@ -28,12 +32,18 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnOdFindItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 protected:
-    ServersCheckerModel* model_;
+    ServerListModel* model_;
     void onRowChanged(size_t index);
+    CImageList serverIconImageList_;
+    std::vector<int> serverIconImageListIndexes_;
+    WinServerIconCache* serverIconCache_;
+    int FindItemByString(LPCWSTR searchText, int startIndex, DWORD flags);
+    int FindItemByPartialString(LPCWSTR searchText, int startIndex);
+    int FindItemByParam(LPARAM searchParam, int startIndex);
 };
 
-}
 
 #endif

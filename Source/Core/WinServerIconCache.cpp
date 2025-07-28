@@ -106,6 +106,22 @@ NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name, int 
     return icon;
 }
 
+void WinServerIconCache::loadIcons(int dpi) {
+    std::unique_ptr<CImageList, ImageListDeleter> imageList(new CImageList, ImageListDeleter {});
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+    imageList->Create(iconWidth, iconHeight, ILC_COLOR32, 3, 3);
+    std::vector<int> indexes(engineList_->count(), -1);
+    for (int i = 0; i < engineList_->count(); i++) {
+        CUploadEngineData* ued = engineList_->byIndex(i);
+        [[maybe_unused]] auto icon = getIconForServer(ued->Name, dpi);
+        int iconIndex = imageList->AddIcon(icon);
+        indexes[i] = iconIndex;
+    }
+    std::lock_guard lk(cacheMutex_);
+    imageLists_[dpi] = { std::move(imageList), std::move(indexes) };
+}
+
 void WinServerIconCache::preLoadIcons(int dpi) {
     if (iconsPreload_) {
         throw std::logic_error("preLoadIcons() should not be called twice");
@@ -113,10 +129,21 @@ void WinServerIconCache::preLoadIcons(int dpi) {
     iconsPreload_ = true;
 
     future_ = std::async(std::launch::async, [this, dpi]() -> int {
-        for (int i = 0; i < engineList_->count(); i++) {
-            CUploadEngineData* ued = engineList_->byIndex(i);
-            [[maybe_unused]] auto icon = getIconBitmapForServer(ued->Name, dpi);
-        }
+        loadIcons(dpi);
         return 0;
     });
+}
+
+WinServerIconCache::ImageListWithIndexes WinServerIconCache::getImageList(int dpi) {
+    std::lock_guard lk(cacheMutex_);
+    auto it = imageLists_.find(dpi);
+    if (it != imageLists_.end()) {
+        return std::make_pair(it->second.first->m_hImageList, it->second.second);
+    }
+    loadIcons(dpi);
+    it = imageLists_.find(dpi);
+    if (it != imageLists_.end()) {
+        return std::make_pair(it->second.first->m_hImageList, it->second.second);
+    }
+    return {};
 }

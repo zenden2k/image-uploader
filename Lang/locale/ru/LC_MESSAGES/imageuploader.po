@@ -192,7 +192,7 @@ msgstr "Доступна новая версия:"
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:271
 #, c-format
 msgid "About %s"
-msgstr "О %s"
+msgstr "Об %s"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2722
 msgid "About..."

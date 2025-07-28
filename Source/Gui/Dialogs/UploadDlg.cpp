@@ -38,7 +38,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/Upload/ServerProfileGroup.h"
-#include "Gui/UploadListModel.h"
+#include "Gui/Models/UploadListModel.h"
 #include "Gui/Helpers/DPIHelper.h"
 
 constexpr auto UPLOAD_LIST_VIEW_COLUMN_WIDTH = 170;

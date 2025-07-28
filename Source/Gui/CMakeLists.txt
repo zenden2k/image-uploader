@@ -102,6 +102,7 @@ set(SRC_LIST
     Dialogs/ServerProfileGroupSelectDialog.cpp
     Dialogs/ScreenRecorderWindow.cpp
     Dialogs/FileFormatCheckErrorDlg.cpp
+    Dialogs/ServerListPopup.cpp
     Models/FileFormatCheckErrorModel.cpp
     Controls/CustomEditControl.cpp
     Controls/HistoryTreeControl.cpp
@@ -115,6 +116,7 @@ set(SRC_LIST
     Controls/ThumbsView.cpp
     Controls/WTLBrowserView.cpp
     Controls/FileFormatErrorView.cpp
+    Controls/ServerListView.cpp
     Helpers/LangHelper.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
@@ -156,7 +158,8 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/TextTool.cpp
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
-    UploadListModel.cpp
+    Models/UploadListModel.cpp
+    Models/ServerListModel.cpp
     FileList.cpp
 )
 
@@ -267,8 +270,9 @@ set(HEADER_LIST
     Dialogs/WizardDlg.h
     Dialogs/ServerProfileGroupSelectDialog.h
     Dialogs/FileFormatCheckErrorDlg.h
-    Models/FileFormatCheckErrorModel.h
+    Dialogs/ServerListPopup.h
     Dialogs/ScreenRecorderWindow.h
+    Models/FileFormatCheckErrorModel.h
     Controls/CustomEditControl.h
     Controls/HistoryTreeControl.h
     Controls/HyperLinkControl.h
@@ -282,6 +286,7 @@ set(HEADER_LIST
     Controls/WTLBrowserView.h
     Controls/FileFormatErrorView.h
     Controls/DialogIndirect.h
+    Controls/ServerListView.h
     Helpers/LangHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h
@@ -326,7 +331,8 @@ set(HEADER_LIST
     ../ImageEditor/DrawingTools/TextTool.h
     ../ImageEditor/DrawingTools/VectorElementTool.h
     ../ImageEditor/Helpers/FontEnumerator.h
-    UploadListModel.h
+    Models/UploadListModel.h
+    Models/ServerListModel.h
     FileList.h
     ../resource.h
 )
@@ -342,14 +348,14 @@ if (IU_ENABLE_SERVERS_CHECKER)
         ../ServerListTool/ServersChecker.cpp
         ../ServerListTool/ServersCheckerModel.cpp
         ../ServerListTool/Helpers.cpp
-        ../ServerListTool/ServerListView.cpp
+        ../ServerListTool/ServerCheckerListView.cpp
         ../ServerListTool/CheckShortUrlTask.cpp
     )
 	list (APPEND HEADER_LIST
         ../ServerListTool/ServersChecker.h
         ../ServerListTool/ServersCheckerModel.h
         ../ServerListTool/Helpers.h
-        ../ServerListTool/ServerListView.h
+        ../ServerListTool/ServerCheckerListView.h
         ../ServerListTool/CheckShortUrlTask.h
     )
 endif()

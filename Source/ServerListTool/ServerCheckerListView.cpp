@@ -1,4 +1,4 @@
-#include "ServerListView.h"
+#include "ServerCheckerListView.h"
 
 #include <strsafe.h>
 
@@ -7,15 +7,15 @@
 
 namespace ServersListTool {
 
-CServerListView::CServerListView(ServersCheckerModel* model) : model_(model){
+CServerCheckerListView::CServerCheckerListView(ServersCheckerModel* model) : model_(model){
     using namespace std::placeholders;
     model_->setOnRowChangedCallback([this](auto&& PH1) { onRowChanged(PH1); });
 }
 
-CServerListView::~CServerListView() {
+CServerCheckerListView::~CServerCheckerListView() {
 }
 
-void CServerListView::Init() {
+void CServerCheckerListView::Init() {
     SetItemCount(model_->getCount());
 
     AddColumn(_T("N"), 0);
@@ -39,7 +39,7 @@ void CServerListView::Init() {
     SetColumnWidth(6, MulDiv(40, dpiX, USER_DEFAULT_SCREEN_DPI));
 }
 
-LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+LRESULT CServerCheckerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     auto* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
     LV_ITEM* pItem = &(pDispInfo)->item;
 
@@ -52,7 +52,7 @@ LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     return 0;
 }
 
-LRESULT CServerListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CServerCheckerListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     auto* lplvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmh);
 
@@ -77,7 +77,7 @@ LRESULT CServerListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& 
     return 0;
 }
 
-void CServerListView::onRowChanged(size_t index) {
+void CServerCheckerListView::onRowChanged(size_t index) {
     PostMessage(LVM_REDRAWITEMS, index, index);
 }
 }

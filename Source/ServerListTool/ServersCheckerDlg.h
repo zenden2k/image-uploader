@@ -30,7 +30,7 @@
 #include "ServerListTool/ServersCheckerModel.h"
 #include "ServersChecker.h"
 #include "Helpers.h"
-#include "ServerListView.h"
+#include "ServerCheckerListView.h"
 #include "Core/TaskDispatcher.h"
 #include "Gui/Controls/ProgressRingControl.h"
 
@@ -124,7 +124,7 @@ private:
     UploadManager* uploadManager_;
     CMyEngineList* engineList_;
     ServersCheckerModel model_;
-    CServerListView listView_;
+    CServerCheckerListView listView_;
 
     SimpleXml xml;
     CIcon icon_, iconSmall_;

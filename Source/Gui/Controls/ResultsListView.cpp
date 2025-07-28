@@ -2,7 +2,7 @@
 
 #include <strsafe.h>
 
-#include "Gui/UploadListModel.h"
+#include "Gui/Models/UploadListModel.h"
 #include "Core/i18n/Translator.h"
 
 CResultsListView::CResultsListView() :  model_(nullptr) {
