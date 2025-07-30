@@ -2,6 +2,24 @@
 
 #include "Func/MyEngineList.h"
 #include "Core/i18n/Translator.h"
+#include "Core/Utils/StringUtils.h"
+
+namespace {
+
+size_t StringSearch(const std::string& str1, const std::string& str2) {
+    auto loc = std::locale();
+    auto it = std::search(str1.begin(), str1.end(),
+        str2.begin(), str2.end(), [&loc](char ch1, char ch2) -> bool {
+            return std::toupper(ch1, loc) == std::toupper(ch2, loc);
+        });
+    if (it != str1.end()) {
+        return it - str1.begin();
+    } else {
+        return std::string::npos;
+    }
+}
+
+}
 
 ServerListModel::ServerListModel(CMyEngineList* engineList) : engineList_(engineList) {
     for (int i = 0; i < engineList_->count(); i++) {
@@ -24,7 +42,7 @@ std::string ServerListModel::getItemText(int row, int column) const {
         return serverData.ued->Name;
     }
     if (column == 1) {
-        return serverData.ued->MaxFileSize ?  IuCoreUtils::FileSizeToString(serverData.ued->MaxFileSize) : "";
+        return serverData.getMaxFileSizeString();
     }
     if (column == 2) {
         
@@ -32,7 +50,7 @@ std::string ServerListModel::getItemText(int row, int column) const {
     if (column == 3) {
         return serverData.ued->NeedAuthorization == 2 ? _("yes") : _("no");
     } else if (column == 4) {
-       
+        return serverData.getFormats();
     } 
     return {};
 }
@@ -43,7 +61,10 @@ uint32_t ServerListModel::getItemColor(int row) const {
 }
 
 size_t ServerListModel::getCount() const {
-    return items_.size();
+    if (filter_.empty()) {
+        return items_.size();
+    }
+    return filteredItemsIndexes_.size();
 }
 
 void ServerListModel::notifyRowChanged(size_t row) {
@@ -53,6 +74,9 @@ void ServerListModel::notifyRowChanged(size_t row) {
 }
 
 const ServerData& ServerListModel::getDataByIndex(size_t row) const {
+    if (!filter_.empty()) {
+        row = filteredItemsIndexes_[row];
+    }
     return items_[row];
 }
 
@@ -70,13 +94,92 @@ void ServerListModel::resetData() {
     }*/
 }
 
+
+void ServerListModel::applyFilter(const ServerFilter& filter) {
+    filter_ = filter;
+    filteredItemsIndexes_.clear();
+    size_t i = 0;
+    for (const auto& item : items_) {
+        if (item.acceptFilter(filter_)) {
+            filteredItemsIndexes_.push_back(i);
+        }
+        i++;
+    }
+    notifyCountChanged(getCount());
+}
+
 void ServerListModel::notifyCountChanged(size_t row) {
     if (itemCountChangedCallback_) {
         itemCountChangedCallback_(row);
     }
 }
 
-bool ServerData::acceptFilter(const ServerFilter& filter) const {
+std::string ServerData::getFormats() const {
+    if (!formats.has_value()) {
+        std::string result;
+        std::map<int, std::set<std::string>> extensions;
 
-    return true;
+        for (const auto& formatGroup : ued->SupportedFormatGroups) {
+            extensions[formatGroup.MinUserRank].insert(formatGroup.Extensions.begin(), formatGroup.Extensions.end());   
+        }
+
+        for (const auto& [k, v] : extensions) {
+            if (!result.empty()) {
+                result += "/ ";
+            }
+            if (!v.empty()) {
+                result += IuStringUtils::Join(v, ",");
+                result += " ";
+            }
+        }   
+        
+        formats = result;
+    }
+
+    return *formats;
+}
+
+int64_t ServerData::getMaxFileSize() const {
+    return ued->SupportedFormatGroups.empty() ? ued->MaxFileSize : ued->SupportedFormatGroups[0].MaxFileSize;
+}
+
+std::string ServerData::getMaxFileSizeString() const {
+    if (!maxFileSizeString.has_value()) {
+        std::string result;
+        std::map<int, int64_t> fileSizes;
+
+        for (const auto& formatGroup : ued->SupportedFormatGroups) {
+            
+            if (formatGroup.MaxFileSize > fileSizes[formatGroup.MinUserRank]) {
+                fileSizes[formatGroup.MinUserRank] = formatGroup.MaxFileSize;
+                
+            }
+        }
+
+        for (const auto [k, fileSize] : fileSizes) {
+            if (!result.empty()) {
+                result += "/ ";
+            }
+            if (fileSize) {
+                result += IuCoreUtils::FileSizeToString(fileSize);
+                result += " ";
+            }  
+        }
+
+        if (result.empty() && ued->MaxFileSize > 0) {
+            result += IuCoreUtils::FileSizeToString(ued->MaxFileSize);
+        }
+        maxFileSizeString = result;
+    }
+    return *maxFileSizeString;
+}
+
+bool ServerData::acceptFilter(const ServerFilter& filter) const {
+    if (!filter.query.empty()) {
+        if (StringSearch(ued->Name, filter.query) == std::string::npos) {
+            return false;
+        }
+    }
+
+    return (ued->TypeMask & filter.typeMask) != 0;
 }

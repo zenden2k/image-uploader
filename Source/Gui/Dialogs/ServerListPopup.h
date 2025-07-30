@@ -31,6 +31,7 @@
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/Constants.h"
 #include "Gui/Controls/ServerListView.h"
+#include "Core/Upload/UploadEngine.h"
 
 // CServerListPopup
 class IconBitmapUtils;
@@ -44,7 +45,7 @@ class CServerListPopup :
     public CDialogResize<CServerListPopup>
 {
 public:
-    explicit CServerListPopup(CMyEngineList* engineList, WinServerIconCache* serverIconCache, bool isChildWindow = false);
+    explicit CServerListPopup(CMyEngineList* engineList, WinServerIconCache* serverIconCache, int serverMask, int selectedServerType = CUploadEngineListBase::ALL_SERVERS, int serverIndex = -1, bool isChildWindow = false);
     virtual ~CServerListPopup();
 
     enum { IDD = IDD_SERVERLISTPOPUP };
@@ -55,16 +56,29 @@ public:
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_ENABLE, OnEnable)
         MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
+        COMMAND_ID_HANDLER(IDOK, OnOK)
+        COMMAND_HANDLER(IDC_ALLTYPESRADIO, BN_CLICKED, OnServerTypeChanged)
+        COMMAND_HANDLER(IDC_IMAGERADIO, BN_CLICKED, OnServerTypeChanged)
+        COMMAND_HANDLER(IDC_FILERADIO, BN_CLICKED, OnServerTypeChanged)
+        COMMAND_HANDLER(IDC_VIDEORADIO, BN_CLICKED, OnServerTypeChanged)
+        COMMAND_HANDLER(IDC_SEARCHQUERYEDIT, EN_CHANGE, OnSearchQueryEditChanged)
+        NOTIFY_HANDLER(IDC_SERVERLISTCONTROL, NM_DBLCLK, OnListViewDblClick)
         CHAIN_MSG_MAP(CDialogResize<CServerListPopup>)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
     BEGIN_DLGRESIZE_MAP(CServerListPopup)
         DLGRESIZE_CONTROL(IDC_SERVERLISTCONTROL, DLSZ_SIZE_X |  DLSZ_SIZE_Y)
+    DLGRESIZE_CONTROL(IDC_SEARCHQUERYEDIT, DLSZ_MOVE_Y)
     END_DLGRESIZE_MAP()
 
     BEGIN_DDX_MAP(CServerListPopup)
         DDX_CONTROL(IDC_SERVERLISTCONTROL, listView_)
+        DDX_CONTROL_HANDLE(IDC_ALLTYPESRADIO, allTypesRadioButton_)
+        DDX_CONTROL_HANDLE(IDC_IMAGERADIO, imageTypeRadioButton_)
+        DDX_CONTROL_HANDLE(IDC_FILERADIO, fileTypeRadioButton_)
+        DDX_CONTROL_HANDLE(IDC_VIDEORADIO, videoTypeRadioButton_)
+        DDX_CONTROL_HANDLE(IDC_SEARCHQUERYEDIT, queryEditControl_)
     END_DDX_MAP()
 
     DLGTEMPLATE* GetTemplate();
@@ -77,6 +91,10 @@ public:
     LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnListViewDblClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnServerTypeChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnSearchQueryEditChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
     void TranslateUI();
     void setTitle(CString title);
@@ -92,13 +110,14 @@ public:
     int showPopup(HWND parent, const RECT& anchorRect);
     bool exitPopup(int nCommandId);
 
-    enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4};
-
     ServerProfile serverProfile() const;
     void setOnChangeCallback(std::function<void(CServerListPopup*)> cb);
+
+    int serverIndex() const;
+
+
 private:
     ServerProfile serverProfile_;
-    int serversMask_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     CMyEngineList* engineList_;
     bool isPopingUp_;
@@ -107,9 +126,13 @@ private:
     std::function<void(CServerListPopup*)> onChangeCallback_;
     std::unique_ptr<ServerListModel> serverListModel_;
     CServerListView listView_;
-
+    CButton allTypesRadioButton_, imageTypeRadioButton_, fileTypeRadioButton_, videoTypeRadioButton_;
+    CEdit queryEditControl_;
+    int serversMask_, serverIndex_, selectedServerType_;
+    int ret_ = 0;
     void serverChanged();
     void createResources();
+    void applyFilter();
 };
 
 

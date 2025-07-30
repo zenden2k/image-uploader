@@ -28,6 +28,7 @@
 #include <map>
 #include <random>
 #include <unordered_set>
+#include <set>
 
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
@@ -56,7 +57,6 @@ struct ActionVariable
 
     }
 };
-
 
 struct ActionFunc {
     static constexpr auto FUNC_REGEXP = "regexp";
@@ -137,7 +137,8 @@ struct FileFormatGroup {
     int64_t MaxFileSize = 0; // allowed formats
     int64_t MinFileSize = 0; // forbidden formats
     std::unordered_set<std::string> UserTypes;
-
+    std::set<std::string> Extensions;
+    int MinUserRank = 0;
     bool acceptsUserType(std::string_view userType) const;
 };
 
@@ -198,7 +199,7 @@ typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> Ser
 class CUploadEngineData
 {
     public:
-        enum ServerType { TypeInvalid = 0, TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8, TypeSearchByImageServer = 16};
+        enum ServerType { TypeInvalid = 0, TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8, TypeSearchByImageServer = 16, TypeVideoServer = 32};
         enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
 
         std::string Name;
@@ -230,6 +231,7 @@ class CUploadEngineData
         int TypeMask;
         bool hasType(ServerType type) const;
         bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, std::string_view userType) const;
+        std::set<std::string> getSupportedExtensions() const;
         CUploadEngineData();
 
         static ServerType ServerTypeFromString(const std::string& serverType);
@@ -390,6 +392,8 @@ public:
     inline static constexpr std::string_view CORE_SCRIPT_SFTP = "sftp";
     inline static constexpr std::string_view CORE_SCRIPT_WEBDAV = "webdav";
     inline static constexpr std::string_view CORE_SCRIPT_DIRECTORY = "directory";
+
+    inline static constexpr int ALL_SERVERS = 0xffffffff;
 
 protected:
     std::vector<std::unique_ptr<CUploadEngineData>> m_list;

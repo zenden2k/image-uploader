@@ -26,10 +26,10 @@
     <xs:simpleType name="ServerType">
         <xs:restriction base="xs:string">
             <xs:enumeration value="file" />
-            <xs:enumeration value="get" />
             <xs:enumeration value="image" />
             <xs:enumeration value="urlshortening" />
             <xs:enumeration value="searchbyimage" />
+            <xs:enumeration value="video" />
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="ServerTypes">
@@ -41,6 +41,7 @@
                             <xs:enumeration value="file"/>
                             <xs:enumeration value="image"/>
                             <xs:enumeration value="urlshortening"/>
+                            <xs:enumeration value="video"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:list>

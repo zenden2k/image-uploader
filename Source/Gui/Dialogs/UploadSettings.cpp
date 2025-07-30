@@ -531,16 +531,25 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
 LRESULT CUploadSettings::OnBnClickedSelectServer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/) {
     bool isImageServer = (hWndCtl == Toolbar.m_hWnd);
     CToolBarCtrl& CurrentToolbar = isImageServer ? Toolbar : FileServerSelectBar;
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
 
     RECT buttonRect {};
     CurrentToolbar.GetRect(IDC_SERVERBUTTON, &buttonRect);
     CurrentToolbar.ClientToScreen(&buttonRect);
-
-    CServerListPopup serverListPopup(ServiceLocator::instance()->myEngineList(), iconCache_);
-    serverListPopup.setServersMask(isImageServer ? CServerSelectorControl::smImageServers | CServerSelectorControl::smFileServers : CServerSelectorControl::smFileServers);
-
-    // serverListPopup.setOnChangeCallback(std::bind(&CUploadSettings::shorteningUrlServerChanged, this, std::placeholders::_1));
-    serverListPopup.showPopup(m_hWnd, buttonRect);
+    ServerProfile& serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
+    CString serverName = U2W(serverProfile.serverName());
+    int serverIndex = myEngineList->getUploadEngineIndex(serverName);
+    int serverMask = isImageServer ? CUploadEngineData::TypeImageServer | CUploadEngineData::TypeFileServer : CUploadEngineData::TypeFileServer | CUploadEngineData::TypeVideoServer;
+    int selectedServerType = isImageServer ? CUploadEngineData::TypeImageServer : CUploadEngineListBase::ALL_SERVERS;
+    CServerListPopup serverListPopup(ServiceLocator::instance()->myEngineList(), iconCache_, serverMask, selectedServerType, serverIndex);
+   
+    if (serverListPopup.showPopup(m_hWnd, buttonRect) == IDOK) {
+        int newServerIndex = serverListPopup.serverIndex();
+        if (newServerIndex != -1) {
+            selectServer(serverProfile, newServerIndex);
+            UpdateAllPlaceSelectors();
+        }
+    };
 
     return 0;
 }

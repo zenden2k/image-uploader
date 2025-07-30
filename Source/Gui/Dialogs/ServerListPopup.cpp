@@ -38,12 +38,14 @@ constexpr TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_I
 }
 
 // CServerListPopup
-CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache* serverIconCache, bool isChildWindow)
+CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache* serverIconCache, int serverMask, int selectedServerType, int serverIndex, bool isChildWindow)
     : engineList_(engineList)
     , serverListModel_(std::make_unique<ServerListModel>(engineList))
-    , listView_(serverListModel_.get(), serverIconCache) {
-    serversMask_ = smImageServers | smFileServers;
-
+    , listView_(serverListModel_.get(), serverIconCache)
+    , serversMask_(serverMask)
+    , selectedServerType_(selectedServerType)
+    , serverIndex_(serverIndex)
+{
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     isChildWindow_ = isChildWindow;
     hMyDlgTemplate_ = nullptr;
@@ -59,6 +61,10 @@ CServerListPopup::~CServerListPopup()
 }
 
 void CServerListPopup::TranslateUI() {
+    TRCC(IDC_ALLTYPESRADIO, "serverlist.servertype", "All");
+    TRCC(IDC_IMAGERADIO, "serverlist.servertype", "Image");
+    TRCC(IDC_FILERADIO, "serverlist.servertype", "File");
+    TRCC(IDC_VIDEORADIO, "serverlist.servertype", "Video");
 }
 
 LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -68,17 +74,32 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
     TranslateUI();
 
+    if (selectedServerType_ == CUploadEngineData::TypeImageServer) {
+        imageTypeRadioButton_.SetCheck(BST_CHECKED);
+    } else if (selectedServerType_ == CUploadEngineData::TypeFileServer) {
+        fileTypeRadioButton_.SetCheck(BST_CHECKED);
+    } else if (selectedServerType_ == CUploadEngineData::TypeVideoServer) {
+        videoTypeRadioButton_.SetCheck(BST_CHECKED);
+    } else {
+        allTypesRadioButton_.SetCheck(BST_CHECKED);
+    }
+
+    imageTypeRadioButton_.EnableWindow(serversMask_ & CUploadEngineData::TypeImageServer);
+    fileTypeRadioButton_.EnableWindow(serversMask_ & CUploadEngineData::TypeFileServer);
+    videoTypeRadioButton_.EnableWindow(serversMask_ & CUploadEngineData::TypeVideoServer);
     //setTitle();
 
     createResources();
     updateServerList();
+
+    applyFilter();
+    listView_.SetFocus();
 
     return FALSE;
 }
 
 LRESULT CServerListPopup::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-
     return 0;
 }
 
@@ -148,6 +169,10 @@ void CServerListPopup::setOnChangeCallback(std::function<void(CServerListPopup*)
     onChangeCallback_ = std::move(cb);
 }
 
+int CServerListPopup::serverIndex() const {
+    return serverIndex_;
+}
+
 int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
     // Code from \Program Files\Microsoft SDKs\Windows\v7.1\Samples\winui\shell\legacysamples\fakemenu\fakemenu.cpp
     isChildWindow_ = false;
@@ -155,7 +180,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
         ATLTRACE(_T("CServerListPopup dialog creation failed!  :( sorry\n"));
         return 0;
     }
-    int nRet(-1);
+
     CRect windowRect;
     GetWindowRect(windowRect);
     int popupWidth = windowRect.Width();
@@ -222,7 +247,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
     }
 
     SetWindowPos(0, x, y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
-    ShowWindow(SW_SHOWNOACTIVATE);
+    ShowWindow(SW_SHOW);
 
     //BOOL bMenuDestroyed(FALSE);
     HWND hwndOwner = GetWindow(GW_OWNER);
@@ -249,14 +274,6 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
 
 
         bool isChildMessage = ::IsChild(hwndPopup, msg.hwnd)!=FALSE;
-        if (!isChildMessage)
-        {
-            TCHAR className[MAX_PATH];
-            if (::GetClassName(msg.hwnd, className, MAX_PATH) != 0)
-            {
-                isChildMessage = lstrcmp(className, _T("ComboLBox"))==0; // Style of ComboboxEx popup list box
-            }
-        }
         bool breakLoop = false;
         // At this point, we get to snoop at all input messages before
         // they get dispatched.  This allows us to route all input to our
@@ -321,9 +338,19 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
             break;
 
             // We need to steal all keyboard messages, too.
+
+        case WM_CHAR:
+            if (msg.hwnd == listView_) {
+                msg.hwnd = queryEditControl_;
+                queryEditControl_.SetFocus();
+            }
         case WM_KEYDOWN:
         case WM_KEYUP:
-        case WM_CHAR:
+            if (msg.hwnd == queryEditControl_ && (msg.wParam == VK_UP || msg.wParam == VK_DOWN)) {
+                msg.hwnd = listView_;
+                listView_.SetFocus();
+            }
+
         case WM_DEADCHAR:
         case WM_SYSKEYDOWN:
         case WM_SYSKEYUP:
@@ -367,34 +394,42 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
     isPopingUp_ = false;
     // If we got a WM_QUIT message, then re-post it so the caller's message
     // loop will see it.
-    if (msg.message == WM_QUIT)
+    /*if (msg.message == WM_QUIT)
     {
         PostQuitMessage((int)msg.wParam);
-    }
+    }*/
 
 
     //if (!bMenuDestroyed)
     DestroyWindow();
 
-    return nRet;
+    return ret_;
 }
 
 bool CServerListPopup::exitPopup(int nCommandId)
 {
-    BOOL bRet = SetProp(m_hWnd, MENU_EXIT_NOTIFY, (HANDLE)1);
-    SetProp(m_hWnd, MENU_EXIT_COMMAND_ID, reinterpret_cast<HANDLE>(static_cast<INT_PTR>(nCommandId)));
-    return bRet !=FALSE;
+    ret_ = nCommandId;
+    PostQuitMessage(0);
+    //BOOL bRet = SetProp(m_hWnd, MENU_EXIT_NOTIFY, (HANDLE)1);
+    //SetProp(m_hWnd, MENU_EXIT_COMMAND_ID, reinterpret_cast<HANDLE>(static_cast<INT_PTR>(nCommandId)));
+    return true;
 }
 
 DLGTEMPLATE* CServerListPopup::GetTemplate()
 {
-    HINSTANCE hInst = GetModuleHandle(0);
+    HINSTANCE hInst = GetModuleHandle(nullptr);
     HRSRC res = FindResource(hInst, MAKEINTRESOURCE(IDD), RT_DIALOG);
+    assert(res);
     DLGTEMPLATE* dit = reinterpret_cast<DLGTEMPLATE*>(LockResource(LoadResource(hInst, res)));
 
+    assert(dit);
     unsigned long sizeDlg = ::SizeofResource(hInst, res);
     hMyDlgTemplate_ = ::GlobalAlloc(GPTR, sizeDlg);
+    assert(hMyDlgTemplate_);
     auto pMyDlgTemplate = reinterpret_cast<ATL::_DialogSplitHelper::DLGTEMPLATEEX*>(::GlobalLock(hMyDlgTemplate_));
+    if (!pMyDlgTemplate) {
+        return {};
+    }
     ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
     if (isChildWindow_)
@@ -427,4 +462,62 @@ LRESULT CServerListPopup::OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     }
 
     return 0;
+}
+
+LRESULT CServerListPopup::OnListViewDblClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    auto pnmia = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
+
+    int nItem = pnmia->iItem;
+
+    if (nItem >= 0) {
+        const auto& data = serverListModel_->getDataByIndex(nItem);
+        serverIndex_ = data.uedIndex;
+        exitPopup(IDOK);
+    }
+    return 0;
+}
+
+LRESULT CServerListPopup::OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nSelected = listView_.GetNextItem(-1, LVNI_SELECTED);
+    if (nSelected >= 0) {
+        const auto& data = serverListModel_->getDataByIndex(nSelected);
+        serverIndex_ = data.uedIndex;
+        exitPopup(IDOK);
+    }
+    return 0;
+}
+
+LRESULT CServerListPopup::OnServerTypeChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    applyFilter();
+
+    return 0;
+}
+
+LRESULT CServerListPopup::OnSearchQueryEditChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    applyFilter();
+
+    return 0;
+}
+
+void CServerListPopup::applyFilter() {
+    int mask = 0;
+
+    if (imageTypeRadioButton_.GetCheck() == BST_CHECKED) {
+        mask |= CUploadEngineData::TypeImageServer;
+    } else if (fileTypeRadioButton_.GetCheck() == BST_CHECKED) {
+        mask |= CUploadEngineData::TypeFileServer;
+    } else if (videoTypeRadioButton_.GetCheck() == BST_CHECKED) {
+        mask |= CUploadEngineData::TypeVideoServer;
+    } else {
+        mask = serversMask_;
+    }
+
+    ServerFilter filter;
+    CString query;
+    queryEditControl_.GetWindowText(query);
+
+    filter.query = W2U(query);
+    filter.typeMask = mask;
+    serverListModel_->applyFilter(filter);
+    listView_.SelectItem(0);
 }

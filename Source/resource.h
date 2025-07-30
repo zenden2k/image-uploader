@@ -347,6 +347,7 @@
 #define IDC_DEBUGDETAILS                1040
 #define IDC_OUTFOLDEREDIT               1040
 #define IDC_VIDEOBITRATEEDIT            1040
+#define IDC_SEARCHQUERYEDIT             1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -781,6 +782,8 @@
 #define IDC_DEFAULTSETTINGSCHECKBOX     1315
 #define IDC_RADIO3                      1315
 #define IDC_CURRENTMONTHRADIO           1315
+#define IDC_VIDEORADIOBUTTON            1315
+#define IDC_VIDEORADIO                  1315
 #define IDC_PROCESSIMAGESCHECKBOX       1316
 #define IDC_STATUSLABEL                 1316
 #define IDC_DEFAULTTHUMBSETTINGSCHECKBOX 1317

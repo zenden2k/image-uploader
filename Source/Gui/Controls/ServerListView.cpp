@@ -6,6 +6,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Gui/Helpers/DPIHelper.h"
 #include "Core/WinServerIconCache.h"
+#include "Core/i18n/Translator.h"
 
 CServerListView::CServerListView(ServerListModel* model, WinServerIconCache* serverIconCache)
     : model_(model)
@@ -28,19 +29,19 @@ BOOL CServerListView::SubclassWindow(HWND hWnd) {
 void CServerListView::Init() {
     SetItemCount(model_->getCount());
 
-    AddColumn(_T("Server"), 0);
-    AddColumn(_T("Max file size"), 1);
-    AddColumn(_T("Time"), 2);
-    AddColumn(_T("Account"), 3);
-    AddColumn(_T("Formats"), 4);
+    AddColumn(TR("Server"), tcServerName);
+    AddColumn(TR("Max. file size"), tcMaxFileSize);
+    AddColumn(TR("Storage time"), tcStorageTime);
+    AddColumn(TR("Account"), tcAccount);
+    AddColumn(TR("File formats"), tcFileFormats);
 
     int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
-    SetColumnWidth(0, MulDiv(130, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(1, MulDiv(100, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(2, MulDiv(80, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(3, MulDiv(50, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(4, MulDiv(170, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(tcServerName, MulDiv(130, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(tcMaxFileSize, MulDiv(100, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(tcStorageTime, MulDiv(80, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(tcAccount, MulDiv(50, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(tcFileFormats, MulDiv(190, dpi, USER_DEFAULT_SCREEN_DPI));
 
     auto iconsWithIndexes = serverIconCache_->getImageList(dpi);
     serverIconImageList_ = iconsWithIndexes.first;
