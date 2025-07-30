@@ -529,6 +529,9 @@ int64_t GetFileSize(const std::string& utf8Filename) {
 }
 
 std::string FileSizeToString(int64_t sizeBytes) {
+    if (sizeBytes < 0) {
+        return {};
+    }
     const char* units[] = { "B", "KB", "MB", "GB", "TB", "PB" };
     const int numUnits = sizeof(units) / sizeof(units[0]);
     double size = static_cast<double>(sizeBytes);
