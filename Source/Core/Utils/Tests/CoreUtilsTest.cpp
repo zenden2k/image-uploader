@@ -163,11 +163,11 @@ TEST_F(CoreUtilsTest, GetDefaultExtensionForMimeType)
 
 TEST_F(CoreUtilsTest, fileSizeToString) 
 {
-    EXPECT_EQ(FileSizeToString(140*1024*1024), "140.0 MB");
-    EXPECT_EQ(FileSizeToString(static_cast<int64_t>(25.5*1024)), "26 KB");
-    EXPECT_EQ(FileSizeToString(0), "0 bytes");
-    EXPECT_EQ("10.0 GB", FileSizeToString(10ULL * 1024 * 1024 * 1024));
-    EXPECT_EQ("n/a", FileSizeToString(-1));
+    EXPECT_EQ(FileSizeToString(140*1024*1024), "140 MB");
+    EXPECT_EQ(FileSizeToString(static_cast<int64_t>(25.5*1024)), "25.5 KB");
+    EXPECT_EQ(FileSizeToString(0), "0 B");
+    EXPECT_EQ("10 GB", FileSizeToString(10ULL * 1024 * 1024 * 1024));
+    EXPECT_EQ("", FileSizeToString(-1));
 }
 
 TEST_F(CoreUtilsTest, Utf8ToWstring)
