@@ -37,6 +37,14 @@ struct std::hash<std::pair<S, T>> {
     }
 };*/
 
+class ImageListDeleter {
+public:
+    void operator()(CImageList* ptr) const {
+        ptr->Destroy();
+        delete ptr;
+    }
+};
+
 class WinServerIconCache : public AbstractServerIconCache {
 public:
     struct WinIcon {
@@ -68,11 +76,16 @@ public:
     */
     void preLoadIcons(int dpi) override;
 
-private:
+    using ImageListWithIndexes = std::pair<HIMAGELIST, std::vector<int>>;
+    ImageListWithIndexes getImageList(int dpi);
+
+private :
     std::unordered_map<std::pair<int, std::string>, WinIcon> serverIcons_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     std::mutex cacheMutex_;
     std::future<int> future_;
     bool iconsPreload_ = false;
+    std::unordered_map<int, std::pair<std::unique_ptr<CImageList, ImageListDeleter>, std::vector<int>>> imageLists_;
     WinIcon tryIconLoad(const std::string& name, int dpi);
+    void loadIcons(int dpi);
 };

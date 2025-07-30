@@ -28,9 +28,11 @@
 
     // TRC() macro for translating dialog item text
     #ifdef NDEBUG
-    #define TRC(c, str) SetDlgItemText(c, TR(str))
+        #define TRC(c, str) SetDlgItemText(c, TR(str))
+        #define TRCC(c, ctx, str) SetDlgItemText(c, IuCoreUtils::Utf8ToWstring(_c(ctx, str)).c_str())
     #else
-    #define TRC(c, str) (ATLASSERT(GetDlgItem(c)),SetDlgItemText(c, TR(str)), (void)0)
+        #define TRC(c, str) (ATLASSERT(GetDlgItem(c)),SetDlgItemText(c, TR(str)), (void)0)
+        #define TRCC(c, ctx, str) (ATLASSERT(GetDlgItem(c)), SetDlgItemText(c, IuCoreUtils::Utf8ToWstring(_c(ctx, str)).c_str()), (void)0)
     #endif
     //#define TR_CONST(str) const_cast<LPWSTR>(TR(str))
 #endif

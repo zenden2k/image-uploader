@@ -147,6 +147,15 @@ bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const st
     return false;
 }
 
+std::set<std::string> CUploadEngineData::getSupportedExtensions() const {
+    std::set<std::string> formatSet;
+    for (const auto& formatGroup : SupportedFormatGroups) {
+        formatSet.insert(formatGroup.Extensions.begin(), formatGroup.Extensions.end());        
+    }
+    return formatSet;
+
+}
+
 CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std::string& serverType) {
     if (serverType == "image"){
         return TypeImageServer;
@@ -158,6 +167,8 @@ CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std:
         return TypeUrlShorteningServer;
     } else if (serverType == "searchbyimage") {
         return TypeSearchByImageServer;
+    } else if (serverType == "video") {
+        return TypeVideoServer;
     }
     return TypeInvalid;
 }

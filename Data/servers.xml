@@ -21,17 +21,23 @@
                %appdata%\Uptooda\Servers\    (если вы использовали инсталлятор)
            Создайте там XML файл с такой же структурой, как у текущего файла.
     -->
-    <Server Name="ImageBan.ru" Authorize="2" Plugin="imageban" WebsiteUrl="https://imageban.ru" RegistrationUrl="https://imageban.ru/u/register">
+    <Server Name="ImageBan.ru" Types="image video" Authorize="2" Plugin="imageban" WebsiteUrl="https://imageban.ru" RegistrationUrl="https://imageban.ru/u/register">
         <Info>
             <SupportedFormats>
-                <FormatGroup>
+                <FormatGroup MaxFileSize="10485760" UserTypes="anon, reg">
                     <Format MimeType="image/bmp">*.bmp</Format>
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
                     <Format MimeType="image/gif">*.gif</Format>
                     <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="video/webm">*.webm</Format>
                 </FormatGroup>
-                <FormatGroup>
+                <FormatGroup MaxFileSize="20971520" UserTypes="gold">
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
                     <Format MimeType="video/webm">*.webm</Format>
                 </FormatGroup>
             </SupportedFormats>
@@ -40,7 +46,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgur.com" Type="image" Types="image file" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
+    <Server Name="imgur.com" Type="image" Types="image file video" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
         RegistrationUrl="https://imgur.com/register" MaxThreads="1">
         <Info>
             <SupportedFormats>
@@ -211,7 +217,7 @@
         </Actions>
         <Result DownloadUrlTemplate="http://sendfile.su/$(FileId)"/>
     </Server>
-    <Server Name="flickr.com" FileHost="1" NeedPassword="0" Authorize="2" Debug="0" Plugin="flickr" SupportsFolders="1" WebsiteUrl="https://flickr.com"
+    <Server Name="flickr.com" Types="image video" NeedPassword="0" Authorize="2" Debug="0" Plugin="flickr" SupportsFolders="1" WebsiteUrl="https://flickr.com"
         RegistrationUrl="https://identity.flickr.com/sign-up">
         <Info>
             <SupportedFormats>
@@ -372,7 +378,16 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="abcvg.org" MaxFileSize="10000000" Plugin="abcvg" WebsiteUrl="https://abcvg.org">
+    <Server Name="abcvg.org" MaxFileSize="10485760" Plugin="abcvg" WebsiteUrl="https://abcvg.org">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="10485760" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub"/>
@@ -404,12 +419,21 @@
         </Actions>
         <Result DownloadUrlTemplate="$(FileId)"  DeleteUrl="$(DeleteUrl)"/>
     </Server>
-    <Server Name="freeimage.host" Authorize="0" Type="image" Plugin="freeimage.host" WebsiteUrl="https://freeimage.host/">
+    <Server Name="freeimage.host" MaxFileSize="67108864" Authorize="0" Type="image" Plugin="freeimage.host" WebsiteUrl="https://freeimage.host/">
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="pixhost.to" Authorize="0" Type="image" Plugin="pixhost.to" MaxFileSize="10000000" WebsiteUrl="https://pixhost.to">
+    <Server Name="pixhost.to" Authorize="0" Type="image" Plugin="pixhost.to" MaxFileSize="10485760" WebsiteUrl="https://pixhost.to">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="10485760">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -511,10 +535,10 @@
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)" />
     </Server>
-    <Server Name="dubz.co" Authorize="1" Type="file" Plugin="dubz" WebsiteUrl="https://dubz.co/" RegistrationUrl="https://dubz.co/register" LoginLabel="Email">
+    <Server Name="dubz.co" Authorize="1" Type="video" Plugin="dubz" WebsiteUrl="https://dubz.co/" RegistrationUrl="https://dubz.co/register" LoginLabel="Email">
         <Info>
             <SupportedFormats>	
-                <FormatGroup MaxFileSize="100000000">
+                <FormatGroup MaxFileSize="100000000" UserTypes="anon">
                     <Format MimeType="video/mp4">*.mp4</Format>
                     <Format MimeType="video/quicktime">*.mov</Format>
                     <Format MimeType="audio/mpeg">*.mp3</Format>
@@ -535,7 +559,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgspace.online" Types="image file" Authorize="2" MaxFileSize="100000000" WebsiteUrl="https://imgspace.online/" 
+    <Server Name="imgspace.online" Types="image file video" Authorize="2" MaxFileSize="100000000" WebsiteUrl="https://imgspace.online/" 
             RegistrationUrl="https://imgspace.online/signup" PasswordLabel="API key">
         <Info>
             <SupportedFormats>
@@ -562,11 +586,11 @@
         </Actions>
         <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)" />
     </Server>
-    <Server Name="gifyu.com" MaxFileSize="50000000" WebsiteUrl="https://gifyu.com/" 
+    <Server Name="gifyu.com" MaxFileSize="52428800" WebsiteUrl="https://gifyu.com/" 
             RegistrationUrl="https://gifyu.com/signup">
         <Info>
             <SupportedFormats>
-                <FormatGroup MaxFileSize="50000000">
+                <FormatGroup MaxFileSize="52428800">
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
                     <Format MimeType="image/gif">*.gif</Format>
@@ -605,7 +629,7 @@
         </Actions>
         <Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
-    <Server Name="1file.su" FileHost="1" WebsiteUrl="https://1file.su" MaxThreads="1">
+    <Server Name="1file.su" FileHost="1" MaxFileSize="524288000" WebsiteUrl="https://1file.su" MaxThreads="1">
         <Actions>
             <Action Type="get" Url="https://1file.su" RegExp="_token&quot;\s+value=&quot;(.+?)&quot;" AssignVars="Token:0"/>
             <Action Type="upload" Url="https://1file.su/upload-file" PostParams="_token=$(Token);files[]=%filename%;">
@@ -642,7 +666,7 @@
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="take-me-to.space" FileHost="1" Authorize="2" Plugin="take-me-to.space" WebsiteUrl="https://take-me-to.space" NeedPassword="0">
+    <Server Name="take-me-to.space" MaxFileSize="52428800" FileHost="1" Authorize="2" Plugin="take-me-to.space" WebsiteUrl="https://take-me-to.space" NeedPassword="0">
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub"/>
@@ -668,7 +692,7 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <!-- Chevereto v4 uploader -->
-    <Server Name="freeimghost.net" Authorize="2" FileHost="1" MaxFileSize="52428800" Plugin="freeimghost.net" WebsiteUrl="https://freeimghost.net/" RegistrationUrl="https://freeimghost.net/signup" PasswordLabel="API key">
+    <Server Name="freeimghost.net" Authorize="2" Types="image video" MaxFileSize="52428800" Plugin="freeimghost.net" WebsiteUrl="https://freeimghost.net/" RegistrationUrl="https://freeimghost.net/signup" PasswordLabel="API key">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="52428800" UserTypes="reg">
@@ -731,7 +755,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
-    <Server Name="thumbsnap.com" FileHost="1" Authorize="2" MaxFileSize="50331648" Plugin="thumbsnap" WebsiteUrl="https://thumbsnap.com/" RegistrationUrl="https://thumbsnap.com/users/signup" PasswordLabel="API key">
+    <Server Name="thumbsnap.com" Types="image video" Authorize="2" MaxFileSize="50331648" Plugin="thumbsnap" WebsiteUrl="https://thumbsnap.com/" RegistrationUrl="https://thumbsnap.com/users/signup" PasswordLabel="API key">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="50331648" UserTypes="reg">
@@ -767,7 +791,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
-    <Server Name="savefiles.com" MaxFileSize="21474836480" FileHost="1" Authorize="2" Plugin="savefiles" SupportsFolders="1" WebsiteUrl="https://savefiles.com/" RegistrationUrl="https://savefiles.com/?op=registration" PasswordLabel="API key" MaxThreads="1">
+    <Server Name="savefiles.com" MaxFileSize="21474836480" Type="video" Authorize="2" Plugin="savefiles" SupportsFolders="1" WebsiteUrl="https://savefiles.com/" RegistrationUrl="https://savefiles.com/?op=registration" PasswordLabel="API key" MaxThreads="1">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="21474836480" UserTypes="reg">

@@ -528,38 +528,26 @@ int64_t GetFileSize(const std::string& utf8Filename) {
     return ec ? -1 : static_cast<int64_t>(size);
 }
 
-std::string FileSizeToString(int64_t nBytes)
-{
-    double number = 0;
-    std::string postfix;
-    int precision = 0;
-    if(nBytes < 0)
-    {
-        return "n/a";
+std::string FileSizeToString(int64_t sizeBytes) {
+    const char* units[] = { "B", "KB", "MB", "GB", "TB", "PB" };
+    const int numUnits = sizeof(units) / sizeof(units[0]);
+    double size = static_cast<double>(sizeBytes);
+    int unitIndex = 0;
+
+    while (size >= 1024 && unitIndex < numUnits - 1) {
+        size /= 1024;
+        ++unitIndex;
     }
 
-    if(nBytes < 1024)
-    {
-        number = double(nBytes);
-        postfix = "bytes";
+    std::ostringstream out;
+    if (std::floor(size) == size) {
+        out << static_cast<int64_t>(size);
+    } else {
+        out << std::fixed << std::setprecision(1) << size;
     }
-    else if( nBytes < 1048576)
-    {
-        number = (double)nBytes / 1024.0;
-        postfix = "KB";
-    }
-    else if(nBytes<((int64_t)1073741824)) /*< 1 GB*/
-    {
-        postfix= "MB";
-        number= (double)nBytes / 1048576.0;
-        precision = 1;
-    } else /*if (nBytes >= 1073741824)*/
-    {
-        postfix= "GB";
-        precision = 1;
-        number = (double)nBytes / 1073741824.0;
-    }
-    return ToString(number, precision) + " " + postfix;
+
+    out << ' ' << units[unitIndex];
+    return out.str();
 }
 
 std::string ToString(double value, int precision)

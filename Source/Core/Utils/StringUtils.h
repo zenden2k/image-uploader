@@ -60,7 +60,21 @@ namespace IuStringUtils
         }
     }
 
-    std::string Join(const std::vector<std::string>& strings, const std::string& delim);
+    template <typename Container>
+    std::string Join(const Container& container, const std::string& delim) {
+        std::ostringstream result;
+        auto it = container.begin();
+
+        if (it != container.end()) {
+            result << *it; 
+            ++it;
+            for (; it != container.end(); ++it) {
+                result << delim << *it; 
+            }
+        }
+        return result.str();
+    }
+
     std::string Tail(std::string const& source, size_t length);
 
     // Current version of ToLower and ToUpper works only with ASCII strings

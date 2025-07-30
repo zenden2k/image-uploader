@@ -44,6 +44,7 @@
 #include "Core/FileTypeCheckTask.h"
 #include "Gui/Dialogs/FileFormatCheckErrorDlg.h"
 #include "Gui/Helpers/DPIHelper.h"
+#include "Gui/Dialogs/ServerListPopup.h"
 
 namespace {
     struct ResizePreset {
@@ -527,6 +528,32 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
     return 0;
 }
 
+LRESULT CUploadSettings::OnBnClickedSelectServer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/) {
+    bool isImageServer = (hWndCtl == Toolbar.m_hWnd);
+    CToolBarCtrl& CurrentToolbar = isImageServer ? Toolbar : FileServerSelectBar;
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+
+    RECT buttonRect {};
+    CurrentToolbar.GetRect(IDC_SERVERBUTTON, &buttonRect);
+    CurrentToolbar.ClientToScreen(&buttonRect);
+    ServerProfile& serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
+    CString serverName = U2W(serverProfile.serverName());
+    int serverIndex = myEngineList->getUploadEngineIndex(serverName);
+    int serverMask = isImageServer ? CUploadEngineData::TypeImageServer | CUploadEngineData::TypeFileServer : CUploadEngineData::TypeFileServer | CUploadEngineData::TypeVideoServer;
+    int selectedServerType = isImageServer ? CUploadEngineData::TypeImageServer : CUploadEngineListBase::ALL_SERVERS;
+    CServerListPopup serverListPopup(ServiceLocator::instance()->myEngineList(), iconCache_, serverMask, selectedServerType, serverIndex);
+   
+    if (serverListPopup.showPopup(m_hWnd, buttonRect) == IDOK) {
+        int newServerIndex = serverListPopup.serverIndex();
+        if (newServerIndex != -1) {
+            selectServer(serverProfile, newServerIndex);
+            UpdateAllPlaceSelectors();
+        }
+    };
+
+    return 0;
+}
+
 void CUploadSettings::UpdateToolbarIcons()
 {
     HICON hImageIcon = NULL, hFileIcon = NULL;
@@ -614,7 +641,7 @@ void CUploadSettings::initToolbars() {
         }
         CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
 
-        CurrentToolbar.AddButton(IDC_SERVERBUTTON, TBSTYLE_DROPDOWN | BTNS_AUTOSIZE | BTNS_SHOWTEXT, TBSTATE_ENABLED, -1, TR("Choose server..."), 0);
+        CurrentToolbar.AddButton(IDC_SERVERBUTTON, TBSTYLE_BUTTON | BTNS_AUTOSIZE | BTNS_SHOWTEXT, TBSTATE_ENABLED, -1, TR("Choose server..."), 0);
         CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR1, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, _T(""), 0);
 
         CurrentToolbar.AddButton(IDC_LOGINTOOLBUTTON + !i, /*TBSTYLE_BUTTON*/ TBSTYLE_DROPDOWN | BTNS_AUTOSIZE | BTNS_SHOWTEXT, TBSTATE_ENABLED, 0, _T(""), 0);
@@ -982,6 +1009,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
     RECT rc;
     CurrentToolbar.GetRect(pnmtb->iItem, &rc);
     CurrentToolbar.MapWindowPoints(nullptr, reinterpret_cast<LPPOINT>(&rc), 2);
+
     //CurrentToolbar.ClientToScreen(&rc);
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));

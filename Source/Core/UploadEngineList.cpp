@@ -295,6 +295,14 @@ void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, 
             FileFormatGroup group;
             std::string userTypes = groupNode.Attribute("UserTypes");
             IuStringUtils::SplitTo(userTypes, ",", std::inserter(group.UserTypes, group.UserTypes.end()));
+            if (group.UserTypes.empty() || group.UserTypes.find(std::string(UserTypes::ANONYMOUS)) != group.UserTypes.end()) {
+                group.MinUserRank = 0;
+            } else if (group.UserTypes.find(std::string(UserTypes::REGISTERED)) != group.UserTypes.end()) {
+                group.MinUserRank = 1;
+            } else {
+                // TODO:
+                group.MinUserRank = 2;
+            }
             group.MaxFileSize = groupNode.AttributeInt64("MaxFileSize");
             group.MinFileSize = groupNode.AttributeInt64("MinFileSize");
 
@@ -302,7 +310,14 @@ void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, 
                 if (formatNode.Name() == "Format") {
                     FileFormat format;
                     IuStringUtils::Split(formatNode.Attribute("MimeType"), ",", format.MimeTypes);
-                    IuStringUtils::Split(formatNode.Text(), ",", format.FileNameWildcards);
+                    std::string listStr = formatNode.Text();
+                    IuStringUtils::Split(listStr, ",", format.FileNameWildcards);
+                    for (const auto& wildcard : format.FileNameWildcards) {
+                        if (wildcard.length() > 2 && wildcard.rfind("*.", 0) == 0 && std::count(wildcard.begin(), wildcard.end(), '*') == 1
+                            && std::count(wildcard.begin(), wildcard.end(), '?') == 0) {
+                            group.Extensions.insert(wildcard.substr(2));
+                        }
+                    }
                     format.MaxFileSize = formatNode.AttributeInt64("MaxFileSize");
                     format.MinFileSize = formatNode.AttributeInt64("MinFileSize");
                     group.Formats.push_back(std::move(format));
@@ -312,6 +327,10 @@ void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, 
             out.push_back(std::move(group));
         }
         return false;
+    });
+
+    std::stable_sort(out.begin(), out.end(), [](const FileFormatGroup& a, const FileFormatGroup& b) {
+        return a.MinUserRank < b.MinUserRank;
     });
 }
 
