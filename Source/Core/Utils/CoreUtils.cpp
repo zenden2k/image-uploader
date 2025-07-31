@@ -21,6 +21,7 @@
 #include "CoreUtils.h"
 
 #include <ctime>
+#include <cmath>
 #include <locale>
 #include <cstdio>
 #include <filesystem>
