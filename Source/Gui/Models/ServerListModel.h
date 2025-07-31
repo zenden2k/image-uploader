@@ -29,15 +29,18 @@ public:
     uint32_t color;
     std::string data;
     CUploadEngineData* ued {};
+    CMyEngineList* engineList {};
     int uedIndex = -1;
     mutable std::optional<std::string> formats;
     mutable std::optional<std::string> maxFileSizeString;
+    mutable std::optional<std::string> serverDisplayName;
 
     std::string getFormats() const;
 
     int64_t getMaxFileSize() const;
 
     std::string getMaxFileSizeString() const;
+    std::string getServerDisplayName() const;
 
     bool acceptFilter(const ServerFilter& filter) const;
 };
@@ -47,6 +50,7 @@ class ServerListModel {
 public:
     ServerListModel(CMyEngineList* engineList);
     ~ServerListModel();
+    void updateEngineList();
     std::string getItemText(int row, int column) const;
     uint32_t getItemColor(int row) const;
     size_t getCount() const;

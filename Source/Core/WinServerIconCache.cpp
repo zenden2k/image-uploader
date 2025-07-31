@@ -135,15 +135,20 @@ void WinServerIconCache::preLoadIcons(int dpi) {
 }
 
 WinServerIconCache::ImageListWithIndexes WinServerIconCache::getImageList(int dpi) {
-    std::lock_guard lk(cacheMutex_);
-    auto it = imageLists_.find(dpi);
-    if (it != imageLists_.end()) {
-        return std::make_pair(it->second.first->m_hImageList, it->second.second);
+    {
+        std::lock_guard lk(cacheMutex_);
+        auto it = imageLists_.find(dpi);
+        if (it != imageLists_.end()) {
+            return std::make_pair(it->second.first->m_hImageList, it->second.second);
+        }
     }
     loadIcons(dpi);
-    it = imageLists_.find(dpi);
-    if (it != imageLists_.end()) {
-        return std::make_pair(it->second.first->m_hImageList, it->second.second);
+    {
+        std::lock_guard lk(cacheMutex_);
+        auto it = imageLists_.find(dpi);
+        if (it != imageLists_.end()) {
+            return std::make_pair(it->second.first->m_hImageList, it->second.second);
+        }
     }
     return {};
 }

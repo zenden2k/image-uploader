@@ -27,27 +27,16 @@ BOOL CServerListView::SubclassWindow(HWND hWnd) {
 }
 
 void CServerListView::Init() {
-    SetItemCount(model_->getCount());
-
     AddColumn(TR("Server"), tcServerName);
     AddColumn(TR("Max. file size"), tcMaxFileSize);
     AddColumn(TR("Storage time"), tcStorageTime);
     AddColumn(TR("Account"), tcAccount);
     AddColumn(TR("File formats"), tcFileFormats);
 
-    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    setColumnWidths();
+    createResources();
 
-    SetColumnWidth(tcServerName, MulDiv(130, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(tcMaxFileSize, MulDiv(100, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(tcStorageTime, MulDiv(80, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(tcAccount, MulDiv(50, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(tcFileFormats, MulDiv(190, dpi, USER_DEFAULT_SCREEN_DPI));
-
-    auto iconsWithIndexes = serverIconCache_->getImageList(dpi);
-    serverIconImageList_ = iconsWithIndexes.first;
-    serverIconImageListIndexes_ = std::move(iconsWithIndexes.second);
-    ModifyStyle(0, LVS_SHAREIMAGELISTS, LVS_SHAREIMAGELISTS);
-    SetImageList(serverIconImageList_, LVSIL_SMALL);
+    SetItemCount(model_->getCount());
 }
 
 LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
@@ -119,8 +108,34 @@ LRESULT CServerListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& 
     return 0;
 }
 
+LRESULT CServerListView::OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    setColumnWidths();
+    createResources();
+    return 0;
+}
+
 void CServerListView::onRowChanged(size_t index) {
     PostMessage(LVM_REDRAWITEMS, index, index);
+}
+
+
+void CServerListView::setColumnWidths() {
+    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    SetColumnWidth(tcServerName, MulDiv(140, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(tcMaxFileSize, MulDiv(115, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(tcStorageTime, MulDiv(100, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(tcAccount, MulDiv(50, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(tcFileFormats, MulDiv(200, dpi, USER_DEFAULT_SCREEN_DPI));
+}
+
+
+void CServerListView::createResources() {
+    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    auto iconsWithIndexes = serverIconCache_->getImageList(dpi);
+    serverIconImageList_ = iconsWithIndexes.first;
+    serverIconImageListIndexes_ = std::move(iconsWithIndexes.second);
+    ModifyStyle(0, LVS_SHAREIMAGELISTS, LVS_SHAREIMAGELISTS);
+    SetImageList(serverIconImageList_, LVSIL_SMALL);
 }
 
 int CServerListView::FindItemByString(LPCWSTR searchText, int startIndex, DWORD flags) {

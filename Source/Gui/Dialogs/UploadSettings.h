@@ -71,11 +71,6 @@ class CUploadSettings :
         enum { IDD = IDD_UPLOADSETTINGS };
 
         enum{
-            IDC_ADD_FTP_SERVER = 19001,
-            IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST = 19002,
-            IDC_ADD_DIRECTORY_AS_SERVER = 19003,
-            IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST = 19004,
-            IDC_OPEN_SERVERS_FOLDER = 19005,
             IDC_USERNAME_FIRST_ID = 20000,
             IDC_USERNAME_LAST_ID = 21000,
             IDC_ADD_ACCOUNT = 21001,
@@ -137,11 +132,6 @@ class CUploadSettings :
 
         COMMAND_ID_HANDLER_EX(IDC_EDITPROFILE, OnEditProfileClicked)
         COMMAND_HANDLER_EX(IDC_PROFILECOMBO, CBN_SELCHANGE, OnProfileComboSelChange)
-        COMMAND_ID_HANDLER_EX(IDC_ADD_FTP_SERVER, OnAddFtpServer)
-        COMMAND_ID_HANDLER_EX(IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST, OnAddFtpServer)
-        COMMAND_ID_HANDLER_EX(IDC_ADD_DIRECTORY_AS_SERVER, OnAddDirectoryAsServer)
-        COMMAND_ID_HANDLER_EX(IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST, OnAddDirectoryAsServer)
-        COMMAND_ID_HANDLER(IDC_OPEN_SERVERS_FOLDER, OnOpenServersFolder)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
     // Handler prototypes:
@@ -178,7 +168,6 @@ class CUploadSettings :
     LRESULT OnChooseMoreImageServersClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnChooseMoreFileServersClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnOpenWebsite(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-    LRESULT OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
     //int m_nImageServer, m_nFileServer;
     void ShowParams();
@@ -239,8 +228,6 @@ public:
     void SaveCurrentProfile();
     CString CurrentProfileOriginalName;
     LRESULT OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-    LRESULT OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-    LRESULT OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 };
 
 

@@ -20,6 +20,7 @@ public:
     BEGIN_MSG_MAP(CServerListView)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_GETDISPINFO, OnGetDispInfo)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_ODFINDITEM, OnOdFindItem)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnMyDpiChanged)
         //REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnListViewNMCustomDraw)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteItem)
@@ -36,9 +37,13 @@ public:
     LRESULT OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnOdFindItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
 protected:
     ServerListModel* model_;
     void onRowChanged(size_t index);
+    void setColumnWidths();
+    void createResources();
     CImageList serverIconImageList_;
     std::vector<int> serverIconImageListIndexes_;
     WinServerIconCache* serverIconCache_;

@@ -372,7 +372,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgbb.com" MaxFileSize="32000000" Plugin="imgbb" Authorize="1" PasswordLabel="API key" WebsiteUrl="https://imgbb.com/" 
+    <Server Name="imgbb.com" MaxFileSize="33554432" Plugin="imgbb" Authorize="1" PasswordLabel="API key" WebsiteUrl="https://imgbb.com/" 
             RegistrationUrl="https://imgbb.com/signup">
         <Actions>
         </Actions>
@@ -538,7 +538,7 @@
     <Server Name="dubz.co" Authorize="1" Type="video" Plugin="dubz" WebsiteUrl="https://dubz.co/" RegistrationUrl="https://dubz.co/register" LoginLabel="Email">
         <Info>
             <SupportedFormats>	
-                <FormatGroup MaxFileSize="100000000" UserTypes="anon">
+                <FormatGroup MaxFileSize="104857600" UserTypes="anon">
                     <Format MimeType="video/mp4">*.mp4</Format>
                     <Format MimeType="video/quicktime">*.mov</Format>
                     <Format MimeType="audio/mpeg">*.mp3</Format>

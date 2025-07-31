@@ -22,24 +22,32 @@ size_t StringSearch(const std::string& str1, const std::string& str2) {
 }
 
 ServerListModel::ServerListModel(CMyEngineList* engineList) : engineList_(engineList) {
-    for (int i = 0; i < engineList_->count(); i++) {
-        CUploadEngineData* ued = engineList_->byIndex(i);
-        
-        ServerData sd;
-        sd.ued = ued;
-        sd.uedIndex = i;
-        
-        items_.push_back(std::move(sd));
-    }
+    updateEngineList();
 }
 
 ServerListModel::~ServerListModel() {
 }
 
+void ServerListModel::updateEngineList() {
+    filteredItemsIndexes_.clear();
+    items_.clear();
+
+    for (int i = 0; i < engineList_->count(); i++) {
+        CUploadEngineData* ued = engineList_->byIndex(i);
+
+        ServerData sd;
+        sd.ued = ued;
+        sd.uedIndex = i;
+        sd.engineList = engineList_;
+
+        items_.push_back(std::move(sd));
+    }
+}
+
 std::string ServerListModel::getItemText(int row, int column) const {
     const ServerData& serverData = getDataByIndex(row);
     if (column == 0) {
-        return serverData.ued->Name;
+        return serverData.getServerDisplayName();
     }
     if (column == 1) {
         return serverData.getMaxFileSizeString();
@@ -174,9 +182,18 @@ std::string ServerData::getMaxFileSizeString() const {
     return *maxFileSizeString;
 }
 
+
+std::string ServerData::getServerDisplayName() const {
+    if (!serverDisplayName.has_value()) {
+        serverDisplayName = engineList->getServerDisplayName(ued);
+    }
+
+    return *serverDisplayName;
+}
+
 bool ServerData::acceptFilter(const ServerFilter& filter) const {
     if (!filter.query.empty()) {
-        if (StringSearch(ued->Name, filter.query) == std::string::npos) {
+        if (StringSearch(getServerDisplayName(), filter.query) == std::string::npos) {
             return false;
         }
     }

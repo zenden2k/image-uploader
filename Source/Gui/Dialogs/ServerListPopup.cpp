@@ -21,6 +21,7 @@
 #include "ServerListPopup.h"
 
 #include <strsafe.h>
+#include <dwmapi.h>
 
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -30,6 +31,9 @@
 #include "Core/AbstractServerIconCache.h"
 #include "Gui/Helpers/DPIHelper.h"
 #include "Gui/Models/ServerListModel.h"
+#include "AddFtpServerDialog.h"
+#include "AddDirectoryServerDialog.h"
+#include "Func/MyEngineList.h"
 
 namespace {
 
@@ -50,7 +54,6 @@ CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache
     isChildWindow_ = isChildWindow;
     hMyDlgTemplate_ = nullptr;
     isPopingUp_ = false;
-    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
 }
 
 CServerListPopup::~CServerListPopup()
@@ -65,14 +68,21 @@ void CServerListPopup::TranslateUI() {
     TRCC(IDC_IMAGERADIO, "serverlist.servertype", "Image");
     TRCC(IDC_FILERADIO, "serverlist.servertype", "File");
     TRCC(IDC_VIDEORADIO, "serverlist.servertype", "Video");
+    TRC(IDC_ADDBUTTON, "Add server");
 }
 
 LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    DWMNCRENDERINGPOLICY policy = DWMNCRP_DISABLED;
+    DwmSetWindowAttribute(m_hWnd, DWMWA_NCRENDERING_POLICY, &policy, sizeof(policy));
+
     DlgResize_Init(true, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
-    listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
+   
     TranslateUI();
+    addServerButton_.SetButtonStyle(BS_SPLITBUTTON);
+
+    listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
 
     if (selectedServerType_ == CUploadEngineData::TypeImageServer) {
         imageTypeRadioButton_.SetCheck(BST_CHECKED);
@@ -92,7 +102,9 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     createResources();
     updateServerList();
 
-    applyFilter();
+    applyFilter(false);
+
+    selectServerByName(U2W(engineList_->byIndex(serverIndex_)->Name));
     listView_.SetFocus();
 
     return FALSE;
@@ -105,6 +117,7 @@ LRESULT CServerListPopup::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 LRESULT CServerListPopup::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     createResources();
+    listView_.SendMessage(WM_MY_DPICHANGED, wParam);
     return 0;
 }
 
@@ -135,7 +148,6 @@ void CServerListPopup::setServersMask(int mask) {
 
 void CServerListPopup::notifyChange()
 {
-    //::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, reinterpret_cast<WPARAM>(m_hWnd), 0);
     if (onChangeCallback_)
     {
         onChangeCallback_(this);
@@ -144,7 +156,6 @@ void CServerListPopup::notifyChange()
 
 void CServerListPopup::notifyServerListChanged()
 {
-    //::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, reinterpret_cast<WPARAM>(m_hWnd), 0);
 }
 
 void CServerListPopup::updateServerList()
@@ -163,6 +174,12 @@ void CServerListPopup::createResources() {
     const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
     const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
+    if (addServerButtonIcon_) {
+        addServerButtonIcon_.DestroyIcon();
+    }
+
+    addServerButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONADDITEM), iconWidth, iconHeight);
+    addServerButton_.SetIcon(addServerButtonIcon_);
 }
 
 void CServerListPopup::setOnChangeCallback(std::function<void(CServerListPopup*)> cb) {
@@ -499,7 +516,17 @@ LRESULT CServerListPopup::OnSearchQueryEditChanged(WORD wNotifyCode, WORD wID, H
     return 0;
 }
 
-void CServerListPopup::applyFilter() {
+LRESULT CServerListPopup::OnBnClickedAddServerButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    showAddServerButtonMenu(hWndCtl);
+    return 0;
+}
+
+LRESULT CServerListPopup::OnBnDropdownAddServerButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    showAddServerButtonMenu(GetDlgItem(IDC_ADDBUTTON));
+    return 0;
+}
+
+void CServerListPopup::applyFilter(bool selectItem) {
     int mask = 0;
 
     if (imageTypeRadioButton_.GetCheck() == BST_CHECKED) {
@@ -519,5 +546,84 @@ void CServerListPopup::applyFilter() {
     filter.query = W2U(query);
     filter.typeMask = mask;
     serverListModel_->applyFilter(filter);
-    listView_.SelectItem(0);
+    if (selectItem) {
+        listView_.SelectItem(0);
+    }
+}
+
+void CServerListPopup::clearFilter() {
+    queryEditControl_.SetWindowText(_T(""));
+    allTypesRadioButton_.SetCheck(BST_CHECKED);
+    imageTypeRadioButton_.SetCheck(BST_UNCHECKED);
+    fileTypeRadioButton_.SetCheck(BST_UNCHECKED);
+    videoTypeRadioButton_.SetCheck(BST_UNCHECKED);
+}
+
+void CServerListPopup::selectServerByName(const CString& name) {
+    const std::string serverName = W2U(name);
+    size_t count = serverListModel_->getCount();
+    for (size_t i = 0; i < count; ++i) {
+        if (serverListModel_->getDataByIndex(i).ued->Name == serverName) {
+            listView_.SelectItem(i);
+            return;
+        }
+    }
+}
+
+void CServerListPopup::showAddServerButtonMenu(HWND control) {
+    RECT rc;
+    ::GetWindowRect(control, &rc);
+    POINT menuOrigin = { rc.left, rc.bottom };
+
+    CMenu popupMenu;
+    popupMenu.CreatePopupMenu();
+    std::wstring itemTitle = str(IuStringUtils::FormatWideNoExcept(TR("Add %s server...")) % L"FTP/SFTP/WebDAV");
+    popupMenu.AppendMenu(MF_STRING, IDM_ADD_FTP_SERVER, itemTitle.c_str());
+    popupMenu.AppendMenu(MF_STRING, IDM_ADD_DIRECTORY_AS_SERVER, TR("Add folder as new server..."));
+    popupMenu.AppendMenu(MF_STRING, IDM_OPEN_SERVERS_FOLDER, TR("Open servers folder"));
+
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+    popupMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
+}
+
+LRESULT CServerListPopup::OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    CAddFtpServerDialog dlg(engineList_);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        serverListModel_->updateEngineList();
+        clearFilter();
+        applyFilter(false);
+        selectServerByName(dlg.createdServerName());
+        listView_.SetFocus();
+    }
+    return 0;
+}
+
+LRESULT CServerListPopup::OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    CAddDirectoryServerDialog dlg(engineList_);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        serverListModel_->updateEngineList();
+        clearFilter();
+        applyFilter(false);
+        selectServerByName(dlg.createdServerName());
+        listView_.SetFocus();
+    }
+    return 0;
+}
+
+LRESULT CServerListPopup::OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    const std::wstring folder = IuCoreUtils::Utf8ToWstring(settings->SettingsFolder + "Servers\\");
+    try {
+        WinUtils::ShellOpenFileOrUrl(folder.c_str(), m_hWnd, {}, true);
+    } catch (const Win32Exception& ex) {
+        const std::wstring msg = str(
+            IuStringUtils::FormatWideNoExcept(TR("Cannot open folder '%1%'.\n%2%"))
+            % folder
+            % ex.getMessage().GetString());
+        GuiTools::LocalizedMessageBox(m_hWnd, msg.c_str(), TR("Error"), MB_ICONERROR);
+    }
+    return 0;
 }

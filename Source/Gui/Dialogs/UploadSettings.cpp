@@ -536,6 +536,7 @@ LRESULT CUploadSettings::OnBnClickedSelectServer(WORD /*wNotifyCode*/, WORD /*wI
     RECT buttonRect {};
     CurrentToolbar.GetRect(IDC_SERVERBUTTON, &buttonRect);
     CurrentToolbar.ClientToScreen(&buttonRect);
+    CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, TBIF_STATE, 0, TBSTATE_ENABLED | TBSTATE_PRESSED, nullptr, 0, 0, 0, 0);
     ServerProfile& serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
     CString serverName = U2W(serverProfile.serverName());
     int serverIndex = myEngineList->getUploadEngineIndex(serverName);
@@ -550,6 +551,8 @@ LRESULT CUploadSettings::OnBnClickedSelectServer(WORD /*wNotifyCode*/, WORD /*wI
             UpdateAllPlaceSelectors();
         }
     };
+
+    CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, TBIF_STATE, 0, TBSTATE_ENABLED, nullptr, 0, 0, 0, 0);
 
     return 0;
 }
@@ -784,124 +787,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
 
-    if(pnmtb->iItem == IDC_SERVERBUTTON)
-    {
-        // Show popup menu with list of hostings
-        int menuItemCount=0;
-        int lastMenuBreakIndex = 0;
-        bool nextItemBreaksLine = false;
-
-        if(isImageServer)
-        {
-            for(int i=0; i<m_EngineList->count(); i++)
-            {
-                mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
-                mi.fType = MFT_STRING;
-                if(!m_EngineList->byIndex(i)->hasType(CUploadEngineData::TypeImageServer)) continue;
-                mi.wID = (isImageServer ? IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
-                CUploadEngineData* ued = m_EngineList->byIndex(i);
-                CString name = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued));
-                mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
-                mi.cch = name.GetLength();
-                mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name, dpi);
-
-                if ( mi.hbmpItem ) {
-                    mi.fMask |= MIIM_BITMAP;
-                }
-                if ( menuItemCount && (menuItemCount - lastMenuBreakIndex) % 34 == 0  ) {
-                    mi.fType |= MFT_MENUBARBREAK ;
-                    lastMenuBreakIndex = menuItemCount;
-                }
-
-                sub.InsertMenuItem(menuItemCount++, true, &mi);
-            }
-
-            ZeroMemory(&mi,sizeof(mi));
-            mi.cbSize = sizeof(mi);
-            mi.fMask = MIIM_TYPE|MIIM_ID;
-            mi.wID = IDC_FILESERVER_LAST_ID + 1;
-            mi.fType = MFT_SEPARATOR;
-
-            if ( menuItemCount && (menuItemCount - lastMenuBreakIndex) >= 23   ) {
-                nextItemBreaksLine = true;
-            } else {
-                sub.InsertMenuItem(menuItemCount++, true, &mi);
-            }
-        }
-
-        mi.fType = MFT_STRING;
-        for(int i=0; i<m_EngineList->count(); i++)
-        {
-            mi.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
-            mi.fType = MFT_STRING;
-            if(!m_EngineList->byIndex(i)->hasType(CUploadEngineData::TypeFileServer)) continue;
-            mi.wID = (isImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
-            CUploadEngineData* ued = m_EngineList->byIndex(i);
-            CString name  = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued));
-            mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
-            mi.cch = name.GetLength();
-            mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name, dpi);
-            if ( mi.hbmpItem ) {
-                mi.fMask |= MIIM_BITMAP;
-            }
-            if ( menuItemCount && ((menuItemCount - lastMenuBreakIndex) % 34 == 0 || nextItemBreaksLine )  ) {
-
-                mi.fType |= MFT_MENUBARBREAK ;
-                lastMenuBreakIndex = menuItemCount;
-
-            }
-            nextItemBreaksLine = false;
-
-            sub.InsertMenuItem(menuItemCount++, true, &mi);
-        }
-
-        ZeroMemory(&mi, sizeof(mi));
-        mi.cbSize = sizeof(mi);
-        mi.wID = IDC_FILESERVER_LAST_ID + 1;
-        mi.fType = MFT_SEPARATOR;
-        /*if (menuItemCount && (menuItemCount - lastMenuBreakIndex) >= 30) {
-            nextItemBreaksLine = true;
-        }
-        else*/
-        {
-            sub.InsertMenuItem(menuItemCount++, true, &mi);
-        }
-
-        ZeroMemory(&mi, sizeof(mi));
-        mi.cbSize = sizeof(mi);
-        mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
-        mi.fType = MFT_STRING;
-        mi.wID = isImageServer ? IDC_ADD_FTP_SERVER : IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST;
-        if (nextItemBreaksLine)
-        {
-            nextItemBreaksLine = false;
-            mi.fType |= MFT_MENUBARBREAK;
-            lastMenuBreakIndex = menuItemCount;
-        }
-        CString addFtpServerStr = TR("Add FTP/SFTP server...");
-        mi.dwTypeData = const_cast<LPWSTR>(addFtpServerStr.GetString());
-        mi.cch = addFtpServerStr.GetLength();
-        mi.hbmpItem = 0;
-        sub.InsertMenuItem(menuItemCount++, true, &mi);
-
-        mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
-        mi.fType = MFT_STRING;
-        mi.wID = isImageServer ? IDC_ADD_DIRECTORY_AS_SERVER : IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST;
-        CString addLocalFolderStr = TR("Add local folder as new server...");
-        mi.dwTypeData = const_cast<LPWSTR>(addLocalFolderStr.GetString());
-        mi.cch = addLocalFolderStr.GetLength();
-        mi.hbmpItem = 0;
-        sub.InsertMenuItem(menuItemCount++, true, &mi);
-
-        sub.AppendMenu(MFT_STRING, IDC_OPEN_SERVERS_FOLDER, TR("Open servers folder"));
-        sub.SetMenuDefaultItem(isImageServer ?
-            (IDC_IMAGESERVER_FIRST_ID + myEngineList->getUploadEngineIndex(Utf8ToWCstring(getSessionImageServerItem().serverName()))) :
-            (IDC_FILESERVER_FIRST_ID + myEngineList->getUploadEngineIndex(Utf8ToWCstring(getSessionFileServerItem().serverName()))), FALSE);
-    }
-    else
-    {
+    if (/*pnmtb->iItem == IDC_SELECTFOLDER*/true) {
         // Show popup menu with list of accounts
-        std::map <std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[serverProfile.serverName()];
+        const std::map <std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[serverProfile.serverName()];
 
         // Ignore account list if there is just one key "" in map (empty string, meaning no authentication at all)
         if(!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end()) )
@@ -1519,49 +1407,6 @@ LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWN
    return 0;
 }
 
-
-LRESULT CUploadSettings::OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
-    CAddFtpServerDialog dlg(m_EngineList);
-    if (dlg.DoModal(m_hWnd) == IDOK) {
-
-        if (wID == IDC_ADD_FTP_SERVER) {
-            auto& sessionImageServer = getSessionImageServerItem();
-            sessionImageServer.setServerName(WCstringToUtf8(dlg.createdServerName()));
-            sessionImageServer.setProfileName(WCstringToUtf8(dlg.createdServerLogin()));
-        } else {
-            auto& sessionFileServer = getSessionFileServerItem();
-            sessionFileServer.setServerName(WCstringToUtf8(dlg.createdServerName()));
-            sessionFileServer.setProfileName(WCstringToUtf8(dlg.createdServerLogin()));
-        }
-
-        UpdateAllPlaceSelectors();
-    }
-    return 0;
-}
-
-LRESULT CUploadSettings::OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
-    CAddDirectoryServerDialog dlg(m_EngineList);
-    if ( dlg.DoModal(m_hWnd) == IDOK ) {
-        if (wID == IDC_ADD_DIRECTORY_AS_SERVER) {
-            auto& sessionImageServer = getSessionImageServerItem();
-            sessionImageServer.setServerName(WCstringToUtf8(dlg.createdServerName()));
-            sessionImageServer.setProfileName("");
-            sessionImageServer.clearFolderInfo();
-        } else {
-            auto& sessionFileServer = getSessionFileServerItem();
-            sessionFileServer.setServerName(WCstringToUtf8(dlg.createdServerName()));
-            sessionFileServer.setProfileName("");
-            sessionFileServer.clearFolderInfo();
-        }
-
-        UpdateAllPlaceSelectors();
-    }
-    return 0;
-}
-
-
 ServerProfile& CUploadSettings::getSessionImageServerItem() {
     return sessionImageServer_.getByIndex(0);
 }
@@ -1598,23 +1443,6 @@ LRESULT CUploadSettings::OnOpenWebsite(WORD wNotifyCode, WORD wID, HWND hWndCtl,
         WinUtils::ShellOpenFileOrUrl(U2WC(ue->WebsiteUrl), m_hWnd);
     }
     return  0;
-}
-
-LRESULT CUploadSettings::OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    const std::wstring folder = IuCoreUtils::Utf8ToWstring(settings->SettingsFolder + "Servers\\");
-    try {
-        WinUtils::ShellOpenFileOrUrl(folder.c_str(), m_hWnd, {}, true);
-    } catch (const Win32Exception& ex) {
-        const std::wstring msg = str(
-            IuStringUtils::FormatWideNoExcept(TR("Cannot open folder '%1%'.\n%2%"))
-            % folder
-            % ex.getMessage().GetString()
-        );
-        GuiTools::LocalizedMessageBox(m_hWnd, msg.c_str(), TR("Error"), MB_ICONERROR);
-    }
-
-    return 0;
 }
 
 void CUploadSettings::updateMoreImageServersLink() {

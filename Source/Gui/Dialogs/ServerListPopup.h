@@ -49,19 +49,27 @@ public:
     virtual ~CServerListPopup();
 
     enum { IDD = IDD_SERVERLISTPOPUP };
+    inline static constexpr auto IDM_ADD_FTP_SERVER = 10000;
+    inline static constexpr auto IDM_ADD_DIRECTORY_AS_SERVER = 10001;
+    inline static constexpr auto IDM_OPEN_SERVERS_FOLDER = 10002;
 
     BEGIN_MSG_MAP(CServerListPopup)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_MOUSEACTIVATE, OnMouseActivate)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_ENABLE, OnEnable)
-        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
+        MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
         COMMAND_ID_HANDLER(IDOK, OnOK)
         COMMAND_HANDLER(IDC_ALLTYPESRADIO, BN_CLICKED, OnServerTypeChanged)
         COMMAND_HANDLER(IDC_IMAGERADIO, BN_CLICKED, OnServerTypeChanged)
         COMMAND_HANDLER(IDC_FILERADIO, BN_CLICKED, OnServerTypeChanged)
         COMMAND_HANDLER(IDC_VIDEORADIO, BN_CLICKED, OnServerTypeChanged)
         COMMAND_HANDLER(IDC_SEARCHQUERYEDIT, EN_CHANGE, OnSearchQueryEditChanged)
+        COMMAND_HANDLER(IDC_ADDBUTTON, BN_CLICKED, OnBnClickedAddServerButton)
+        COMMAND_ID_HANDLER_EX(IDM_ADD_FTP_SERVER, OnAddFtpServer)
+        COMMAND_ID_HANDLER_EX(IDM_ADD_DIRECTORY_AS_SERVER, OnAddDirectoryAsServer)
+        COMMAND_ID_HANDLER_EX(IDM_OPEN_SERVERS_FOLDER, OnOpenServersFolder)
+        NOTIFY_HANDLER(IDC_ADDBUTTON, BCN_DROPDOWN, OnBnDropdownAddServerButton)
         NOTIFY_HANDLER(IDC_SERVERLISTCONTROL, NM_DBLCLK, OnListViewDblClick)
         CHAIN_MSG_MAP(CDialogResize<CServerListPopup>)
         REFLECT_NOTIFICATIONS()
@@ -69,7 +77,8 @@ public:
 
     BEGIN_DLGRESIZE_MAP(CServerListPopup)
         DLGRESIZE_CONTROL(IDC_SERVERLISTCONTROL, DLSZ_SIZE_X |  DLSZ_SIZE_Y)
-    DLGRESIZE_CONTROL(IDC_SEARCHQUERYEDIT, DLSZ_MOVE_Y)
+        DLGRESIZE_CONTROL(IDC_SEARCHQUERYEDIT, DLSZ_MOVE_Y)
+        DLGRESIZE_CONTROL(IDC_ADDBUTTON, DLSZ_MOVE_X | DLSZ_MOVE_Y)
     END_DLGRESIZE_MAP()
 
     BEGIN_DDX_MAP(CServerListPopup)
@@ -79,6 +88,7 @@ public:
         DDX_CONTROL_HANDLE(IDC_FILERADIO, fileTypeRadioButton_)
         DDX_CONTROL_HANDLE(IDC_VIDEORADIO, videoTypeRadioButton_)
         DDX_CONTROL_HANDLE(IDC_SEARCHQUERYEDIT, queryEditControl_)
+        DDX_CONTROL_HANDLE(IDC_ADDBUTTON, addServerButton_)
     END_DDX_MAP()
 
     DLGTEMPLATE* GetTemplate();
@@ -95,7 +105,11 @@ public:
     LRESULT OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnServerTypeChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnSearchQueryEditChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
+    LRESULT OnBnClickedAddServerButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnBnDropdownAddServerButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    LRESULT OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
+    LRESULT OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
     void TranslateUI();
     void setTitle(CString title);
     CString getTitle() const;
@@ -128,11 +142,16 @@ private:
     CServerListView listView_;
     CButton allTypesRadioButton_, imageTypeRadioButton_, fileTypeRadioButton_, videoTypeRadioButton_;
     CEdit queryEditControl_;
+    CButton addServerButton_;
+    CIcon addServerButtonIcon_;
     int serversMask_, serverIndex_, selectedServerType_;
     int ret_ = 0;
     void serverChanged();
     void createResources();
-    void applyFilter();
+    void applyFilter(bool selectItem = true);
+    void clearFilter();
+    void selectServerByName(const CString& name);
+    void showAddServerButtonMenu(HWND control);
 };
 
 

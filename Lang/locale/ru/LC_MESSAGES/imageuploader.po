@@ -204,7 +204,7 @@ msgstr "Доступ:"
 
 #: ../Source/Gui/Controls/ServerListView.cpp:35
 msgid "Account"
-msgstr "Аккаунт нужен"
+msgstr "Акк."
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:717
 msgid "Account is not enabled"
