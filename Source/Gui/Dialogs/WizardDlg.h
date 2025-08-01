@@ -307,6 +307,7 @@ public:
     bool isScreenRecorderRunning() const;
     void stopScreenRecording();
     bool trayIconEnabled() const;
+    bool canExitApp() const;
 
 protected:
     bool acceptsDragnDrop() const;

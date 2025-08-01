@@ -241,6 +241,7 @@ public:
      void OnFileFinished(UploadTask*  task, bool ok);
      void ShowImageUploadedMessage(UploadTask* task, const CString& url);
      void ShowScreenshotCopiedToClipboardMessage();
+     bool canExitApp();
 
      int iconAnimationCounter_;
      std::shared_ptr<UploadSession> currentUploadSession_;

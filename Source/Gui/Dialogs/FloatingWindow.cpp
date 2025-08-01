@@ -187,7 +187,9 @@ LRESULT CFloatingWindow::OnExit(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         wizardDlg_->FlashWindow(true);
         return 0;
     }
-    wizardDlg_->CloseWizard();
+    if (canExitApp()) {
+        wizardDlg_->CloseWizard();
+    }
     return 0;
 }
 
@@ -661,6 +663,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, HotkeyToString("settings", TR("Settings") + CString(_T("..."))), settingsBitmap_);
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_EXIT, TR("Exit"));
+        TrayMenu.EnableMenuItem(IDM_EXIT, MF_BYCOMMAND | (canExitApp() ? MF_ENABLED : MF_DISABLED));
         if (Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftDoubleClickCommandStr).commandId)
         {
             SetMenuDefaultItem(TrayMenu, Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftDoubleClickCommandStr).commandId,
@@ -1029,6 +1032,10 @@ void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
     CString statusText = TR("Screenshot has been copied to clipboard.");
     ShowBaloonTip(statusText, APP_NAME, 17000);
     setStatusText(statusText, kStatusHideTimeout);
+}
+
+bool CFloatingWindow::canExitApp() {
+    return !m_bIsUploading && wizardDlg_->canExitApp();
 }
 
 void  CFloatingWindow::onUploadSessionFinished(UploadSession* session) {

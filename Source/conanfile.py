@@ -58,7 +58,7 @@ class ImageUploaderRecipe(ConanFile):
 
     def requirements(self):
         self.requires("boost/1.87.0")
-        self.requires("libcurl/8.12.1")
+        self.requires("libcurl/8.10.1") # cookie sharing between threads is causing crash in newer versions
         self.requires("pcre/8.45")
         self.requires("uriparser/0.9.8")
         self.requires("zlib/1.3.1")

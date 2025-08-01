@@ -286,7 +286,7 @@ NetworkClient::NetworkClient()
     m_nUploadDataOffset = 0;
     treatErrorsAsWarnings_ = false;
     logger_ = nullptr;
-    curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
+    curl_easy_setopt(curl_handle, CURLOPT_COOKIEFILE, "");
     m_userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36";
 
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, private_static_writer);
@@ -337,9 +337,6 @@ NetworkClient::~NetworkClient()
 {
     curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, nullptr);
     curl_easy_cleanup(curl_handle);
-#ifdef USE_OPENSSL
-    ERR_remove_thread_state(nullptr);
-#endif
     proxyProvider_ = nullptr;
 }
 
@@ -504,19 +501,22 @@ bool NetworkClient::doPost(const std::string& data)
     return private_on_finish_request();
 }
 
-std::string NetworkClient::urlEncode(const std::string& str)
-{
-    char * encoded = curl_easy_escape(curl_handle, str.c_str() , str.length() );
-    std::string res = encoded;
-    res+="";
+std::string NetworkClient::urlEncode(const std::string& str) {
+    char* encoded = curl_easy_escape(curl_handle, str.c_str(), str.length());
+    if (!encoded) {
+        return {};
+    }
+    std::string res { encoded };
     curl_free(encoded);
     return res;
 }
 
 std::string NetworkClient::urlDecode(const std::string& str) {
-    char * decoded = curl_easy_unescape(curl_handle, str.c_str(), str.length(), nullptr);
-    std::string res = decoded;
-    res += "";
+    char* decoded = curl_easy_unescape(curl_handle, str.c_str(), str.length(), nullptr);
+    if (!decoded) {
+        return {};
+    }
+    std::string res { decoded };
     curl_free(decoded);
     return res;
 }
@@ -901,12 +901,12 @@ void NetworkClient::setTreatErrorsAsWarnings(bool treat)
     treatErrorsAsWarnings_ = treat;
 }
 
-std::string NetworkClient::getCurlResultString()
-{
-    const char * str = curl_easy_strerror(curl_result);
-    std::string res(str);
-    res+="";
-    //curl_free(str);
+std::string NetworkClient::getCurlResultString() {
+    const char* str = curl_easy_strerror(curl_result);
+    if (!str) {
+        return {};
+    }
+    std::string res { str };
     return res;
 }
 

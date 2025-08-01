@@ -2847,6 +2847,10 @@ bool CWizardDlg::trayIconEnabled() const {
     return floatWnd_ && floatWnd_->m_hWnd != nullptr;
 }
 
+bool CWizardDlg::canExitApp() const {
+    return IsWindowEnabled() && GetDlgItem(IDCANCEL).IsWindowEnabled();
+}
+
 void CWizardDlg::createIcons() {
     const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
     if (windowIcon_) {
