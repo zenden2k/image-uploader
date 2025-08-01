@@ -182,7 +182,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
 
             SimpleXmlNode storageTimeInfoNode = infoNode.GetChild("StorageTimeInfo", false);
             if (!storageTimeInfoNode.IsNull()) {
-                loadStorageTimeInfo(storageTimeInfoNode, UE, UE.StorageTime);
+                loadStorageTimeInfo(storageTimeInfoNode, UE, UE.StorageTimeInfo);
             }
         }
 
@@ -358,6 +358,7 @@ void CUploadEngineList::loadStorageTimeInfo(SimpleXmlNode& node, CUploadEngineDa
             } catch (const std::exception& ex) {
                 LOG(WARNING) << "loadStorageTimeInfo exception, line no. " << groupNode.GetLineNumber() << ": " << ex.what();
             }
+            group.AfterLastDownload = groupNode.AttributeBool("AfterLastDownload");
 
             out.push_back(std::move(group));
         }

@@ -213,26 +213,35 @@ bool ServerData::acceptFilter(const ServerFilter& filter) const {
 void ServerData::cacheStorageTime() const {
     if (!storageTimeStr.has_value()) {
         std::string daysStr;
-
-        if (ued->StorageTime.size() == 1) {
-            const auto& item = ued->StorageTime[0];
+        std::string result;
+        if (ued->StorageTimeInfo.size() == 1) {
+            const auto& item = ued->StorageTimeInfo[0];
             storageTime = item.Time;
-            storageTimeStr = item.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : str(IuStringUtils::FormatNoExcept(_n("%d day", "%d days", item.Time)) % item.Time);
-        } else if (!ued->StorageTime.empty()) {
-            storageTime = ued->StorageTime[0].Time;
-            for (const auto& storageTime : ued->StorageTime) {
+            result = item.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : str(IuStringUtils::FormatNoExcept(_n("%d day", "%d days", item.Time)) % item.Time);
+            if (item.AfterLastDownload) {
+                result += u8"\u2913";
+            }
+        } else if (!ued->StorageTimeInfo.empty()) {
+            for (const auto& item : ued->StorageTimeInfo) {
                 if (!daysStr.empty()) {
                     daysStr += "/ ";
                 }
-                if (storageTime.Time) {
-                    daysStr += storageTime.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : std::to_string(storageTime.Time);
+                if (item.Time) {
+                    daysStr += item.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : std::to_string(item.Time);
+                    if (item.AfterLastDownload) {
+                        daysStr += u8"\u2913";
+                    }
+                } else {
+                    daysStr += "?";
                 }
+
                 daysStr += " ";
             }
-            storageTimeStr = daysStr.empty() ? "" : str(IuStringUtils::FormatNoExcept(_("%1%days")) % daysStr);
+            storageTime = ued->StorageTimeInfo[0].Time;
+            result = daysStr.empty() ? "" : str(IuStringUtils::FormatNoExcept(_("%1%days")) % daysStr);
         } else {
             storageTime = 0;
-            storageTimeStr = "";
         }
+        storageTimeStr = result;
     }
 }

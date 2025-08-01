@@ -24,7 +24,7 @@
     <Server Name="ImageBan.ru" Types="image video" Authorize="2" Plugin="imageban" WebsiteUrl="https://imageban.ru" RegistrationUrl="https://imageban.ru/u/register">
         <Info>
             <SupportedFormats>
-                <FormatGroup MaxFileSize="10485760" UserTypes="anon, reg">
+                <FormatGroup MaxFileSize="10485760" UserTypes="anon,reg">
                     <Format MimeType="image/bmp">*.bmp</Format>
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
@@ -508,19 +508,6 @@
     <Server Name="mega.nz" Authorize="2" Engine="MegaNz" FileHost="1" SupportsFolders="1" RegistrationUrl="https://mega.nz/register" 
             WebsiteUrl="https://mega.io/" MaxThreads="1" LoginLabel="Email">
         <Info>
-            <SupportedFormats>
-                <FormatGroup MaxFileSize="33554432" UserTypes="anon">
-                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
-                    <Format MimeType="image/png">*.png</Format>
-                    <Format MimeType="image/bmp">*.bmp</Format>
-                    <Format MimeType="image/gif">*.gif</Format>
-                    <Format MimeType="image/tiff">*.tif,*.tiff</Format>
-                    <Format MimeType="image/webp">*.webp</Format>
-                    <Format MimeType="image/heic">*.heic</Format>
-                    <Format MimeType="image/avif">*.avif</Format>
-                    <Format MimeType="application/pdf">*.pdf</Format>
-                </FormatGroup>
-            </SupportedFormats>
             <StorageTimeInfo>
                 <StorageTime>-1</StorageTime>
             </StorageTimeInfo>
@@ -537,7 +524,19 @@
     <Server Name="imgbb.com" MaxFileSize="33554432" Plugin="imgbb" Authorize="1" PasswordLabel="API key" WebsiteUrl="https://imgbb.com/" 
             RegistrationUrl="https://imgbb.com/signup">
         <Info>
-            
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="33554432" UserTypes="anon">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/tiff">*.tif,*.tiff</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/heic">*.heic</Format>
+                    <Format MimeType="image/avif">*.avif</Format>
+                    <Format MimeType="application/pdf">*.pdf</Format>
+                </FormatGroup>
+            </SupportedFormats>   
             <StorageTimeInfo>
                 <StorageTime>-1</StorageTime>
             </StorageTimeInfo>
@@ -555,6 +554,9 @@
                     <Format MimeType="image/gif">*.gif</Format>
                 </FormatGroup>
             </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
         </Info>
         <Actions>
         </Actions>
@@ -565,17 +567,40 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i" WebsiteUrl="https://2i.cz" RegistrationUrl="https://2i.cz/signup">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="20971520">
+                <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                <Format MimeType="image/png">*.png</Format>
+                <Format MimeType="image/bmp">*.bmp</Format>
+                <Format MimeType="image/gif">*.gif</Format>
+                <Format MimeType="image/webp">*.webp</Format>
+            </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="vgy.me" Type="image" Authorize="2" Plugin="vgy_me" PasswordLabel="User key" WebsiteUrl="https://vgy.me"
         RegistrationUrl="https://vgy.me/auth/register">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="20971520">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="yourfilestore.com" FileHost="1" MaxFileSize="500000000" WebsiteUrl="https://yourfilestore.com" MaxThreads="1">
+    <Server Name="yourfilestore.com" FileHost="1" MaxFileSize="524288000" WebsiteUrl="https://yourfilestore.com" MaxThreads="1">
         <Actions>
             <Action Type="get" Url="https://yourfilestore.com/" RegExp="UPLOAD_IDENTIFIER&quot;\s+value=&quot;(.+?)&quot;" AssignVars="UploadId:0;">
                 <RegExp Pattern="xcsrf_token&quot; value=&quot;(.+?)&quot;" AssignVars="XcsrfToken:0"/>
@@ -588,6 +613,24 @@
         <Result DownloadUrlTemplate="$(FileId)"  DeleteUrl="$(DeleteUrl)"/>
     </Server>
     <Server Name="freeimage.host" MaxFileSize="67108864" Authorize="0" Type="image" Plugin="freeimage.host" WebsiteUrl="https://freeimage.host/">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="67108864" UserTypes="anon">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="134217728" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -607,12 +650,28 @@
         <Result DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="mediafire.com" Authorize="2" FileHost="1" Plugin="mediafire" SupportsFolders="1" MinVersion="1.4.0" WebsiteUrl="https://www.mediafire.com"> 
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="4294967296" UserTypes="anon,reg">
+                    <Format>*</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="53687091200" UserTypes="pro,business">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub" />
     </Server>
     <Server Name="upload.ee" Authorize="0" FileHost="1" Plugin="upload.ee" MaxFileSize="104857600" WebsiteUrl="https://www.upload.ee" 
         RegistrationUrl="https://www.upload.ee/register.html">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon" AfterLastDownload="1">50</StorageTime>
+                <StorageTime UserTypes="reg" AfterLastDownload="1">120</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
@@ -630,11 +689,44 @@
     </Server>
     <Server Name="pixeldrain.com" Authorize="2" FileHost="1" Plugin="pixeldrain.com" NeedPassword="0" WebsiteUrl="https://pixeldrain.com"
         RegistrationUrl="https://pixeldrain.com/register">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="21474836480" UserTypes="anon,reg">
+                    <Format>*</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="107374182400" UserTypes="pro">
+                    <Format>*</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="107374182400" UserTypes="prepaid">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon,reg" AfterLastDownload="1">120</StorageTime>
+                <StorageTime UserTypes="pro" AfterLastDownload="1">240</StorageTime>
+                <StorageTime UserTypes="prepaid">-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="wdfiles.ru" FileHost="1" Plugin="wdfiles" WebsiteUrl="https://wdfiles.ru" RegistrationUrl="https://wdfiles.ru/register.html">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="6442450944" UserTypes="anon,reg">
+                    <Format>*</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="10737418240" UserTypes="premium">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon" AfterLastDownload="1">120</StorageTime>
+                <StorageTime UserTypes="reg" AfterLastDownload="1">240</StorageTime>
+                <StorageTime UserTypes="premium">-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>

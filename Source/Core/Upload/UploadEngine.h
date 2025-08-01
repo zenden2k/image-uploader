@@ -145,6 +145,7 @@ struct FileFormatGroup {
 struct StorageTime {
     inline static constexpr int TIME_INFINITE = -1;
     int Time = 0; // in days
+    bool AfterLastDownload = false;
     std::vector<std::string> UserTypes;
     int MinUserRank = 0;
 };
@@ -227,7 +228,7 @@ class CUploadEngineData
         std::vector<UploadAction> Actions;
         std::vector<FileFormatGroup> SupportedFormatGroups;
         std::vector<FileFormatGroup> ForbiddenFormatGroups;
-        std::vector<StorageTime> StorageTime;
+        std::vector<StorageTime> StorageTimeInfo;
         std::string LoginLabel, PasswordLabel;
         std::string UserAgent;
         std::string Engine;
