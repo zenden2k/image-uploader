@@ -31,18 +31,24 @@ public:
     CUploadEngineData* ued {};
     CMyEngineList* engineList {};
     int uedIndex = -1;
+
+    std::string getFormats() const;
+    int64_t getMaxFileSize() const;
+    std::string getMaxFileSizeString() const;
+    std::string getServerDisplayName() const;
+    std::string getStorageTimeString() const;
+    int getStorageTime() const;
+
+    bool acceptFilter(const ServerFilter& filter) const;
+
+private:
     mutable std::optional<std::string> formats;
     mutable std::optional<std::string> maxFileSizeString;
     mutable std::optional<std::string> serverDisplayName;
+    mutable std::optional<std::string> storageTimeStr;
+    mutable std::optional<int> storageTime;
 
-    std::string getFormats() const;
-
-    int64_t getMaxFileSize() const;
-
-    std::string getMaxFileSizeString() const;
-    std::string getServerDisplayName() const;
-
-    bool acceptFilter(const ServerFilter& filter) const;
+    void cacheStorageTime() const;
 };
 
 

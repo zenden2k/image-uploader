@@ -638,3 +638,66 @@ LRESULT CServerListPopup::OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND h
     }
     return 0;
 }
+
+LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    HWND hwnd = reinterpret_cast<HWND>(wParam);
+    POINT ClientPoint, ScreenPoint;
+    if (hwnd != listView_) {
+        return 0;
+    }
+
+    if (lParam == -1) {
+        int nCurItem = listView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+        if (nCurItem >= 0) {
+            CRect rc;
+            listView_.GetItemRect(nCurItem, &rc, LVIR_ICON);
+            ClientPoint = rc.CenterPoint();
+        } else {
+            ClientPoint.x = 0;
+            ClientPoint.y = 0;
+        }
+        ScreenPoint = ClientPoint;
+        ::ClientToScreen(hwnd, &ScreenPoint);
+    } else {
+        ScreenPoint.x = GET_X_LPARAM(lParam);
+        ScreenPoint.y = GET_Y_LPARAM(lParam);
+        ClientPoint = ScreenPoint;
+        ::ScreenToClient(hwnd, &ClientPoint);
+    }
+
+    LV_HITTESTINFO hti;
+    hti.pt = ClientPoint;
+    listView_.HitTest(&hti);
+
+    if (hti.iItem >= 0) {
+        constexpr auto ID_OPENREGISTERURL = 11000;
+        constexpr auto ID_OPENWEBSITE = 11001;
+
+        const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+        auto* engineList = ServiceLocator::instance()->engineList();
+        const ServerData& data = serverListModel_->getDataByIndex(hti.iItem);
+        if (!data.ued) {
+            return 0;
+        }
+        CMenu contextMenu;
+        contextMenu.CreatePopupMenu();
+
+        contextMenu.AppendMenu(MF_STRING, ID_OPENWEBSITE, TR("Open the website"));
+        contextMenu.EnableMenuItem(ID_OPENREGISTERURL, data.ued->WebsiteUrl.empty() ? MF_DISABLED : MF_ENABLED);
+
+        contextMenu.AppendMenu(MF_STRING, ID_OPENREGISTERURL, TR("Go to signup page"));
+        contextMenu.EnableMenuItem(ID_OPENREGISTERURL, data.ued->RegistrationUrl.empty() ? MF_DISABLED : MF_ENABLED);
+
+        BOOL res = contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+        switch (res) {
+        case ID_OPENWEBSITE:
+            WinUtils::ShellOpenFileOrUrl(U2WC(data.ued->WebsiteUrl), m_hWnd);
+            break;
+        case ID_OPENREGISTERURL:
+            WinUtils::ShellOpenFileOrUrl(U2WC(data.ued->RegistrationUrl), m_hWnd);
+            break;
+        }
+    }
+    return 0;
+}

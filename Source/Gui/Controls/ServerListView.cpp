@@ -128,7 +128,6 @@ void CServerListView::setColumnWidths() {
     SetColumnWidth(tcFileFormats, MulDiv(200, dpi, USER_DEFAULT_SCREEN_DPI));
 }
 
-
 void CServerListView::createResources() {
     int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto iconsWithIndexes = serverIconCache_->getImageList(dpi);

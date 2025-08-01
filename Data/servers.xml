@@ -41,6 +41,9 @@
                     <Format MimeType="video/webm">*.webm</Format>
                 </FormatGroup>
             </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
         </Info>
         <Actions>
         </Actions>
@@ -72,6 +75,10 @@
                 </FormatGroup>	
                 -->	 
             </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon">0</StorageTime>
+                <StorageTime UserTypes="reg">-1</StorageTime>
+            </StorageTimeInfo>
         </Info>
         <Actions>
         </Actions>
@@ -112,9 +119,19 @@
     </Server>
     <Server Name="Yandex.Disk" Debug="0"  NeedPassword="0" Authorize="2" Plugin="yandexdisk" FileHost="1" SupportsFolders="1" RegistrationUrl="https://disk.yandex.ru"
         WebsiteUrl="https://disk.yandex.ru">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="Dropbox" FileHost="1" Debug="0" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="0" WebsiteUrl="https://www.dropbox.com/">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Result ImageUrlTemplate="stub" />
     </Server>
     <Server Name="fastpic.ru" MaxFileSize="26214400" Debug="0" Plugin="fastpic" WebsiteUrl="https://fastpic.org">
@@ -142,14 +159,33 @@
     <Server Name="imageup.ru" Authorize="2" Plugin="imageup" WebsiteUrl="https://imageup.ru" RegistrationUrl="https://imageup.ru/registration.html">
         <Info>
             <SupportedFormats>
-                <FormatGroup>
+                <FormatGroup UserTypes="anon" MaxFileSize="10485760">
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
                     <Format MimeType="image/gif">*.gif</Format>
                     <Format MimeType="image/bmp">*.bmp</Format>
                     <Format MimeType="image/tiff">*.tiff,*.tif</Format>
                 </FormatGroup>	 
+                <FormatGroup UserTypes="reg" MaxFileSize="10485760">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/tiff">*.tiff,*.tif</Format>
+                </FormatGroup>	
+                <FormatGroup UserTypes="premium" MaxFileSize="20971520">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/tiff">*.tiff,*.tif</Format>
+                </FormatGroup>	
             </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon">30</StorageTime>
+                <StorageTime UserTypes="reg">90</StorageTime>
+                <StorageTime UserTypes="premium">-1</StorageTime>
+            </StorageTimeInfo>
         </Info>
         <Actions>
         </Actions>
@@ -187,6 +223,10 @@
                     <Format MimeType="image/webp">*.webp</Format>
                 </FormatGroup>	  
             </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon">365</StorageTime>
+                <StorageTime UserTypes="reg">-1</StorageTime>
+            </StorageTimeInfo>
         </Info>
         <Actions>
         </Actions>
@@ -204,13 +244,37 @@
     </Server>
     <!-- Blocked by RKN ? -->
     <Server Name="hostingkartinok.com"  Authorize="1" Debug="0" WebsiteUrl="https://hostingkartinok.com" RegistrationUrl="https://hostingkartinok.com/register.php">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="3145728" UserTypes="anon">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="5242880" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
             <Action Type="upload" Url="https://hostingkartinok.com/login.php" PostParams="autologin=1;email=$(_LOGIN);password=$(_PASSWORD);login=Войти" OnlyOnce="1" />
             <Action Type="upload" Url="https://hostingkartinok.com/process.php" PostParams="image_1=%filename%;image_2=;jpeg_quality=70%;resize_to=50px;upload_type=standard;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
     </Server>
-    <Server Name="sendfile.su" FileHost="1" WebsiteUrl="http://sendfile.su" RegistrationUrl="http://sendfile.su/user.php?register">
+    <Server Name="sendfile.su" FileHost="1" MaxFileSize="629145600" WebsiteUrl="http://sendfile.su" RegistrationUrl="http://sendfile.su/user.php?register" MaxThreads="3">
+         <Info>
+            <StorageTimeInfo>
+                <StorageTime>25</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
             <Action Type="get" Url="http://sendfile.su/" RegExp="http://s(\d+).sendfile.su/upload.php" AssignVars="_ServerId:0;" OnlyOnce="1"/>
             <Action Type="upload" Url="http://s$(_ServerId).sendfile.su/upload.php" PostParams="user_id=0;f0=%filename%;category_id=0;private=1;" RegExp="http://sendfile.su/(\d+)" AssignVars="FileId:0;"/>
@@ -314,21 +378,46 @@
         <Result DirectUrlTemplate="stub"/>
     </Server>
     <Server Name="vk.com" Authorize="2" Type="image" Plugin="vk" MinVersion="1.3.1.4270" SupportsFolders="1" NeedPassword="0" WebsiteUrl="https://vk.com/">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="Google Drive" FileHost="1" Authorize="2" Type="file" Plugin="googledrive" SupportsFolders="1" NeedPassword="0" LoginLabel="Profile name" 
         WebsiteUrl="https://drive.google.com/">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="OneDrive" FileHost="1" Authorize="2" Type="file" Plugin="onedrive" SupportsFolders="1" NeedPassword="0" MinVersion="1.3.3" 
         WebsiteUrl="https://onedrive.live.com">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="cloud.mail.ru" FileHost="1" Authorize="2" Type="file" Plugin="cloud.mail.ru" MinVersion="1.3.3" WebsiteUrl="https://cloud.mail.ru">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="imgbox.com"  Type="image"  Authorize="0" Plugin="imgbox" WebsiteUrl="https://imgbox.com" RegistrationUrl="https://imgbox.com/register">
-    <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
+        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="geekpic.net" Plugin="geekpic" MinVersion="1.3.2.4462" WebsiteUrl="https://pic4net.com/">
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
@@ -338,13 +427,39 @@
         <Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="imagebam.com" Plugin="imagebam.com" WebsiteUrl="https://www.imagebam.com" RegistrationUrl="https://www.imagebam.com/auth/register">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <!-- u.cubeupload.com is blocked by Roskomnadzor -->
-    <Server Name="cubeupload.com" Authorize="2" MaxFileSize="5000000" MinVersion="1.4.0" WebsiteUrl="https://cubeupload.com/" 
+    <Server Name="cubeupload.com" Authorize="2" MaxFileSize="5242880" MinVersion="1.4.0" WebsiteUrl="https://cubeupload.com/" 
             RegistrationUrl="https://cubeupload.com/signup">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="5242880">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="application/pdf,application/x-pdf">*.pdf</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
             <Action Type="login" Url="https://cubeupload.com/login" PostParams="cube_username=$(_LOGIN);cube_password=$(_PASSWORD);login=Login" OnlyOnce="1"/>
             <Action Type="upload" Url="https://cubeupload.com/upload_json.php" PostParams="name=$(FILENAME);userHash=false;userID=false;fileinput[0]=%filename%;" 
@@ -357,12 +472,59 @@
         <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" />
     </Server>
     <Server Name="picabox.ru" Authorize="0" FileHost="0" Debug="0" Plugin="picabox" WebsiteUrl="https://picabox.ru" RegistrationUrl="https://picabox.ru/site/signin">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/x-xbitmap">*.xbm</Format>
+                    <Format MimeType="image/tiff">*.tif,*.tiff</Format>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/x-portable-anymap">*.pnm</Format>
+                    <Format MimeType="image/jpeg">*.jpeg</Format>
+                    <Format MimeType="image/heif">*.heif</Format>
+                    <Format MimeType="image/x-icon">*.ico</Format>
+                    <Format MimeType="image/tiff">*.tiff</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/svg+xml">*.svg</Format>
+                    <Format MimeType="image/jpeg">*.jpg</Format>
+                    <Format MimeType="image/heic">*.heic</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/svg+xml">*.svg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/jpeg">*.jpeg</Format>
+                    <Format MimeType="image/avif">*.avif</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon">180</StorageTime>
+                <StorageTime UserTypes="reg">-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub"/>
     </Server>
     <Server Name="mega.nz" Authorize="2" Engine="MegaNz" FileHost="1" SupportsFolders="1" RegistrationUrl="https://mega.nz/register" 
             WebsiteUrl="https://mega.io/" MaxThreads="1" LoginLabel="Email">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="33554432" UserTypes="anon">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/tiff">*.tif,*.tiff</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/heic">*.heic</Format>
+                    <Format MimeType="image/avif">*.avif</Format>
+                    <Format MimeType="application/pdf">*.pdf</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -374,6 +536,12 @@
     </Server>
     <Server Name="imgbb.com" MaxFileSize="33554432" Plugin="imgbb" Authorize="1" PasswordLabel="API key" WebsiteUrl="https://imgbb.com/" 
             RegistrationUrl="https://imgbb.com/signup">
+        <Info>
+            
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -451,6 +619,11 @@
     </Server>
     <Server Name="postimages.org" Authorize="1" Type="image" Plugin="postimages.org" NeedPassword="0" WebsiteUrl="https://postimages.org"
         RegistrationUrl="https://postimages.org/signup">
+        <Info>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
@@ -718,10 +891,17 @@
         <!--<Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>-->
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
-    <Server Name="radikal.cloud" Authorize="2" MaxFileSize="10485760" WebsiteUrl="https://radikal.cloud/" RegistrationUrl="https://radikal.cloud/signup" PasswordLabel="API key">
+    <Server Name="radikal.cloud" Authorize="2" MaxFileSize="20971520" WebsiteUrl="https://radikal.cloud/" RegistrationUrl="https://radikal.cloud/signup" PasswordLabel="API key">
         <Info>
             <SupportedFormats>
-                <FormatGroup MaxFileSize="10485760" UserTypes="reg">
+                <FormatGroup MaxFileSize="10485760" UserTypes="anon">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="20971520" UserTypes="reg">
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
                     <Format MimeType="image/bmp">*.bmp</Format>
@@ -729,6 +909,10 @@
                     <Format MimeType="image/webp">*.webp</Format>
                 </FormatGroup>
             </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon">60</StorageTime>
+                <StorageTime UserTypes="reg">-1</StorageTime>
+            </StorageTimeInfo>
         </Info>
         <Actions>
             <Action Type="upload" Url="https://radikal.cloud/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD);">

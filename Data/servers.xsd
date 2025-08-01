@@ -114,6 +114,22 @@
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
+                                        <xs:element name="StorageTimeInfo" minOccurs="0">
+                                            <xs:complexType mixed="true">
+                                                <xs:sequence>
+                                                    <xs:element name="StorageTime" maxOccurs="unbounded" minOccurs="1">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:integer">
+                                                                    <xs:attribute type="xs:integer" name="MaxFileSize" use="optional"/>
+                                                                    <xs:attribute type="xs:string" name="UserTypes" use="optional"/>
+                                                                </xs:extension>
+                                                            </xs:simpleContent>        
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
                                         <xs:element name="ForbiddenFormats" minOccurs="0">
                                             <xs:complexType mixed="true">
                                                 <xs:sequence>

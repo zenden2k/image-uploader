@@ -249,6 +249,13 @@ SimpleXmlNode& SimpleXmlNode::each(std::function<bool(int, SimpleXmlNode&)> call
     return *this;
 }
 
+int SimpleXmlNode::GetLineNumber() const {
+    if (!impl_->m_el) { 
+        return -1;
+    }
+    return impl_->m_el->GetLineNum();
+}
+
 SimpleXmlNode SimpleXmlNode::CreateChild(const std::string& name) {
     if (!impl_->m_el)
         return 0;

@@ -59,6 +59,7 @@ public:
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_ENABLE, OnEnable)
         MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
+        MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
         COMMAND_ID_HANDLER(IDOK, OnOK)
         COMMAND_HANDLER(IDC_ALLTYPESRADIO, BN_CLICKED, OnServerTypeChanged)
         COMMAND_HANDLER(IDC_IMAGERADIO, BN_CLICKED, OnServerTypeChanged)
@@ -109,7 +110,8 @@ public:
     LRESULT OnBnDropdownAddServerButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
-    LRESULT OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
+    LRESULT OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     void TranslateUI();
     void setTitle(CString title);
     CString getTitle() const;
@@ -152,6 +154,7 @@ private:
     void clearFilter();
     void selectServerByName(const CString& name);
     void showAddServerButtonMenu(HWND control);
+    
 };
 
 

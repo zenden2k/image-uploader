@@ -53,7 +53,7 @@ std::string ServerListModel::getItemText(int row, int column) const {
         return serverData.getMaxFileSizeString();
     }
     if (column == 2) {
-        
+        return serverData.getStorageTimeString();
     }
     if (column == 3) {
         return serverData.ued->NeedAuthorization == 2 ? _("yes") : _("no");
@@ -157,10 +157,8 @@ std::string ServerData::getMaxFileSizeString() const {
         std::map<int, int64_t> fileSizes;
 
         for (const auto& formatGroup : ued->SupportedFormatGroups) {
-            
             if (formatGroup.MaxFileSize > fileSizes[formatGroup.MinUserRank]) {
                 fileSizes[formatGroup.MinUserRank] = formatGroup.MaxFileSize;
-                
             }
         }
 
@@ -170,8 +168,8 @@ std::string ServerData::getMaxFileSizeString() const {
             }
             if (fileSize) {
                 result += IuCoreUtils::FileSizeToString(fileSize);
-                result += " ";
-            }  
+            }
+            result += " ";
         }
 
         if (result.empty() && ued->MaxFileSize > 0) {
@@ -191,6 +189,17 @@ std::string ServerData::getServerDisplayName() const {
     return *serverDisplayName;
 }
 
+std::string ServerData::getStorageTimeString() const {
+    cacheStorageTime();
+    return *storageTimeStr;
+}
+
+
+int ServerData::getStorageTime() const {
+    cacheStorageTime();
+    return *storageTime;
+}
+
 bool ServerData::acceptFilter(const ServerFilter& filter) const {
     if (!filter.query.empty()) {
         if (StringSearch(getServerDisplayName(), filter.query) == std::string::npos) {
@@ -199,4 +208,31 @@ bool ServerData::acceptFilter(const ServerFilter& filter) const {
     }
 
     return (ued->TypeMask & filter.typeMask) != 0;
+}
+
+void ServerData::cacheStorageTime() const {
+    if (!storageTimeStr.has_value()) {
+        std::string daysStr;
+
+        if (ued->StorageTime.size() == 1) {
+            const auto& item = ued->StorageTime[0];
+            storageTime = item.Time;
+            storageTimeStr = item.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : str(IuStringUtils::FormatNoExcept(_n("%d day", "%d days", item.Time)) % item.Time);
+        } else if (!ued->StorageTime.empty()) {
+            storageTime = ued->StorageTime[0].Time;
+            for (const auto& storageTime : ued->StorageTime) {
+                if (!daysStr.empty()) {
+                    daysStr += "/ ";
+                }
+                if (storageTime.Time) {
+                    daysStr += storageTime.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : std::to_string(storageTime.Time);
+                }
+                daysStr += " ";
+            }
+            storageTimeStr = daysStr.empty() ? "" : str(IuStringUtils::FormatNoExcept(_("%1%days")) % daysStr);
+        } else {
+            storageTime = 0;
+            storageTimeStr = "";
+        }
+    }
 }

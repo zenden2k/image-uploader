@@ -142,7 +142,13 @@ struct FileFormatGroup {
     bool acceptsUserType(std::string_view userType) const;
 };
 
-/**
+struct StorageTime {
+    inline static constexpr int TIME_INFINITE = -1;
+    int Time = 0; // in days
+    std::vector<std::string> UserTypes;
+    int MinUserRank = 0;
+};
+    /**
 Global object <b>ServerParams</b> is an instance of ServerSettingsStruct.
 */
 class ServerSettingsStruct
@@ -221,6 +227,7 @@ class CUploadEngineData
         std::vector<UploadAction> Actions;
         std::vector<FileFormatGroup> SupportedFormatGroups;
         std::vector<FileFormatGroup> ForbiddenFormatGroups;
+        std::vector<StorageTime> StorageTime;
         std::string LoginLabel, PasswordLabel;
         std::string UserAgent;
         std::string Engine;

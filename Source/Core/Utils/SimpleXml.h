@@ -97,6 +97,7 @@ class SimpleXmlNode
         bool GetChilds(const std::string& name,std::vector<SimpleXmlNode> &out) const;
         bool GetAttributes(std::vector<std::string> &out) const;
         SimpleXmlNode& each(std::function<bool(int, SimpleXmlNode&)> callback);
+        int GetLineNumber() const;
 
         /*! @endcond */
         int GetAttributeCount();

@@ -179,6 +179,11 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             if (!forbiddenFormatsNode.IsNull()) {
                 loadFormats(forbiddenFormatsNode, UE, UE.ForbiddenFormatGroups);
             }
+
+            SimpleXmlNode storageTimeInfoNode = infoNode.GetChild("StorageTimeInfo", false);
+            if (!storageTimeInfoNode.IsNull()) {
+                loadStorageTimeInfo(storageTimeInfoNode, UE, UE.StorageTime);
+            }
         }
 
         std::vector<SimpleXmlNode> actions;
@@ -330,6 +335,36 @@ void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, 
     });
 
     std::stable_sort(out.begin(), out.end(), [](const FileFormatGroup& a, const FileFormatGroup& b) {
+        return a.MinUserRank < b.MinUserRank;
+    });
+}
+
+void CUploadEngineList::loadStorageTimeInfo(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<StorageTime>& out) {
+    node.each([&](int k, SimpleXmlNode& groupNode) -> bool {
+        if (groupNode.Name() == "StorageTime") {
+            StorageTime group;
+            std::string userTypes = groupNode.Attribute("UserTypes");
+            IuStringUtils::SplitTo(userTypes, ",", std::inserter(group.UserTypes, group.UserTypes.end()));
+            if (group.UserTypes.empty() || std::find(group.UserTypes.begin(), group.UserTypes.end(), std::string(UserTypes::ANONYMOUS)) != group.UserTypes.end()) {
+                group.MinUserRank = 0;
+            } else if (std::find(group.UserTypes.begin(), group.UserTypes.end(), std::string(UserTypes::REGISTERED)) != group.UserTypes.end()) {
+                group.MinUserRank = 1;
+            } else {
+                // TODO:
+                group.MinUserRank = 2;
+            }
+            try {
+                group.Time = std::stoi(groupNode.Text());
+            } catch (const std::exception& ex) {
+                LOG(WARNING) << "loadStorageTimeInfo exception, line no. " << groupNode.GetLineNumber() << ": " << ex.what();
+            }
+
+            out.push_back(std::move(group));
+        }
+        return false;
+    });
+
+    std::stable_sort(out.begin(), out.end(), [](const StorageTime& a, const StorageTime& b) {
         return a.MinUserRank < b.MinUserRank;
     });
 }
