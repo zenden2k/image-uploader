@@ -262,8 +262,5 @@ void CServerProfileGroupSelectDialog::createResources() {
 }
 
 LRESULT CServerProfileGroupSelectDialog::OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    for (auto& it : serverSelectors_) {
-        it->updateServerList();
-    }
     return 0;
 }

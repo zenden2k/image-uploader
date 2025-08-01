@@ -30,7 +30,7 @@
 #include "Func/Common.h"
 
 constexpr unsigned int IDC_SELECTFOLDER = 4050;
-constexpr unsigned int IDC_SERVERBUTTON = 4000;
+constexpr unsigned int ID_SERVERBUTTON = 4000;
 constexpr unsigned int IDC_IMAGETOOLBAR = 4010;
 constexpr unsigned int IDC_FILETOOLBAR = 4011;
 
@@ -92,7 +92,7 @@ class CUploadSettings :
         COMMAND_HANDLER(IDC_LOGINTOOLBUTTON, BN_CLICKED, OnBnClickedLogin)
         COMMAND_HANDLER(IDC_LOGINTOOLBUTTON+1, BN_CLICKED, OnBnClickedLogin)
         COMMAND_HANDLER(IDC_SELECTFOLDER, BN_CLICKED, OnBnClickedSelectFolder)
-        COMMAND_HANDLER(IDC_SERVERBUTTON, BN_CLICKED, OnBnClickedSelectServer)
+        COMMAND_HANDLER(ID_SERVERBUTTON, BN_CLICKED, OnBnClickedSelectServer)
         COMMAND_HANDLER(IDC_NEWFOLDER, BN_CLICKED, OnNewFolder)
         COMMAND_HANDLER(IDC_NEWFOLDER+1, BN_CLICKED, OnNewFolder)
         COMMAND_HANDLER(IDC_OPENINBROWSER, BN_CLICKED, OnOpenInBrowser)

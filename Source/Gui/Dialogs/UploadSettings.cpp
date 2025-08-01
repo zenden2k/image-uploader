@@ -534,9 +534,9 @@ LRESULT CUploadSettings::OnBnClickedSelectServer(WORD /*wNotifyCode*/, WORD /*wI
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
 
     RECT buttonRect {};
-    CurrentToolbar.GetRect(IDC_SERVERBUTTON, &buttonRect);
+    CurrentToolbar.GetRect(ID_SERVERBUTTON, &buttonRect);
     CurrentToolbar.ClientToScreen(&buttonRect);
-    CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, TBIF_STATE, 0, TBSTATE_ENABLED | TBSTATE_PRESSED, nullptr, 0, 0, 0, 0);
+    CurrentToolbar.SetButtonInfo(ID_SERVERBUTTON, TBIF_STATE, 0, TBSTATE_ENABLED | TBSTATE_PRESSED, nullptr, 0, 0, 0, 0);
     ServerProfile& serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
     CString serverName = U2W(serverProfile.serverName());
     int serverIndex = myEngineList->getUploadEngineIndex(serverName);
@@ -552,7 +552,7 @@ LRESULT CUploadSettings::OnBnClickedSelectServer(WORD /*wNotifyCode*/, WORD /*wI
         }
     };
 
-    CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, TBIF_STATE, 0, TBSTATE_ENABLED, nullptr, 0, 0, 0, 0);
+    CurrentToolbar.SetButtonInfo(ID_SERVERBUTTON, TBIF_STATE, 0, TBSTATE_ENABLED, nullptr, 0, 0, 0, 0);
 
     return 0;
 }
@@ -589,8 +589,8 @@ void CUploadSettings::UpdateToolbarIcons()
             nFileIndex = m_PlaceSelectorImageList.ReplaceIcon(nFileIndex, hFileIcon);
     } else nFileIndex = -1;
 
-    Toolbar.ChangeBitmap(IDC_SERVERBUTTON, nImageIndex);
-    FileServerSelectBar.ChangeBitmap(IDC_SERVERBUTTON, nFileIndex);
+    Toolbar.ChangeBitmap(ID_SERVERBUTTON, nImageIndex);
+    FileServerSelectBar.ChangeBitmap(ID_SERVERBUTTON, nFileIndex);
 }
 
 void CUploadSettings::initToolbars() {
@@ -644,7 +644,7 @@ void CUploadSettings::initToolbars() {
         }
         CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
 
-        CurrentToolbar.AddButton(IDC_SERVERBUTTON, TBSTYLE_BUTTON | BTNS_AUTOSIZE | BTNS_SHOWTEXT, TBSTATE_ENABLED, -1, TR("Choose server..."), 0);
+        CurrentToolbar.AddButton(ID_SERVERBUTTON, TBSTYLE_BUTTON | BTNS_AUTOSIZE | BTNS_SHOWTEXT, TBSTATE_ENABLED, -1, TR("Choose server..."), 0);
         CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR1, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, _T(""), 0);
 
         CurrentToolbar.AddButton(IDC_LOGINTOOLBUTTON + !i, /*TBSTYLE_BUTTON*/ TBSTYLE_DROPDOWN | BTNS_AUTOSIZE | BTNS_SHOWTEXT, TBSTATE_ENABLED, 0, _T(""), 0);
@@ -682,7 +682,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     bi.cbSize = sizeof(bi);
     bi.dwMask = TBIF_TEXT;
     bi.pszText = const_cast<LPWSTR>(serverTitle.GetString());
-    currentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
+    currentToolbar.SetButtonInfo(ID_SERVERBUTTON, &bi);
 
     if(serverProfile.isNull())
     {
@@ -925,7 +925,7 @@ LRESULT CUploadSettings::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         bool ImageServer = (hwnd == Toolbar.m_hWnd);
         CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
 
-        ::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, IDC_SERVERBUTTON, reinterpret_cast<LPARAM>(&rc));
+        ::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, ID_SERVERBUTTON, reinterpret_cast<LPARAM>(&rc));
         CurrentToolbar.ClientToScreen(&rc);
         if(PtInRect(&rc, pt))
         {
@@ -1155,7 +1155,7 @@ LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WO
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CServerSelectorControl serverSelectorControl(uploadEngineManager_, false, false);
-    serverSelectorControl.setServersMask(CServerSelectorControl::smUrlShorteners);
+    serverSelectorControl.setServersMask(CUploadEngineData::TypeUrlShorteningServer);
     serverSelectorControl.setShowImageProcessingParams(false);
     serverSelectorControl.setTitle(TR("URL shortening server"));
     serverSelectorControl.setServerProfile(Settings.urlShorteningServer);
@@ -1415,7 +1415,7 @@ ServerProfile& CUploadSettings::getSessionFileServerItem() {
 }
 
 LRESULT CUploadSettings::OnChooseMoreImageServersClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    CServerProfileGroupSelectDialog dlg(uploadEngineManager_, sessionImageServer_, CServerSelectorControl::smImageServers | CServerSelectorControl::smFileServers);
+    CServerProfileGroupSelectDialog dlg(uploadEngineManager_, sessionImageServer_, CUploadEngineData::TypeImageServer | CUploadEngineData::TypeFileServer);
     if (dlg.DoModal(m_hWnd) == IDOK) {
         sessionImageServer_ = dlg.serverProfileGroup();
 
@@ -1425,7 +1425,7 @@ LRESULT CUploadSettings::OnChooseMoreImageServersClicked(WORD wNotifyCode, WORD 
 }
 
 LRESULT CUploadSettings::OnChooseMoreFileServersClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    CServerProfileGroupSelectDialog dlg(uploadEngineManager_, sessionFileServer_, CServerSelectorControl::smFileServers);
+    CServerProfileGroupSelectDialog dlg(uploadEngineManager_, sessionFileServer_, CUploadEngineData::TypeFileServer | CUploadEngineData::TypeVideoServer);
     if (dlg.DoModal(m_hWnd) == IDOK) {
         sessionFileServer_ = dlg.serverProfileGroup();
 

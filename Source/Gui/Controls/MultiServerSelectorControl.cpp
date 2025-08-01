@@ -31,7 +31,7 @@
 
 // CMultiServerSelectorControl
 CMultiServerSelectorControl::CMultiServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow) {
-    serversMask_ = CServerSelectorControl::smImageServers | CServerSelectorControl::smFileServers;
+    serversMask_ = CUploadEngineData::TypeImageServer | CUploadEngineData::TypeFileServer;
     uploadEngineManager_ = uploadEngineManager;
     BasicSettings* settings = ServiceLocator::instance()->basicSettings();
     profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) { profileListChanged(settings, servers); });
@@ -101,17 +101,17 @@ void CMultiServerSelectorControl::setServersMask(int mask) {
 
 void CMultiServerSelectorControl::updateInfoLabel() {
     auto* engineList = ServiceLocator::instance()->myEngineList();
-    std::wstring text;
+    std::string text;
     if (serverProfileGroup_.getCount() == 0) {
-        text = TR("Server not chosen");
+        text = _("Server not chosen");
     } else if (serverProfileGroup_.getCount() == 1) {
-        text = str(boost::wformat(TR("Selected server: %s")) % IuCoreUtils::Utf8ToWstring(engineList->getServerDisplayName(serverProfileGroup_.getByIndex(0).uploadEngineData())));
+        text = str(IuStringUtils::FormatNoExcept(_("Selected server: %s")) % engineList->getServerDisplayName(serverProfileGroup_.getByIndex(0).uploadEngineData()));
     }
     else {
-        text = str(boost::wformat(TR("Selected servers: %d")) % serverProfileGroup_.getCount());
+        text = str(IuStringUtils::FormatNoExcept(_n("%d server selected", "%d servers selected", serverProfileGroup_.getCount())) % serverProfileGroup_.getCount());
     }
 
-    SetDlgItemText(IDC_LABEL, text.c_str());
+    SetDlgItemText(IDC_LABEL, U2WC(text));
 }
 
 void CMultiServerSelectorControl::profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers) {

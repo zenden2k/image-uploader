@@ -36,11 +36,6 @@ CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngi
 
 LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    /*imageServerSelector_->updateServerList();
-    fileServerSelector_->updateServerList();*/
-    trayServerSelector_->updateServerList();
-    //contextMenuServerSelector_->updateServerList();
-    temporaryServerSelector_->updateServerList();
     return 0;
 }
 
@@ -62,7 +57,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_FILESERVERPLACEHOLDER);
 
     fileServerSelector_ = std::make_unique<CMultiServerSelectorControl>(uploadEngineManager_);
-    fileServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
+    fileServerSelector_->setServersMask(CUploadEngineData::TypeFileServer | CUploadEngineData::TypeVideoServer);
     //fileServerSelector_->setShowImageProcessingParams(false);
     fileServerSelector_->Create(m_hWnd, serverSelectorRect);
     fileServerSelector_->ShowWindow( SW_SHOW );
@@ -106,7 +101,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_URLSHORTENERPLACEHOLDER);
 
     urlShortenerServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
-    urlShortenerServerSelector_->setServersMask(CServerSelectorControl::smUrlShorteners);
+    urlShortenerServerSelector_->setServersMask(CUploadEngineData::TypeUrlShorteningServer);
     urlShortenerServerSelector_->setShowImageProcessingParams(false);
     urlShortenerServerSelector_->setShowParamsLink(false);
     urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);

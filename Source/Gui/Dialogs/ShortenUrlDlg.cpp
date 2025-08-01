@@ -76,7 +76,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CRect serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_SHORTENINGSERVERPLACEHOLDER);
 
     urlShortenerServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
-    urlShortenerServerSelector_->setServersMask(CServerSelectorControl::smUrlShorteners);
+    urlShortenerServerSelector_->setServersMask(CUploadEngineData::TypeUrlShorteningServer);
     urlShortenerServerSelector_->setShowImageProcessingParams(false);
     urlShortenerServerSelector_->setShowParamsLink(false);
     urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);

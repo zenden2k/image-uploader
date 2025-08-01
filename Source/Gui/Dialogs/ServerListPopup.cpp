@@ -64,6 +64,7 @@ CServerListPopup::~CServerListPopup()
 }
 
 void CServerListPopup::TranslateUI() {
+    SetWindowText(TR("Choose server"));
     TRCC(IDC_ALLTYPESRADIO, "serverlist.servertype", "All");
     TRCC(IDC_IMAGERADIO, "serverlist.servertype", "Image");
     TRCC(IDC_FILERADIO, "serverlist.servertype", "File");
@@ -97,14 +98,18 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     imageTypeRadioButton_.EnableWindow(serversMask_ & CUploadEngineData::TypeImageServer);
     fileTypeRadioButton_.EnableWindow(serversMask_ & CUploadEngineData::TypeFileServer);
     videoTypeRadioButton_.EnableWindow(serversMask_ & CUploadEngineData::TypeVideoServer);
-    //setTitle();
 
     createResources();
     updateServerList();
 
     applyFilter(false);
 
-    selectServerByName(U2W(engineList_->byIndex(serverIndex_)->Name));
+    CUploadEngineData* ued = engineList_->byIndex(serverIndex_);
+
+    if (ued) {
+        selectServerByName(U2W(ued->Name));
+    }
+    
     listView_.SetFocus();
 
     return FALSE;
@@ -264,6 +269,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
     }
 
     SetWindowPos(0, x, y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
+    ULONGLONG startTime = GetTickCount64(); 
     ShowWindow(SW_SHOW);
 
     //BOOL bMenuDestroyed(FALSE);
@@ -306,16 +312,21 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
             // addition to stealing the message, we also need to convert the
             // coordinates.
 
-        case WM_LBUTTONDOWN:
         case WM_LBUTTONUP:
+        case WM_RBUTTONUP:
+        case WM_MBUTTONUP:
+            if ((msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd)) && GetTickCount64() - startTime > 400) {
+                breakLoop = true;
+               
+            }
+            break;
+        case WM_LBUTTONDOWN:
         case WM_LBUTTONDBLCLK:
         case WM_RBUTTONDOWN:
-        case WM_RBUTTONUP:
         case WM_RBUTTONDBLCLK:
         case WM_MBUTTONDOWN:
-        case WM_MBUTTONUP:
         case WM_MBUTTONDBLCLK:
-            if (msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd))
+            if ((msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd)))
             {
                 breakLoop = true;
                 break;

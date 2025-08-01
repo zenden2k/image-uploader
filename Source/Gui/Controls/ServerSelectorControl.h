@@ -36,9 +36,12 @@
 #include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/Constants.h"
+#include "Core/Upload/UploadEngine.h"
+
 // CServerSelectorControl
 class IconBitmapUtils;
 class UploadEngineManager;
+class WinServerIconCache;
 
 constexpr int WM_SERVERSELECTCONTROL_CHANGE = WM_USER + 156;
 constexpr int WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED = WM_USER + 157;
@@ -48,25 +51,27 @@ class CServerSelectorControl :
 {
 public:
     explicit CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true, bool showServerIcons = true);
-virtual ~CServerSelectorControl();
+    virtual ~CServerSelectorControl();
     enum { IDD = IDD_SERVERSELECTORCONTROL, IDC_LOGINMENUITEM = 4020, IDC_USERNAME_FIRST_ID = 20000, IDC_USERNAME_LAST_ID = 21000,
         IDC_ADD_ACCOUNT= 21001, IDC_NO_ACCOUNT = 21003
     };
 
     BEGIN_MSG_MAP(CServerSelectorControl)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+        MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
         MESSAGE_HANDLER(WM_MOUSEACTIVATE, OnMouseActivate)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_ENABLE, OnEnable)
         MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
         COMMAND_ID_HANDLER(IDC_EDIT, OnClickedEdit)
-        COMMAND_HANDLER(IDC_SERVERCOMBOBOX, CBN_SELCHANGE, OnServerComboSelChange)
         COMMAND_ID_HANDLER(IDC_IMAGEPROCESSINGPARAMS, OnImageProcessingParamsClicked)
         COMMAND_ID_HANDLER(IDC_ACCOUNTINFO, OnAccountClick)
         COMMAND_ID_HANDLER(IDC_ADD_ACCOUNT, OnAddAccountClick)
         COMMAND_ID_HANDLER(IDC_LOGINMENUITEM, OnLoginMenuItemClicked)
         COMMAND_ID_HANDLER(IDC_NO_ACCOUNT, OnNoAccountClicked)
         COMMAND_RANGE_HANDLER(IDC_USERNAME_FIRST_ID, IDC_USERNAME_LAST_ID, OnUserNameMenuItemClick);
+        COMMAND_HANDLER(IDC_SERVERBUTTON, BN_CLICKED, OnBnClickedServerButton)
+        NOTIFY_HANDLER(IDC_SERVERBUTTON, BCN_DROPDOWN, OnBnDropdownServerButton)
     END_MSG_MAP()
 
     DLGTEMPLATE* GetTemplate();
@@ -75,10 +80,10 @@ virtual ~CServerSelectorControl();
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-    LRESULT OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnAddAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnLoginMenuItemClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -87,6 +92,9 @@ virtual ~CServerSelectorControl();
     LRESULT OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnBnClickedServerButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnBnDropdownServerButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+
     void TranslateUI();
     void setTitle(CString title);
     CString getTitle() const;
@@ -96,11 +104,10 @@ virtual ~CServerSelectorControl();
     void setShowFilesizeLimits(bool show);
     void notifyChange();
     void notifyServerListChanged();
-    void updateServerList();
+    void updateServerButton();
     bool isAccountChosen() const;
     int showPopup(HWND parent, const RECT& anchorRect);
     bool exitPopup(int nCommandId);
-    enum ServerMaskEnum{ smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4};
 
     ServerProfile serverProfile() const;
     void setShowImageProcessingParams(bool show);
@@ -109,7 +116,7 @@ virtual ~CServerSelectorControl();
     void setShowEmptyItem(bool show);
 
 private:
-    CComboBoxEx serverComboBox_;
+    CButton serverButton_;
     CHyperLink imageProcessingParamsLink_;
     CHyperLink accountLink_;
     CImageListManaged comboBoxImageList_,settingsButtonImageList_;
@@ -119,17 +126,12 @@ private:
     bool showDefaultServerItem_;
     bool showImageProcessingParams_;
     bool showParamsLink_;
-    void addAccount();
+  
     CString currentUserName_;
     int serversMask_;
-    void serverChanged();
-    void updateInfoLabel();
-    void createSettingsButton();
-    void createResources();
     bool defaultServer_;
     std::vector<CString> menuOpenedUserNames_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
-    int previousSelectedServerIndex;
     UploadEngineManager* uploadEngineManager_;
     bool isPopingUp_;
     bool isChildWindow_;
@@ -142,8 +144,16 @@ private:
     bool showServerIcons_;
     boost::signals2::scoped_connection profileListChangedConnection_;
     CIcon iconUser_, iconFolder_;
-    void clearServerComboBox();
+    WinServerIconCache* iconCache_;
+    ULONGLONG activationTime_ = 0;
+
     void profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers);
+    void addAccount();
+    void serverChanged();
+    void updateInfoLabel();
+    void createSettingsButton();
+    void createResources();
+    void showServerButtonPopup();
 };
 
 #endif

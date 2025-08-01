@@ -23,6 +23,7 @@
 #include <strsafe.h>
 
 #include "Gui/Dialogs/WizardDlg.h"
+#include "Gui/Dialogs/ServerListPopup.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
 #include "Gui/Dialogs/UploadParamsDlg.h"
@@ -35,22 +36,11 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/AbstractServerIconCache.h"
 #include "Gui/Helpers/DPIHelper.h"
+#include "Core/WinServerIconCache.h"
 
 namespace {
 
-constexpr char kAddFtpServer[] = "<add_ftp_server>";
-constexpr char kAddDirectoryAsServer[] = "<add_directory_as_server>";
 constexpr TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_ID[] = _T("MENU_EXIT_COMMAND_ID");
-
-// Why not 'strdup' function ?
-// Because strdup requires usage of free() function.
-char* DuplicateString(const char* str) {
-    size_t len = strlen(str);
-    char* res = new char[len + 1];
-    memcpy(res, str, len);
-    res[len] = '\0';
-    return res;
-}
 
 }
 
@@ -58,12 +48,11 @@ char* DuplicateString(const char* str) {
 CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow, bool showServerIcons)
 {
     showDefaultServerItem_ = false;
-    serversMask_ = smImageServers | smFileServers;
+    serversMask_ = CUploadEngineData::TypeImageServer | CUploadEngineData::TypeFileServer;
     showImageProcessingParams_ = true;
     showParamsLink_ = true;
     defaultServer_ = defaultServer;
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
-    previousSelectedServerIndex = -1;
     uploadEngineManager_ = uploadEngineManager;
     isChildWindow_ = isChildWindow;
     showFileSizeLimits_ = false;
@@ -71,7 +60,9 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
     isPopingUp_ = false;
     showEmptyItem_ = false;
     showServerIcons_ = showServerIcons;
-    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    auto serviceLocator = ServiceLocator::instance();
+    BasicSettings* settings = serviceLocator->basicSettings();
+    iconCache_ = dynamic_cast<WinServerIconCache*>(serviceLocator->serverIconCache());
     profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) { profileListChanged(settings, servers); } );
 }
 
@@ -105,29 +96,35 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     createSettingsButton();
     setTitle(title_);
     serverGroupboxFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SERVERGROUPBOX));
-    serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
     userPictureControl_ = GetDlgItem(IDC_USERICON);
     folderPictureControl_ = GetDlgItem(IDC_FOLDERICON);
+    serverButton_ = GetDlgItem(IDC_SERVERBUTTON);
+    serverButton_.SetButtonStyle(BS_SPLITBUTTON);
 
     createResources();
-    updateServerList();
+    updateServerButton();
+    updateInfoLabel();
 
     return FALSE;
 }
 
+LRESULT CServerSelectorControl::OnActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    if (LOWORD(wParam)) {
+        activationTime_ = GetTickCount64();
+    }
+    return 0;
+}
+
 LRESULT CServerSelectorControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    clearServerComboBox();
-
     return 0;
 }
 
 LRESULT CServerSelectorControl::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     createSettingsButton();
     createResources();
-
-    // Not working:
-    //updateServerList();
+    updateServerButton();
+    updateInfoLabel();
     return 0;
 }
 
@@ -149,22 +146,7 @@ void CServerSelectorControl::setServerProfile(const ServerProfile& serverProfile
         return;
     }
 
-    int count = serverComboBox_.GetCount();
-    int comboboxItemIndex = CB_ERR;
-    for (int i = 0; i < count; i++) {
-        char * data = static_cast<char*>(serverComboBox_.GetItemDataPtr(i));
-        if (data && !strcmp(data, serverProfile.serverName().c_str())) {
-            comboboxItemIndex = i;
-            break;
-        }
-    }
-
-    if ( comboboxItemIndex == CB_ERR) {
-        serverComboBox_.SetCurSel(0); //random server
-    } else {
-        serverComboBox_.SetCurSel(comboboxItemIndex);
-    }
-    previousSelectedServerIndex = comboboxItemIndex;
+    updateServerButton();
     updateInfoLabel();
 }
 
@@ -187,11 +169,6 @@ LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND h
     return 0;
 }
 
-LRESULT CServerSelectorControl::OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    serverChanged();
-    return 0;
-}
-
 void CServerSelectorControl::addAccount()
 {
     ServerProfile serverProfileCopy = serverProfile_;
@@ -210,84 +187,46 @@ void CServerSelectorControl::addAccount()
 
 void CServerSelectorControl::serverChanged() {
     CUploadEngineData * uploadEngineData = nullptr;
-    int serverComboElementIndex = serverComboBox_.GetCurSel();
-    char *lpstrServerName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
-
-    if ( !lpstrServerName ) {
-        serverComboElementIndex++;
-        serverComboBox_.SetCurSel(serverComboElementIndex);
-        lpstrServerName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
-    }
+    std::string serverName = serverProfile_.serverName();
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-    if ( serverComboElementIndex >= 0 && lpstrServerName ) {
-        std::string serverName = lpstrServerName;
+    if (!serverName.empty()) {
         CString serverNameW = Utf8ToWCstring( serverName );
         serverProfile_.setServerName(serverName);
-        if ( serverName == kAddFtpServer ) {
-            CAddFtpServerDialog dlg(myEngineList);
-            if ( dlg.DoModal(m_hWnd) == IDOK ) {
-                serverProfile_ = ServerProfile();
-                serverProfile_.setServerName(WCstringToUtf8(dlg.createdServerName()));
-                serverProfile_.setProfileName(WCstringToUtf8(dlg.createdServerLogin()));
-                serverProfile_.clearFolderInfo();
-                notifyServerListChanged();
-
-            } else {
-                serverComboBox_.SetCurSel(previousSelectedServerIndex);
-                serverChanged();
-                return;
+        uploadEngineData = myEngineList->byName(serverNameW);
+        if (!uploadEngineData) {
+            return;
+        }
+        auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+        auto ssIt = settings->ServersSettings.find(serverName);
+        if (ssIt != settings->ServersSettings.end()) {
+            std::map<std::string, ServerSettingsStruct>& ss = ssIt->second;
+            auto it = ss.begin();
+            if (it->first.empty()) {
+                ++it;
             }
-        } else if (serverName == kAddDirectoryAsServer  ) {
-            CAddDirectoryServerDialog dlg(myEngineList);
-            if ( dlg.DoModal(m_hWnd) == IDOK ) {
-                serverProfile_ = ServerProfile();
-                serverProfile_.setServerName(WCstringToUtf8(dlg.createdServerName()));
+            if (it != ss.end()) {
+                ServerSettingsStruct& s = it->second;
+                serverProfile_.setProfileName(s.authData.Login);
+                serverProfile_.setFolder(s.defaultFolder);
+            } else {
                 serverProfile_.setProfileName("");
                 serverProfile_.clearFolderInfo();
-                notifyServerListChanged();
-            } else {
-                serverComboBox_.SetCurSel(previousSelectedServerIndex);
-                serverChanged();
-                return;
-            }
-        } else if ( serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer ) {
-            uploadEngineData = myEngineList->byName(serverNameW);
-            if ( !uploadEngineData ) {
-                return ;
-            }
-            auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-            auto ssIt = settings->ServersSettings.find("serverName");
-            if ( ssIt != settings->ServersSettings.end() ) {
-                std::map <std::string, ServerSettingsStruct>& ss = ssIt->second;
-                auto it = ss.begin();
-                if ( it->first.empty() ) {
-                    ++it;
-                }
-                if ( it!= ss.end() ) {
-                    ServerSettingsStruct & s = it->second;
-                    serverProfile_.setProfileName(s.authData.Login);
-                    serverProfile_.setFolder(s.defaultFolder);
-                } else {
-                    serverProfile_.setProfileName("");
-                    serverProfile_.clearFolderInfo();
-                }
             }
         }
+            
 
     } else {
         serverProfile_ = ServerProfile();
     }
-    previousSelectedServerIndex = serverComboElementIndex;
+
     notifyChange();
 
     updateInfoLabel();
 }
 
 void CServerSelectorControl::updateInfoLabel() {
-    int serverComboElementIndex = serverComboBox_.GetCurSel();
-    DWORD_PTR itemData = serverComboBox_.GetItemData(serverComboElementIndex);
 
-    std::string serverName { itemData == CB_ERR ? "" : reinterpret_cast<const char*>(itemData) };
+    std::string serverName = serverProfile_.serverName();
     currentUserName_.Empty();
 
     bool showServerParams = (serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer );
@@ -383,97 +322,14 @@ void CServerSelectorControl::notifyServerListChanged()
     ::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, reinterpret_cast<WPARAM>(m_hWnd), 0);
 }
 
-void CServerSelectorControl::updateServerList()
-{
+void CServerSelectorControl::updateServerButton() {
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto iconCache = ServiceLocator::instance()->serverIconCache();
-    serverComboBox_.SetImageList(nullptr);
-    clearServerComboBox();
-    comboBoxImageList_.Destroy();
-    if (showServerIcons_) {
-        DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
-        comboBoxImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
-    }
-
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-    if (showEmptyItem_) {
-        serverComboBox_.AddItem(_T(""), -1, -1, 0, reinterpret_cast<LPARAM>(DuplicateString("")));
-    }
-    if ( showDefaultServerItem_ ) {
-        serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>(DuplicateString("default") ));
-    }
-
-    //CIcon hImageIcon = NULL, hFileIcon = NULL;
-    int selectedIndex = 0;
-    int addedItems = 0;
-    std::string selectedServerName = serverProfile_.serverName();
-    TCHAR line[40];
-    for ( int i=0; i < ARRAY_SIZE(line)-1; i++ ) {
-        line[i] = '-';
-    }
-    line[ARRAY_SIZE(line)-1] = 0;
-    for ( int mask = 1; mask <= 4; mask*=2 ) {
-        int currentLoopMask = mask & serversMask_;
-        if (!currentLoopMask) {
-            continue;
-        }
-        if ( addedItems ) {
-            serverComboBox_.AddItem(line, -1, -1, 0,  0 );
-        }
-        for (int i = 0; i < myEngineList->count(); i++) {
-            CUploadEngineData * ue = myEngineList->byIndex(i);
-
-            if (serversMask_ != smUrlShorteners && !ue->hasType(CUploadEngineData::TypeFileServer) && !ue->hasType(CUploadEngineData::TypeImageServer)) {
-                continue;
-            }
-            if (!ue->hasType(CUploadEngineData::TypeImageServer) && ((currentLoopMask & smImageServers) == smImageServers)) {
-                continue;
-            }
-            if (!ue->hasType(CUploadEngineData::TypeFileServer) && ((currentLoopMask & smFileServers) == smFileServers)) {
-                continue;
-            }
-
-            if ( !ue->hasType(CUploadEngineData::TypeUrlShorteningServer) && (currentLoopMask & smUrlShorteners) ) {
-                continue;
-            }
-            int nImageIndex = -1;
-            if (showServerIcons_) {
-                HICON hImageIcon = iconCache->getIconForServer(ue->Name, dpi);
-
-                if (hImageIcon) {
-                    nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);
-                }
-            }
-            size_t bufferSize = ue->Name.length() + 1;
-            char* serverName = new char[bufferSize];
-            StringCchCopyA(serverName, bufferSize, ue->Name.c_str());
-
-            std::string displayName = myEngineList->getServerDisplayName(ue);
-            if (showFileSizeLimits_ && ue->MaxFileSize > 0) {
-                displayName += " (" + IuCoreUtils::FileSizeToString(ue->MaxFileSize) + ")";
-            }
-            int itemIndex = serverComboBox_.AddItem(U2W(displayName), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));
-            if (itemIndex == -1) {
-                delete[] serverName;
-            } else {
-                if (ue->Name == selectedServerName) {
-                    selectedIndex = itemIndex;
-                }
-                addedItems++;
-            }
-        }
-    }
-    if (serversMask_ != smUrlShorteners ) {
-        serverComboBox_.AddItem(line, -1, -1, 0,  0 );
-        serverComboBox_.AddItem(TR("Add FTP server..."), -1, -1, 1, reinterpret_cast<LPARAM>(kAddFtpServer));
-        serverComboBox_.AddItem(TR("Add local folder..."), -1, -1, 1, reinterpret_cast<LPARAM>(kAddDirectoryAsServer));
-    }
-
-    if (showServerIcons_) {
-        serverComboBox_.SetImageList(comboBoxImageList_);
-    }
-    serverComboBox_.SetCurSel( selectedIndex );
-    serverChanged();
+    CUploadEngineData *ued = myEngineList->byName(serverProfile_.serverName());
+    HICON serverIcon = ued ? iconCache->getIconForServer(ued->Name, dpi) : nullptr;
+    serverButton_.SetWindowText(ued ? U2WC(myEngineList->getServerDisplayName(ued)) : TR("Choose server"));
+    serverButton_.SetIcon(serverIcon);
 }
 
 bool CServerSelectorControl::isAccountChosen() const
@@ -706,17 +562,6 @@ void CServerSelectorControl::createResources() {
     folderPictureControl_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
-void CServerSelectorControl::clearServerComboBox() {
-    int count = serverComboBox_.GetCount();
-    for (int i = 0; i < count; i++) {
-        char* data = static_cast<char*>(serverComboBox_.GetItemDataPtr(i));
-        if (data && *data != '<') {
-            delete[] data;
-        }
-    }
-    serverComboBox_.ResetContent();
-}
-
 void CServerSelectorControl::profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers) {
     if (!serverProfile_.profileName().empty()) {
         ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile_);
@@ -898,11 +743,11 @@ int CServerSelectorControl::showPopup(HWND parent, const RECT& anchorRect) {
         case WM_MBUTTONDOWN:
         case WM_MBUTTONUP:
         case WM_MBUTTONDBLCLK:
-            if (msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd))
+            if ((msg.hwnd == hwndOwner || ::IsChild(hwndOwner, msg.hwnd)) && (GetTickCount64() - activationTime_ > 400))
             {
                 breakLoop = true;
-                break;
             }
+            break;
         case WM_MOUSEMOVE:
             if (!isChildMessage) {
                 pt.x = (short)LOWORD(msg.lParam);
@@ -1048,4 +893,38 @@ LRESULT CServerSelectorControl::OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam
     }
 
     return 0;
+}
+
+LRESULT CServerSelectorControl::OnBnClickedServerButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    showServerButtonPopup();
+    return 0;
+}
+
+LRESULT CServerSelectorControl::OnBnDropdownServerButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    //serverButton_.PostMessage(BM_CLICK);
+    showServerButtonPopup();
+    return 0;
+}
+
+void CServerSelectorControl::showServerButtonPopup() {
+    RECT buttonRect;
+    serverButton_.GetWindowRect(&buttonRect);
+
+    CString serverName = U2W(serverProfile_.serverName());
+    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+    int serverIndex = myEngineList->getUploadEngineIndex(serverName);
+    
+    CServerListPopup serverListPopup(myEngineList, iconCache_, serversMask_, CUploadEngineListBase::ALL_SERVERS, serverIndex);
+
+    if (serverListPopup.showPopup(m_hWnd, buttonRect) == IDOK) {
+        int newServerIndex = serverListPopup.serverIndex();
+        if (newServerIndex != -1) {
+            CUploadEngineData * ued = myEngineList->byIndex(newServerIndex);
+            if (ued) {
+                serverProfile_.setServerName(ued->Name);
+            }
+            updateServerButton();
+            serverChanged();
+        }
+    };
 }

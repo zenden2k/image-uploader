@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-30 20:32+0300\n"
+"POT-Creation-Date: 2025-08-01 15:17+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/image-uploader/"
@@ -78,6 +78,14 @@ msgid "%d file total"
 msgid_plural "%d files total"
 msgstr[0] "Toplam dosya:"
 msgstr[1] "Toplam dosya:"
+
+#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:111
+#, fuzzy, c-format
+#| msgid "No Folder Selected"
+msgid "%d server selected"
+msgid_plural "%d servers selected"
+msgstr[0] "Klasör seçilmedi"
+msgstr[1] "Klasör seçilmedi"
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:31
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:33
@@ -160,19 +168,19 @@ msgstr "&Yükle"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:354
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:355
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1428
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1429
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1316
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1317
 msgid "(edited)"
 msgstr "(düzenlenmiş)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1015
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1018
 #, fuzzy
 #| msgid "(the link has been copied to the clipboard)"
 msgid "(the code has been copied to the clipboard)"
 msgstr "(Bağlantı panoya kopyalandı)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:939
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:992
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:942
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:995
 msgid "(the link has been copied to the clipboard)"
 msgstr "(Bağlantı panoya kopyalandı)"
 
@@ -180,8 +188,8 @@ msgstr "(Bağlantı panoya kopyalandı)"
 msgid "< Back"
 msgstr "<Geri"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:565
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:979
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:421
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:867
 msgid "<no authentication>"
 msgstr "<Hesap doğrulaması yok>"
 
@@ -203,13 +211,13 @@ msgstr "Hakkında..."
 msgid "Access:"
 msgstr "Erişim:"
 
-#: ../Source/Gui/Controls/ServerListView.cpp:35
+#: ../Source/Gui/Controls/ServerListView.cpp:33
 #, fuzzy
 #| msgid "Account..."
 msgid "Account"
 msgstr "Hesap..."
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:717
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:720
 msgid "Account is not enabled"
 msgstr "Hesap Etkin Değil"
 
@@ -218,7 +226,7 @@ msgstr "Hesap Etkin Değil"
 msgid "Account with such name already exists."
 msgstr "Bu adda bir hesap zaten var."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:320
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:259
 msgid "Account..."
 msgstr "Hesap..."
 
@@ -239,16 +247,14 @@ msgstr ""
 msgid "Add"
 msgstr "Ekle"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:468
-msgid "Add FTP server..."
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:591
+#, fuzzy, c-format
+#| msgid "Add FTP server..."
+msgid "Add %s server..."
 msgstr "FTP sunucusu ekle..."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:28
 msgid "Add FTP/SFTP server"
-msgstr ""
-
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:881
-msgid "Add FTP/SFTP server..."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:73
@@ -275,8 +281,8 @@ msgstr "Öğe ekle"
 msgid "Add Menu Item"
 msgstr "Menü öğesi Ekle"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:586
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:997
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:442
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:885
 #, fuzzy
 #| msgid "Account..."
 msgid "Add account..."
@@ -291,6 +297,12 @@ msgstr "Explorer Menüsüne ekle"
 #| msgid "Add Files..."
 msgid "Add files..."
 msgstr "Dosya Ekle..."
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:593
+#, fuzzy
+#| msgid "Add local folder as new server..."
+msgid "Add folder as new server..."
+msgstr "Yerel dizini sunucu olarak ekle..."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:172
 #, fuzzy
@@ -308,13 +320,11 @@ msgstr "Dosya Ekle..."
 msgid "Add item to video files' context menu"
 msgstr "\"Video ekle\" menüsü"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:890
-msgid "Add local folder as new server..."
-msgstr "Yerel dizini sunucu olarak ekle..."
-
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:469
-msgid "Add local folder..."
-msgstr "Yerel dizin ekle..."
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:72
+#, fuzzy
+#| msgid "Add FTP server..."
+msgid "Add server"
+msgstr "FTP sunucusu ekle..."
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:53
 msgid "Add text"
@@ -328,7 +338,7 @@ msgstr "Öngörüntü Metni ekle"
 msgid "Add text to image"
 msgstr "Metin ekle"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:634
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:636
 msgid "Add to Wizard"
 msgstr "Sihirbaza ekle"
 
@@ -376,7 +386,7 @@ msgstr "Tavsiye:"
 msgid "Aero only (Windows Vista or later)"
 msgstr "Sadece aero (Windows Vista veya üstü)"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:64
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:68
 msgctxt "serverlist.servertype"
 msgid "All"
 msgstr ""
@@ -409,7 +419,7 @@ msgstr "Tüm dosyalar"
 msgid "All files have been successfully uploaded."
 msgstr "Tüm dosyalar başarıyla yüklendi"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:585
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:587
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:178
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:80
 msgid "All monitors"
@@ -636,10 +646,6 @@ msgstr "Gözat..."
 msgid "Brush"
 msgstr "Fırça"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:403
-msgid "By default"
-msgstr "Varsayılan"
-
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:50
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:37
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:36
@@ -691,7 +697,7 @@ msgstr ""
 msgid "Cannot load thumbnail for image."
 msgstr "Görüntü'nün öngörüntüsü yüklenemiyor."
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1610
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:634
 #, fuzzy
 #| msgid "Cannot copy file "
 msgid ""
@@ -699,7 +705,7 @@ msgid ""
 "%2%"
 msgstr "Dosya kopyalanamadı"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:749
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:752
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:582
 #, c-format
 msgid ""
@@ -711,7 +717,7 @@ msgstr ""
 "%s. \n"
 " Başka bir işlem tarafından kullanılıyor olabilir."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:572
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:207
 msgid "Capture Last Region"
@@ -721,18 +727,18 @@ msgstr ""
 msgid "Capture Rectangular Region"
 msgstr "Dikdörtgen bölge yakalama"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:568
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:201
 msgid "Capture Selected Area"
 msgstr "Seçili Alanı Yakalama"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:578
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:204
 msgid "Capture Selected Object"
 msgstr "Seçili Nesneyi Yakalama"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:203
 #, fuzzy
@@ -748,14 +754,14 @@ msgstr "Etkin Pencere Yakalama"
 msgid "Capture cursor"
 msgstr "Gölgeli yakalama"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:573
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:575
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:200
 #: ../Source/Gui/Win7JumpList.cpp:251
 msgid "Capture the Active Window"
 msgstr "Etkin Pencere Yakalama"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:572
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:199
 #: ../Source/Gui/Win7JumpList.cpp:243
@@ -825,7 +831,7 @@ msgstr ""
 msgid "Choose folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:650
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:653
 msgid "Choose folder..."
 msgstr "Klasörü seç..."
 
@@ -833,7 +839,7 @@ msgstr "Klasörü seç..."
 msgid "Choose media file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:606
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:608
 msgid "Choose monitor"
 msgstr ""
 
@@ -841,8 +847,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:222
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:227
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:228
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1623
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1635
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1451
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1463
 msgid "Choose more servers..."
 msgstr ""
 
@@ -851,8 +857,10 @@ msgstr ""
 msgid "Choose program"
 msgstr ""
 
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:331
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:676
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:67
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:679
 msgid "Choose server"
 msgstr "Sunucu seç"
 
@@ -860,7 +868,7 @@ msgstr "Sunucu seç"
 msgid "Choose server for uploading images"
 msgstr "Resim yükleme sunucusunu seçin"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:644
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:647
 msgid "Choose server..."
 msgstr "Sunucu seç..."
 
@@ -929,7 +937,7 @@ msgstr "Pencere arka planını temizle"
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr "İşlemi başlatmak için \"Yükle\" butonuna tıklayın."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1021
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1024
 msgid "Click on this message to view details..."
 msgstr "Bu mesajın ayrıntılarını görüntülemek için tıklayın..."
 
@@ -1075,7 +1083,7 @@ msgid "Copy e-mail"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:376
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:963
 msgid "Copy folder's ID"
 msgstr ""
 
@@ -1114,7 +1122,7 @@ msgstr "Tıklanabilir öngörüntü"
 msgid "Copy link to view page"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:626
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:628
 msgid "Copy to Clipboard"
 msgstr "Panoya Kopyala"
 
@@ -1175,7 +1183,7 @@ msgstr ""
 msgid "Could not save settings file. See error log for details."
 msgstr "Ayarlar dosyası kaydedilemedi. Detay için hata günlüğüne bakınız."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:964
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:967
 msgid "Could not upload screenshot :("
 msgstr "Ekran görüntüsü yüklenemedi"
 
@@ -1235,7 +1243,7 @@ msgstr "Öngörüntü şablonu oluştur"
 msgid "Crop"
 msgstr "Kırp"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:587
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:589
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:169
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:71
 msgid "Current monitor"
@@ -1345,7 +1353,7 @@ msgstr "Belgeler"
 msgid "Don't have an account? Sign up on %s right now!"
 msgstr "Bir hesabınız yokmu? Hemen %s kaydolun"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1246
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1134
 msgid "Don't resize"
 msgstr "Yeniden boyutlandırma"
 
@@ -1397,8 +1405,8 @@ msgstr "Klasörü düzenle"
 msgid "Edit hotkey..."
 msgstr "Kısayolu düzenle..."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:514
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:916
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:370
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:804
 #, fuzzy
 #| msgid "View log for details."
 msgid "Edit login credentials..."
@@ -1417,7 +1425,7 @@ msgstr ""
 msgid "Enter URLs (one http:// or ftp:// link per line)"
 msgstr "Link'leri girin (satır başına bir http:// veya ftp:// linki)"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:321
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:260
 msgid "Enter account information"
 msgstr "Hesap bilgilerini giriniz"
 
@@ -1468,6 +1476,7 @@ msgstr "Metni girin:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:136
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:154
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:637
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
@@ -1479,7 +1488,6 @@ msgstr "Metni girin:"
 #: ../Source/Gui/Dialogs/TextViewDlg.cpp:85
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:331
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:350
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1614
 msgid "Error"
 msgstr "Hata"
 
@@ -1534,8 +1542,8 @@ msgstr "Çalıştırılabilir"
 msgid "Execute Squirrel script for each task (file)"
 msgstr "Her görev(dosya) için Squirrel komutunu çalıştır."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:276
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:663
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:278
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:665
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:226
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:529
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1935
@@ -1608,14 +1616,14 @@ msgstr ""
 msgid "File"
 msgstr "Dosya"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:66
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:70
 #, fuzzy
 #| msgid "File"
 msgctxt "serverlist.servertype"
 msgid "File"
 msgstr "Dosya"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:872
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:875
 #, c-format
 msgid "File \"%s\" is beeing uploaded to server %s.."
 msgstr "\"%s\" dosyası %s sunucusuna yüklenmeye başladı.."
@@ -1643,7 +1651,7 @@ msgstr ""
 msgid "File exceeds filesize limit of \"%s\" server (%s)."
 msgstr "Dosya boyutu \"%s\" sunucusunun (%s) limitini aşıyor."
 
-#: ../Source/Gui/Controls/ServerListView.cpp:36
+#: ../Source/Gui/Controls/ServerListView.cpp:34
 #, fuzzy
 #| msgid "Filename format:"
 msgid "File formats"
@@ -1733,7 +1741,7 @@ msgstr "Bitir"
 msgid "Finish >"
 msgstr "Son >"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:537
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:539
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Finish Screen Recording"
@@ -1833,7 +1841,7 @@ msgstr "Çerçeve rengi:"
 msgid "Frames layout"
 msgstr "Çerçeve düzeni"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:577
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:579
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:202
 msgid "Freehand Capture"
@@ -1883,7 +1891,7 @@ msgstr "Genel"
 msgid "Global hotkey:"
 msgstr "Genel kısayol:"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1180
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1068
 msgid "Go to signup page"
 msgstr "Kayıt sayfasına git"
 
@@ -1970,7 +1978,7 @@ msgstr "Yoksay"
 msgid "Ignore all"
 msgstr "Yoksay"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:65
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:69
 #, fuzzy
 #| msgid "Images"
 msgctxt "serverlist.servertype"
@@ -2013,7 +2021,7 @@ msgstr "Resim ayarları ve sunucu seçimi"
 msgid "Image processing"
 msgstr "Görüntü İşleme"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:100
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:91
 msgid "Image processing settings..."
 msgstr "Görüntü İşleme Ayarları..."
 
@@ -2057,7 +2065,7 @@ msgid "Implicit"
 msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:243
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:565
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:355
@@ -2274,7 +2282,7 @@ msgstr "Dosya MD5 kontrolü başarısız"
 msgid "MD5 check of the update package failed "
 msgstr "Güncelleştirme paketi MD5 kontrolü başarısız oldu"
 
-#: ../Source/Gui/Controls/ServerListView.cpp:33
+#: ../Source/Gui/Controls/ServerListView.cpp:31
 #, fuzzy
 #| msgid "Filesize: "
 msgid "Max. file size"
@@ -2296,7 +2304,7 @@ msgstr "Orta buton tıklama    :"
 msgid "Mime-type"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:591
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:593
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:97
 msgid "Monitor"
 msgstr ""
@@ -2349,7 +2357,7 @@ msgstr ""
 msgid "New Profile Name"
 msgstr "Yeni Profil Adı"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1068
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:956
 msgid "New folder"
 msgstr "Yeni klasör"
 
@@ -2366,7 +2374,7 @@ msgstr "İleri >"
 msgid "No"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:729
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:732
 msgid "No Folder Selected"
 msgstr "Klasör seçilmedi"
 
@@ -2449,11 +2457,11 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:206
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:364
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1079
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:967
 msgid "Open in Web Browser"
 msgstr "Tarayıcı ile aç"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:630
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:632
 msgid "Open in Wizard"
 msgstr "Sihirbazı Aç"
 
@@ -2466,7 +2474,7 @@ msgstr "Harici düzenleyicide aç"
 msgid "Open in folder"
 msgstr "Klasörü aç"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:618
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:620
 msgid "Open in the editor"
 msgstr "Düzenleyicide aç"
 
@@ -2474,13 +2482,13 @@ msgstr "Düzenleyicide aç"
 msgid "Open screenshot in the editor"
 msgstr "Hızlı çekimi düzenleyicide aç"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:656
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:658
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2818
 msgid "Open screenshots folder"
 msgstr "Hızlı çekim klasörünü aç"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:896
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:594
 #, fuzzy
 #| msgid "Open screenshots folder"
 msgid "Open servers folder"
@@ -2493,7 +2501,7 @@ msgid "Open system connection settings"
 msgstr "Bağlantı ayarları"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1187
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 #, fuzzy
 #| msgid "Open in the editor"
 msgid "Open the website"
@@ -2533,7 +2541,7 @@ msgstr "Parametreler:"
 msgid "Password:"
 msgstr "Parola:"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:559
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:561
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:219
 #: ../Source/Gui/Dialogs/MainDlg.cpp:174
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
@@ -2701,7 +2709,7 @@ msgstr "Kalite:"
 msgid "Queued"
 msgstr "Sıraya alındı"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:562
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:564
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:222
 msgid "Quick upload image from clipboard"
 msgstr ""
@@ -2931,7 +2939,7 @@ msgstr "Ekran Yakalama Eylemi"
 msgid "Screen Recording Window"
 msgstr "Ekran Yakalama Eylemi"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:649
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:651
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:352 ../Source/Gui/Win7JumpList.cpp:267
 #, fuzzy
 #| msgid "Screenshot Action"
@@ -2944,25 +2952,25 @@ msgstr "Ekran Yakalama Eylemi"
 msgid "Screen recording backend: %s"
 msgstr "Ekran Yakalama Eylemi"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:569
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
 #: ../Source/Gui/Dialogs/MainDlg.cpp:75
 msgid "Screenshot"
 msgstr "Ekran görüntüsü"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:642
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:644
 msgid "Screenshot Action"
 msgstr "Ekran Yakalama Eylemi"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1029
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1032
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2526
 #, fuzzy
 #| msgid "Screenshot was saved to clipboard."
 msgid "Screenshot has been copied to clipboard."
 msgstr "Ekran görüntüsü panoya kaydedildi"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1022
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1023
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1025
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1026
 msgid "Screenshot was uploaded"
 msgstr "Ekran görüntüsü yüklendi"
 
@@ -3055,15 +3063,14 @@ msgstr "Seçin..."
 msgid "Selected server: %s"
 msgstr ""
 
-#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:111
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1625
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1638
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1453
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1466
 #, c-format
 msgid "Selected servers: %d"
 msgstr ""
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:24
-#: ../Source/Gui/Controls/ServerListView.cpp:32
+#: ../Source/Gui/Controls/ServerListView.cpp:30
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:172
 msgid "Server"
@@ -3073,7 +3080,7 @@ msgstr "Sunucu"
 msgid "Server [:port]:"
 msgstr "Sunucu [:port]:"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:684
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:540
 msgid "Server and authentication settings"
 msgstr "Sunucu ve hesap ayarları"
 
@@ -3106,8 +3113,8 @@ msgstr "Sunucu adı:"
 msgid "Server not chosen"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:929
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1167
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:817
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1055
 msgid "Server settings..."
 msgstr "Sunucu ayarları..."
 
@@ -3141,7 +3148,7 @@ msgid "Session total:"
 msgstr "Toplam oturum:"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:175
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:661
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:663
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:218
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:72
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:360
@@ -3156,7 +3163,7 @@ msgstr "Ayarlar dosyası konum:"
 msgid "Settings have been saved."
 msgstr "Ayarlar kaydedildi."
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:100
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:91
 msgid "Settings..."
 msgstr "Ayarlar..."
 
@@ -3164,7 +3171,7 @@ msgstr "Ayarlar..."
 msgid "Shell context menu integration"
 msgstr "Menü entegrasyonu"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:940
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:943
 msgid "Short URL"
 msgstr "Kısa link"
 
@@ -3177,7 +3184,7 @@ msgid "Shorten URL"
 msgstr "Link kısalt"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:374
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1356
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1244
 #, c-format
 msgid "Shorten URL using %s"
 msgstr "Kısa link kullan (%s)"
@@ -3186,7 +3193,7 @@ msgstr "Kısa link kullan (%s)"
 msgid "Shorten URLs"
 msgstr "Kısa Link"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:653
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:655
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:223
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:347
 msgid "Shorten a Link"
@@ -3196,7 +3203,7 @@ msgstr "Link kısalt"
 msgid "Shorten a link from the clipboard"
 msgstr "Panodan link kısalt"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:459
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:461
 #, c-format
 msgid "Shortening URL \"%s\" using %s"
 msgstr "Kısaltılıyor \"%s\" kullanılarak %s"
@@ -3231,14 +3238,14 @@ msgstr ""
 msgid "Show preview for video files in file list"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:655
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:657
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:216
 #, fuzzy
 #| msgid "Show program's window"
 msgid "Show program window"
 msgstr "Program Penceresini Göster"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:658
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:660
 msgid "Show results of last upload"
 msgstr "Son yükleme sonuçlarını göster"
 
@@ -3281,7 +3288,7 @@ msgstr "Kaynak link (isteğe bağlı):"
 msgid "Source code"
 msgstr "Kaynak kodu"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:715
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:718
 msgid "Specify account..."
 msgstr "Hesabı Belirtin..."
 
@@ -3289,7 +3296,7 @@ msgstr "Hesabı Belirtin..."
 msgid "Start"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:650
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:652
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:353 ../Source/Gui/Win7JumpList.cpp:275
 #, fuzzy
 #| msgid "Screenshot Action"
@@ -3317,7 +3324,7 @@ msgstr ""
 msgid "Stop"
 msgstr "Durdur"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:539
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:541
 msgid "Stop uploading"
 msgstr "Yüklemeyi durdur"
 
@@ -3325,7 +3332,7 @@ msgstr "Yüklemeyi durdur"
 msgid "Stopped"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerListView.cpp:34
+#: ../Source/Gui/Controls/ServerListView.cpp:32
 msgid "Storage time"
 msgstr ""
 
@@ -3458,7 +3465,7 @@ msgstr ""
 "Bu, Öngörüntü program üzerinden değil, site tarafından oluşturulacak "
 "demektir."
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1204
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1092
 msgid "This server doesn't have any settings."
 msgstr ""
 
@@ -3577,7 +3584,7 @@ msgstr "İndirme Linki:"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:116
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:86
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1272
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1160
 msgid "URL shortening server"
 msgstr "Link kısaltılma sunucusu"
 
@@ -3594,7 +3601,7 @@ msgstr "Resim yüklenemiyor"
 msgid "Unable to make screenshot!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:943
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:946
 msgid "Unable to shorten the link..."
 msgstr "Link kısaltma için..."
 
@@ -3643,12 +3650,12 @@ msgid "Upload failed. Another retry (%d)..."
 msgstr "Yükleme başarısız. Tekrar dene (%d)..."
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:241
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:541
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:543
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
 msgid "Upload files"
 msgstr "Dosya Yükle"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:542
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:544
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
 msgid "Upload folder"
 msgstr "Klasör Yükle"
@@ -3680,7 +3687,7 @@ msgstr ""
 msgid "Upload to %s"
 msgstr "%s Yükle"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:622
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:624
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:985
 msgid "Upload to Web"
 msgstr "Web'den Yükle"
@@ -3730,7 +3737,7 @@ msgstr "Yükleme hataları"
 msgid "Uploading module"
 msgstr "Yükleme modülü"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:877
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:880
 msgid "Uploading screenshot"
 msgstr "Ekran görüntüsü yükleniyor"
 
@@ -3767,7 +3774,7 @@ msgstr ""
 msgid "Use template"
 msgstr "Şablon kullan"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:95
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:86
 msgid "User name"
 msgstr "Kullanıcı adı"
 
@@ -3780,7 +3787,7 @@ msgstr ""
 msgid "Vertical interval:"
 msgstr "Dikey aralık:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:67
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:71
 #, fuzzy
 #| msgid "Video files"
 msgctxt "serverlist.servertype"
@@ -3840,8 +3847,8 @@ msgstr "BBCode / HTML kodları"
 msgid "View Media File Information"
 msgstr "Medya Dosyası Bilgileri"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:944
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:965
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:947
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:968
 msgid "View log for details."
 msgstr "Ayrıntılar için günlüğü görüntüle."
 
@@ -4007,7 +4014,7 @@ msgstr ""
 msgid "multiple files"
 msgstr "Çoklu dosyalar"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:50
+#: ../Source/Gui/Models/ServerListModel.cpp:59
 #, fuzzy
 #| msgid "Undo"
 msgid "no"
@@ -4044,9 +4051,15 @@ msgstr "Tahir YILMAZ"
 msgid "unknown server"
 msgstr "Rasgele sunucu"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:50
+#: ../Source/Gui/Models/ServerListModel.cpp:59
 msgid "yes"
 msgstr ""
+
+#~ msgid "Add local folder..."
+#~ msgstr "Yerel dizin ekle..."
+
+#~ msgid "By default"
+#~ msgstr "Varsayılan"
 
 #~ msgid "Shorten a link"
 #~ msgstr "Link kısalt"

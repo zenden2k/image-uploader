@@ -70,7 +70,6 @@ virtual ~CMultiServerSelectorControl();
 
     const ServerProfileGroup& serverProfileGroup() const;
 private:
-    CHyperLink imageProcessingParamsLink_;
     ServerProfileGroup serverProfileGroup_;
     int serversMask_;
     void serverChanged();

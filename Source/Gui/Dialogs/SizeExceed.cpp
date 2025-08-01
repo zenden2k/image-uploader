@@ -66,7 +66,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
     imageServerSelector_->setTitle(fileTask_->isImage() ? TR("Server for uploading images") : TR("Server for other file types"));
     if (!fileTask_->isImage()) {
-        imageServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
+        imageServerSelector_->setServersMask(CUploadEngineData::TypeImageServer | CUploadEngineData::TypeFileServer);
     }
 
     imageServerSelector_->ShowWindow(SW_SHOW);
