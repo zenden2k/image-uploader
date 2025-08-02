@@ -384,7 +384,7 @@ set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_D
 
 set(LIBS_LIST
     gdiplus Ws2_32 dwmapi wininet IPHLPAPI
-    Secur32 Netapi32 Winhttp Userenv Psapi uxtheme Urlmon
+    Secur32 Netapi32 Winhttp Userenv Psapi uxtheme Urlmon Imm32
     minizip::minizip
 )
 

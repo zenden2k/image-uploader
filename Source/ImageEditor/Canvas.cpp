@@ -1311,7 +1311,7 @@ std::shared_ptr<InputBox> Canvas::getInputBox( const RECT& rect ) {
     rc.top -= scrollOffset_.y;
     rc.left -= scrollOffset_.x;
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? (WS_EX_LAYOUTRTL | WS_EX_RTLREADING) : 0;
-    /*HWND wnd =*/ inputBox_->Create( parentWindow_, rc, _T(""), WS_CHILD |ES_MULTILINE|/*ES_AUTOHSCROLL|*/ES_AUTOVSCROLL|  ES_WANTRETURN
+    /*HWND wnd =*/ inputBox_->Create( parentWindow_, rc, WS_CHILD |ES_MULTILINE|/*ES_AUTOHSCROLL|*/ES_AUTOVSCROLL|  ES_WANTRETURN
         | ES_NOHIDESEL /*| ES_LEFT */, WS_EX_TRANSPARENT | rtlStyle);
 
     inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);

@@ -8,6 +8,10 @@
 
 #include "atlheaders.h"
 #include "../InputBox.h"
+#include <Richedit.h>
+#include <RichOle.h>
+#include <TextServ.h>
+//#include <Msftedit.h>
 
 namespace ImageEditor {
 
@@ -16,77 +20,235 @@ public:
     virtual POINT GetScrollOffset() = 0;
     virtual ~InputBoxControlCallback() = default;
 };
-class InputBoxControl :
-    public CWindowImpl<InputBoxControl, CRichEditCtrl,CControlWinTraits>, public InputBox
-{
-    public:
-        typedef CWindowImpl<InputBoxControl, CRichEditCtrl,CControlWinTraits> Base;
-        InputBoxControl(Canvas* canvas);
-        ~InputBoxControl() override;
-        DECLARE_WND_SUPERCLASS(_T("CInputBoxControl"), CRichEditCtrl::GetWndClassName())
 
-        enum {  IDMM_UNDO = 100, IDMM_REDO, IDMM_CUT, IDMM_COPY, IDMM_PASTE};
-        
-         BEGIN_MSG_MAP(InputBoxControl)
-            //MSG_WM_KILLFOCUS(OnKillFocus)
-            MESSAGE_HANDLER(WM_CREATE, OnCreate)
-            MESSAGE_HANDLER(WM_DESTROY, OnDestroy) 
-            MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown )
-            //MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown )
-            MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
-            MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
-            MESSAGE_HANDLER(WM_SETCURSOR, OnSetCursor)
-            REFLECTED_NOTIFY_CODE_HANDLER(EN_REQUESTRESIZE, OnRequestResize)
-            REFLECTED_NOTIFY_CODE_HANDLER(EN_SELCHANGE, OnSelChange)
-            //NOTIFY_CODE_HANDLER(EN_REQUESTRESIZE, OnRequestResize)
-            REFLECTED_COMMAND_CODE_HANDLER_EX(EN_CHANGE, OnChange)
-            COMMAND_ID_HANDLER(IDMM_UNDO, OnUndo)
-            COMMAND_ID_HANDLER(IDMM_REDO, OnRedo)
-            COMMAND_ID_HANDLER(IDMM_CUT, OnCut)
-            COMMAND_ID_HANDLER(IDMM_COPY, OnCopy)
-            COMMAND_ID_HANDLER(IDMM_PASTE, OnPaste)
-            //CHAIN_MSG_MAP(Base) 
-         END_MSG_MAP()
+class InputBoxControl : public CWindowImpl<InputBoxControl, CWindow, CControlWinTraits>,
+                        public ITextHost2,
+                        public InputBox {
+public:
+    DECLARE_WND_CLASS_EX(L"WindowlessInputBox", CS_DBLCLKS, COLOR_WINDOW);
 
-         // Handler prototypes:
-         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
-        LRESULT OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
-        LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
-        LRESULT OnKillFocus(HWND hwndNewFocus);
-        //LRESULT OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnChange(UINT wNotifyCode,int, HWND);
-        LRESULT OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        LRESULT OnSelChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
-        LRESULT OnUndo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnRedo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnCut(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnCopy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnPaste(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
+    explicit InputBoxControl(Canvas* canvas);
+    ~InputBoxControl() override;
 
-    public:
-        BOOL SubclassWindow(HWND hWnd);
-        void show(bool s) override;
-        void resize(int x, int y, int w,int h, std::vector<MovableElement::Grip> grips) override;
-        void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) override;
-        bool isVisible() override;
-        void invalidate() override;
-        void setTextColor(Gdiplus::Color color) override;
-        void setFont(LOGFONT font,  DWORD changeMask) override;
-        void setRawText(const std::string& text) override;
-        std::string getRawText() override;
-        bool isEmpty() override;
-protected:
-    static DWORD CALLBACK EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
-    static DWORD CALLBACK EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
-    bool contextMenuOpened_;
-    Canvas* canvas_;
-    CFont biggerFont_;
+    // Создание/уничтожение
+    HWND Create(HWND hParent, const RECT& rc, DWORD style = WS_CHILD | WS_VISIBLE, DWORD exStyle = 0);
+    void Destroy();
+
+    // InputBox
+    void show(bool show) override;
+    void resize(int x, int y, int w, int h, std::vector<MovableElement::Grip> grips) override;
+    void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) override;
+    bool isVisible() override;
+    void invalidate() override;
+    void setTextColor(Gdiplus::Color color) override;
+    void setFont(LOGFONT font, DWORD changeMask) override;
+    void setRawText(const std::string& text) override;
+    std::string getRawText() override;
+    bool isEmpty() override;
+
+    // WTL messages
+    BEGIN_MSG_MAP(InputBoxControl)
+    MESSAGE_HANDLER(WM_CREATE, OnCreate)
+    MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+    MESSAGE_HANDLER(WM_SIZE, OnSize)
+    MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
+    MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
+    MESSAGE_HANDLER(WM_TIMER, OnTimer)
+    MESSAGE_HANDLER(WM_PAINT, OnPaint)
+    MESSAGE_RANGE_HANDLER(WM_MOUSEFIRST, WM_MOUSELAST, OnMouse)
+    MESSAGE_RANGE_HANDLER(WM_KEYFIRST, WM_KEYLAST, OnKey)
+    MESSAGE_HANDLER(WM_IME_STARTCOMPOSITION, OnIme)
+    MESSAGE_HANDLER(WM_IME_COMPOSITION, OnIme)
+    MESSAGE_HANDLER(WM_IME_ENDCOMPOSITION, OnIme)
+    MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+    MESSAGE_HANDLER(WM_SETCURSOR, OnSetCursor)
+    END_MSG_MAP()
+
+    // IUnknown
+    STDMETHOD(QueryInterface)(REFIID riid, void** ppv) override;
+    STDMETHOD_(ULONG, AddRef)() override {
+        return (ULONG)InterlockedIncrement(&refCount_);
+    };
+    STDMETHOD_(ULONG, Release)() override
+    {
+        ULONG r = (ULONG)InterlockedDecrement(&refCount_);
+        if (!r)
+            delete this;
+        return r;
+    }
+
+    // ITextHost/ITextHost2
+    HDC TxGetDC() override;
+    INT TxReleaseDC(HDC hdc) override;
+    BOOL TxShowScrollBar(INT, BOOL) override { return TRUE; }
+    BOOL TxEnableScrollBar(INT, INT) override { return TRUE; }
+    BOOL TxSetScrollRange(INT, LONG, INT, BOOL) override { return TRUE; }
+    BOOL TxSetScrollPos(INT, INT, BOOL) override { return TRUE; }
+    void TxInvalidateRect(LPCRECT prc, BOOL) override;
+    void TxViewChange(BOOL fUpdate) override;
+    BOOL TxCreateCaret(HBITMAP, INT, INT) override;
+    BOOL TxShowCaret(BOOL) override;
+    BOOL TxSetCaretPos(INT, INT) override;
+    BOOL TxSetTimer(UINT idTimer, UINT uTimeout) override;
+    void TxKillTimer(UINT idTimer) override;
+    void TxScrollWindowEx(INT, INT, LPCRECT, LPCRECT, HRGN, LPRECT, UINT) override { }
+    void TxSetCapture(BOOL fCapture) override {
+        if (fCapture)
+            SetCapture();
+        else
+            ReleaseCapture();
+    }
+    void TxSetFocus() override {
+        ::SetFocus(m_hWnd);
+    }
+    void TxSetCursor(HCURSOR hcur, BOOL) override;
+    BOOL TxScreenToClient(LPPOINT lppt) override { return ::ScreenToClient(m_hWnd, lppt); }
+    BOOL TxClientToScreen(LPPOINT lppt) override { return ::ClientToScreen(m_hWnd, lppt); }
+    HRESULT TxActivate(LONG*) override { return S_OK; }
+    HRESULT TxDeactivate(LONG) override { return S_OK; }
+    HRESULT TxGetClientRect(LPRECT prc) override;
+    HRESULT TxGetViewInset(LPRECT prc) override {
+        SetRect(prc, 0, 0, 0, 0);
+        return S_OK;
+    }
+    HRESULT TxGetCharFormat(const CHARFORMATW** ppCF) override {
+        *ppCF = &charFormat_;
+        return S_FALSE;
+    }
+    HRESULT TxGetParaFormat(const PARAFORMAT** ppPF) override {
+        *ppPF = &paraFormat_;
+        return S_OK;
+    }
+    COLORREF TxGetSysColor(int nIndex) override { return ::GetSysColor(nIndex); }
+    HRESULT TxGetBackStyle(TXTBACKSTYLE* pstyle) override {
+        *pstyle = TXTBACK_TRANSPARENT;
+        return S_OK;
+    }
+    HRESULT TxGetMaxLength(DWORD* plength) override {
+        *plength = maxLength_;
+        return S_OK;
+    }
+    HRESULT TxGetScrollBars(DWORD* pdwScrollBar) override {
+        *pdwScrollBar = ES_AUTOVSCROLL | ES_MULTILINE;
+        return S_OK;
+    }
+    HRESULT TxGetPasswordChar(TCHAR* pch) override {
+        *pch = 0;
+        return S_OK;
+    }
+    HRESULT TxGetAcceleratorPos(LONG* pcp) override {
+        *pcp = -1;
+        return S_OK;
+    }
+    HRESULT TxGetExtent(LPSIZEL lpExtent) override;
+    HRESULT OnTxCharFormatChange(CONST CHARFORMATW* pCF) override;
+    HRESULT OnTxParaFormatChange(CONST PARAFORMAT*) override { return S_OK; }
+    HRESULT TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) override;
+    HRESULT TxNotify(DWORD iNotify, void* pv) override;
+    HIMC TxImmGetContext() override { return ::ImmGetContext(m_hWnd); }
+    void TxImmReleaseContext(HIMC himc) override { ::ImmReleaseContext(m_hWnd, himc); }
+    HRESULT TxGetWindow(HWND* phwnd) override {
+        *phwnd = m_hWnd;
+        return S_OK;
+    }
+    HRESULT TxSetForegroundWindow() override {
+        ::SetForegroundWindow(m_hWnd);
+        return S_OK;
+    }
+    HPALETTE TxGetPalette() override { return nullptr; }
+    HRESULT TxGetEastAsianFlags(LONG* pFlags) override {
+        *pFlags = 0;
+        return S_OK;
+    }
+    //HCURSOR TxGetCursor(INT) override { return ::LoadCursor(nullptr, IDC_IBEAM); }
+    //HRESULT TxGetCaretPos(POINT*) override { return S_FALSE; }
+
+    /* BOOL TxGetActiveWindow(HWND* phwnd) override {
+        *phwnd = ::GetActiveWindow();
+        return TRUE;
+    }*/
+
+    // ITextHost2
+    HRESULT TxShowDropCaret(BOOL fShow, HDC hdc, LPCRECT prc) override { return S_OK; }
+    HRESULT TxDestroyCaret() override { return S_OK; }
+    HRESULT TxGetHorzExtent(LONG* p) override {
+        if (p)
+            *p = 0;
+        return S_OK;
+    }
+    // NEW (ITextHost2): двойной клик в очереди
+    BOOL TxIsDoubleClickPending() override { return FALSE; }
+    // NEW (ITextHost2): альтернативная установка курсора
+    HCURSOR TxSetCursor2(HCURSOR hcur, BOOL) override {
+        HCURSOR res = cursor_;
+        cursor_ = hcur;
+        SetCursor(cursor_);
+        return res;
+    }
+    // NEW (ITextHost2): уведомление об освобождении TextServices
+    void TxFreeTextServicesNotification() override { }
+    // NEW (ITextHost2): стили редактирования и окна
+    HRESULT TxGetEditStyle(DWORD dwItem, DWORD* pdwData) override {
+        if (!pdwData)
+            return E_POINTER;
+        // dwItem: GETESTYLE_* (см. TextServ.h). Вернём базовые флаги.
+        *pdwData = ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_WANTRETURN;
+        return S_OK;
+    }
+    HRESULT TxGetWindowStyles(DWORD* pdwStyle, DWORD* pdwExStyle) override {
+        if (pdwStyle)
+            *pdwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_CLIPSIBLINGS;
+        if (pdwExStyle)
+            *pdwExStyle = 0;
+        return S_OK;
+    }
+
+    // NEW (ITextHost): ширина selection bar
+    HRESULT TxGetSelectionBarWidth(LONG* pWidth) override {
+        if (pWidth)
+            *pWidth = 0;
+        return S_OK;
+    }
+
+private:
+    // Создание движка и дефолтные настройки
+    bool CreateTextServices();
+    void ApplyDefaults();
+
+    // Стримы RTF
+    static DWORD CALLBACK EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb);
+    static DWORD CALLBACK EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb);
+
+    // WTL handlers
+    LRESULT OnCreate(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnDestroy(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnSize(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnPaint(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnSetFocus(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnKillFocus(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnTimer(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnMouse(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnKey(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnIme(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnContextMenu(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnSetCursor(UINT, WPARAM, LPARAM, BOOL&);
+
+private:
+    // Состояние
+    Canvas* canvas_ {};
+    CComPtr<ITextServices> services_;
+    CComPtr<IUnknown> servicesUnk_;
+    RECT clientRect_ {};
+    DWORD maxLength_ { INFINITE };
+    CHARFORMAT charFormat_ {};
+    PARAFORMAT paraFormat_ {};
+    LOGFONT logFont_ {};
+    COLORREF textColor_ { RGB(0, 0, 0) };
+    bool visible_ { true };
+    LONG refCount_ { 1 };
+    bool contextMenuOpened_ { false };
+    std::vector<MovableElement::Grip> grips_;
+    HCURSOR cursor_;
 };
 
 }
