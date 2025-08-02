@@ -23,6 +23,12 @@
 #include <sstream>
 #include <ComDef.h>
 #include <strsafe.h>
+#include <dwrite.h>
+#include <dcommon.h>
+#include <MinHook.h>
+#include <d2d1_1.h>
+#include <d2d1_3.h>
+#include <dwrite_2.h>
 
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
@@ -37,8 +43,216 @@
 DEFINE_GUID_(IID_ITextServices, 0x8d33f740, 0xcf58, 0x11ce, 0xa8, 0x9d, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5);
 DEFINE_GUID_(IID_ITextHost, 0xc5bdd8d0, 0xd26e, 0x11ce, 0xa8, 0x9e, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5);
 DEFINE_GUID_(IID_ITextHost2, 0xc5bdd8d7, 0xd26e, 0x11ce, 0xa8, 0x9e, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5);
+DEFINE_GUID_(IID_ITextServices2, 0x8d33f741, 0xcf58, 0x11ce, 0xa8, 0x9d, 0x00, 0xaa, 0x00, 0x6c, 0xad, 0xc5);
 
 namespace ImageEditor {
+
+typedef void(STDMETHODCALLTYPE* DrawTextWFunc)(
+    ID2D1RenderTarget*,
+    const WCHAR*,
+    UINT32,
+    IDWriteTextFormat*,
+    const D2D1_RECT_F*,
+    ID2D1Brush*,
+    D2D1_DRAW_TEXT_OPTIONS,
+    DWRITE_MEASURING_MODE);
+
+DrawTextWFunc g_originalDrawTextW = nullptr;
+
+// Хук
+void STDMETHODCALLTYPE MyDrawTextW(
+    ID2D1RenderTarget* pThis,
+    const WCHAR* text,
+    UINT32 len,
+    IDWriteTextFormat* format,
+    const D2D1_RECT_F* layoutRect,
+    ID2D1Brush* brush,
+    D2D1_DRAW_TEXT_OPTIONS options,
+    DWRITE_MEASURING_MODE measuringMode) {
+    // Добавим ENABLE_COLOR_FONT, если его нет
+    options = (D2D1_DRAW_TEXT_OPTIONS)(options | D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+
+    g_originalDrawTextW(pThis, text, len, format, layoutRect, brush, options, measuringMode);
+}
+
+void HookDrawTextW(ID2D1DeviceContext* renderTarget) {
+    void** vtable = *(void***)renderTarget;
+
+    void* drawTextAddr = vtable[27]; // DrawTextW — 27-й метод в vtable
+
+    if (MH_CreateHook(drawTextAddr, &MyDrawTextW, reinterpret_cast<void**>(&g_originalDrawTextW)) != MH_OK)
+        return;
+
+    MH_EnableHook(drawTextAddr);
+}
+
+// Прототип оригинальной функции DrawTextLayout
+typedef void(STDMETHODCALLTYPE* OriginalDrawTextLayout_t)(
+    ID2D1RenderTarget* This,
+    D2D1_POINT_2F origin,
+    IDWriteTextLayout* textLayout,
+    ID2D1Brush* defaultFillBrush,
+    D2D1_DRAW_TEXT_OPTIONS options);
+
+// Указатель на оригинальную функцию
+OriginalDrawTextLayout_t g_originalDrawTextLayout = nullptr;
+
+// Ваша хук-функция
+void STDMETHODCALLTYPE MyDrawTextLayout(
+    ID2D1RenderTarget* This,
+    D2D1_POINT_2F origin,
+    IDWriteTextLayout* textLayout,
+    ID2D1Brush* defaultFillBrush,
+    D2D1_DRAW_TEXT_OPTIONS options) {
+    // Ваш код до вызова оригинальной функции
+    // Например, логирование или модификация параметров
+
+    // Вызов оригинальной функции
+    g_originalDrawTextLayout(This, origin, textLayout, defaultFillBrush, options | D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+
+    // Ваш код после вызова оригинальной функции
+}
+
+void HookDrawTextLayout(ID2D1DeviceContext* renderTarget) {
+    // Получаем указатель на виртуальную таблицу
+    void** vtable = *(void***)renderTarget;
+
+    // DrawTextLayout находится по индексу 28 в vtable ID2D1RenderTarget
+    void* drawTextLayoutAddr = vtable[28];
+
+    if (MH_CreateHook(drawTextLayoutAddr, &MyDrawTextLayout,
+            reinterpret_cast<void**>(&g_originalDrawTextLayout))
+        != MH_OK) {
+        // Обработка ошибки
+        return;
+    }
+
+    if (MH_EnableHook(drawTextLayoutAddr) != MH_OK) {
+        // Обработка ошибки
+        return;
+    }
+}
+
+// Прототип оригинальной функции DrawGlyphRun
+typedef void(STDMETHODCALLTYPE* OriginalDrawGlyphRun_t)(
+    ID2D1RenderTarget* This,
+    D2D1_POINT_2F baselineOrigin,
+    const DWRITE_GLYPH_RUN* glyphRun,
+    ID2D1Brush* foregroundBrush,
+    DWRITE_MEASURING_MODE measuringMode);
+
+// Указатель на оригинальную функцию
+OriginalDrawGlyphRun_t g_originalDrawGlyphRun = nullptr;
+
+// Ваша хук-функция для DrawGlyphRun
+void STDMETHODCALLTYPE MyDrawGlyphRun(
+    ID2D1RenderTarget* This,
+    D2D1_POINT_2F baselineOrigin,
+    const DWRITE_GLYPH_RUN* glyphRun,
+    ID2D1Brush* foregroundBrush,
+    DWRITE_MEASURING_MODE measuringMode) {
+    // Ваш код до вызова оригинальной функции
+    // Например, логирование глифов или модификация кисти
+
+    g_originalDrawGlyphRun(This, baselineOrigin, glyphRun, foregroundBrush, measuringMode);
+    return;
+
+    CComPtr<ID2D1DeviceContext4> deviceContext;
+    HRESULT hr = This->QueryInterface(__uuidof(ID2D1DeviceContext4),
+        reinterpret_cast<void**>(&deviceContext));
+
+    if (SUCCEEDED(hr) && deviceContext) {
+        // Проверяем, есть ли цветные глифы в этом запуске
+        CComPtr<IDWriteFactory2> factory;
+        hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,
+            __uuidof(IDWriteFactory2),
+            reinterpret_cast<IUnknown**>(&factory));
+        bool hasColorGlyphs = false;
+        if (SUCCEEDED(hr) && factory) {
+            // Проверяем каждый глиф на наличие цветных данных
+           
+
+            BOOL exists = FALSE;
+            // hr = glyphRun->fontFace->HasKerningPairs(&exists); // Любой метод для проверки
+
+            // Более простая проверка - пытаемся получить цветные слои
+            IDWriteColorGlyphRunEnumerator* enumerator = nullptr;
+            HRESULT colorHr = factory->TranslateColorGlyphRun(
+                baselineOrigin.x, baselineOrigin.y,
+                glyphRun,
+                nullptr,
+
+                measuringMode,
+                nullptr,
+                0,
+                &enumerator);
+
+            hasColorGlyphs = SUCCEEDED(colorHr) && enumerator;
+
+            if (hasColorGlyphs) {
+                // Проверяем, действительно ли есть цветные runs
+                BOOL hasRun = FALSE;
+                enumerator->MoveNext(&hasRun);
+                hasColorGlyphs = hasRun;
+                enumerator->Release();
+            }
+        }
+            
+
+            if (hasColorGlyphs) {
+
+                // Используем DrawColorBitmapGlyphRun для автоматической обработки цветных глифов
+                deviceContext->DrawColorBitmapGlyphRun(
+                     DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_SVG | DWRITE_GLYPH_IMAGE_FORMATS_PNG,
+                    baselineOrigin,
+                    glyphRun,
+                    measuringMode);
+
+                return;
+                /*if (SUCCEEDED(hr)) {
+                    // Успешно нарисовали цветные глифы
+                    deviceContext->Release();
+                    return;
+                }*/
+            } else {
+               // g_originalDrawGlyphRun(This, baselineOrigin, glyphRun, foregroundBrush, measuringMode);
+
+            }
+    }
+
+    // Fallback на обычный рендеринг
+    //g_originalDrawGlyphRun(This, baselineOrigin, glyphRun, foregroundBrush, measuringMode);
+
+    // Вызов оригинальной функции
+    g_originalDrawGlyphRun(This, baselineOrigin, glyphRun, foregroundBrush, measuringMode);
+
+    // Ваш код после вызова оригинальной функции
+}
+
+void HookAllTextMethods(ID2D1RenderTarget* renderTarget) {
+    void** vtable = *(void***)renderTarget;
+
+    // Хук DrawTextW (индекс 27)
+    if (MH_CreateHook(vtable[27], &MyDrawTextW,
+            reinterpret_cast<void**>(&g_originalDrawTextW))
+        == MH_OK) {
+        MH_EnableHook(vtable[27]);
+    }
+
+    // Хук DrawTextLayout (индекс 28)
+    if (MH_CreateHook(vtable[28], &MyDrawTextLayout,
+            reinterpret_cast<void**>(&g_originalDrawTextLayout))
+        == MH_OK) {
+        MH_EnableHook(vtable[28]);
+    }
+
+    // Хук DrawGlyphRun (индекс 29)
+    if (MH_CreateHook(vtable[29], &MyDrawGlyphRun,
+            reinterpret_cast<void**>(&g_originalDrawGlyphRun))
+        == MH_OK) {
+        MH_EnableHook(vtable[29]);
+    }
+}
 
 static HRESULT(STDAPICALLTYPE* pCreateTextServices)(IUnknown*, ITextHost*, IUnknown**) = nullptr;
 
@@ -56,7 +270,7 @@ InputBoxControl::~InputBoxControl() {
 }
 
 HWND InputBoxControl::Create(HWND hParent, const RECT& rc, DWORD style, DWORD exStyle) {
-
+    d2dMode_ = true;
     ::LoadLibraryW(L"msftedit.dll");
     HMODULE h = ::GetModuleHandleW(L"msftedit.dll");
     if (!h)
@@ -76,6 +290,7 @@ HWND InputBoxControl::Create(HWND hParent, const RECT& rc, DWORD style, DWORD ex
 
 void InputBoxControl::Destroy() {
     services_.Release();
+    services2_.Release();
     servicesUnk_.Release();
     ::DestroyCaret();
     /*if (m_hWnd)
@@ -94,6 +309,10 @@ bool InputBoxControl::CreateTextServices() {
     hr = punk->QueryInterface(IID_ITextServices, (void**)&services_);
     if (FAILED(hr))
         return false;
+
+    hr = punk->QueryInterface(IID_ITextServices2, (void**)&services2_);
+    /* if (FAILED(hr))
+        return false;*/
 
     ApplyDefaults();
     return true;
@@ -114,6 +333,13 @@ void InputBoxControl::ApplyDefaults() {
     // Многострочность, автоскролл, не скрывать выделение
     LONG style = ES_MULTILINE | ES_AUTOVSCROLL  | ES_NOHIDESEL |  ES_WANTRETURN;
     services_->TxSendMessage(EM_SETOPTIONS, ECOOP_OR, style, nullptr);
+
+    // ВАЖНО: Включаем поддержку emoji и улучшенного рендеринга
+    //services_->TxSendMessage(EM_SETTEXTMODE, TM_RICHTEXT, 0, nullptr); // RTF режим вместо plaintext
+
+    // Включаем расширенную типографику для emoji
+    LONG langOptions = IMF_UIFONTS | IMF_AUTOFONT | IMF_DUALFONT;
+    services_->TxSendMessage(EM_SETLANGOPTIONS, 0, langOptions, nullptr);
 
     // Плейнтекст режим — при необходимости можно убрать, если нужен RTF ввод по умолчанию
     //services_->TxSendMessage(EM_SETTEXTMODE, TM_PLAINTEXT, 0, nullptr);
@@ -147,7 +373,84 @@ void InputBoxControl::resize(int x, int y, int w, int h, std::vector<MovableElem
     ::GetClientRect(m_hWnd, &clientRect_);
 }
 
+bool InputBoxControl::CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gdiplus::Rect sourceRect, ID2D1Bitmap** d2dBitmap) {
+    if (!renderTarget_ || !gdipBitmap)
+        return false;
+
+    // Создаем временный bitmap для конвертации
+    Gdiplus::Bitmap tempBitmap(sourceRect.Width, sourceRect.Height, PixelFormat32bppPARGB);
+    Gdiplus::Graphics tempGraphics(&tempBitmap);
+
+    // Копируем нужную область
+    tempGraphics.DrawImage(gdipBitmap,
+        Gdiplus::Rect(0, 0, sourceRect.Width, sourceRect.Height),
+        sourceRect.X, sourceRect.Y, sourceRect.Width, sourceRect.Height,
+        Gdiplus::UnitPixel);
+
+    // Получаем данные пикселей
+    Gdiplus::BitmapData bitmapData;
+    Gdiplus::Rect lockRect(0, 0, sourceRect.Width, sourceRect.Height);
+    tempBitmap.LockBits(&lockRect, Gdiplus::ImageLockModeRead, PixelFormat32bppPARGB, &bitmapData);
+
+    // Создаем D2D bitmap
+    D2D1_BITMAP_PROPERTIES bitmapProps = D2D1::BitmapProperties(
+        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
+        96.0f, 96.0f);
+
+    HRESULT hr = renderTarget_->CreateBitmap(
+        D2D1::SizeU(sourceRect.Width, sourceRect.Height),
+        bitmapData.Scan0,
+        bitmapData.Stride,
+        bitmapProps,
+        d2dBitmap);
+
+    tempBitmap.UnlockBits(&bitmapData);
+
+    return SUCCEEDED(hr);
+}
+
 void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) {
+    {
+        if (!services2_ || !InitializeD2D())
+            return;
+
+            HDC mainHdc = graphics->GetHDC();
+
+        RECT bindRect = { layoutArea.X, layoutArea.Y, layoutArea.GetRight(), layoutArea.GetBottom() };
+        HRESULT hr = renderTarget_->BindDC(mainHdc, &bindRect);
+        if (FAILED(hr)) {
+            graphics->ReleaseHDC(mainHdc);
+            return ;
+        }
+
+        renderTarget_->BeginDraw();
+
+        // ВАЖНО: Подготавливаем фон в D2D
+        if (background) {
+            // Конвертируем GDI+ bitmap в D2D bitmap и рисуем фон
+            CComPtr<ID2D1Bitmap> d2dBackground;
+            if (CreateD2DBitmapFromGdiplus(background, layoutArea, &d2dBackground)) {
+                D2D1_RECT_F destRect = D2D1::RectF(0, 0, (FLOAT)layoutArea.Width, (FLOAT)layoutArea.Height);
+                renderTarget_->DrawBitmap(d2dBackground, destRect);
+            }
+        } else {
+            // Заливаем белым фоном
+            CComPtr<ID2D1SolidColorBrush> whiteBrush;
+            renderTarget_->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &whiteBrush);
+            D2D1_RECT_F rect = D2D1::RectF(0, 0, (FLOAT)layoutArea.Width, (FLOAT)layoutArea.Height);
+            renderTarget_->FillRectangle(rect, whiteBrush);
+        }
+
+        // Теперь рендерим текст поверх подготовленного фона
+        RECTL textRect = { 0, 0, layoutArea.Width, layoutArea.Height };
+        hr = services2_->TxDrawD2D(renderTarget_, &textRect, nullptr, 0);
+
+        HRESULT endHr = renderTarget_->EndDraw();
+        graphics->ReleaseHDC(mainHdc);
+
+       
+    }
+    return;
     if (!services_)
         return;
 
@@ -240,7 +543,7 @@ void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
         charFormat_.yHeight = pointSize * 20;
     }
 
-    StringCchCopy(charFormat_.szFaceName,std::size(charFormat_.szFaceName), logFont_.lfFaceName);
+    wcsncpy_s(charFormat_.szFaceName, logFont_.lfFaceName, _TRUNCATE);
 
     charFormat_.dwEffects = 0; 
 
@@ -335,7 +638,7 @@ DWORD CALLBACK InputBoxControl::EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE 
 LRESULT InputBoxControl::OnCreate(UINT, WPARAM, LPARAM, BOOL& bHandled) {
     int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
     // Базовый шрифт: Segoe UI 11pt
-    wcscpy_s(logFont_.lfFaceName, L"Segoe UI");
+    wcscpy_s(logFont_.lfFaceName, L"Segoe UI Emoji");
     logFont_.lfHeight = -MulDiv(11, dpi, 72);
     logFont_.lfWeight = FW_NORMAL;
 
@@ -370,26 +673,78 @@ LRESULT InputBoxControl::OnSize(UINT, WPARAM, LPARAM lParam, BOOL&) {
     return 0;
 }
 
+
+
 LRESULT InputBoxControl::OnPaint(UINT, WPARAM, LPARAM, BOOL&) {
     CPaintDC dc(m_hWnd);
-    if (!services_ /* || !visible_*/) {
+    RECT clientRect;
+    GetClientRect(&clientRect);
+    RECT rc = { clientRect.left, clientRect.top, clientRect.right, clientRect.bottom };
+    RECTL rcPaint = { dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top, dc.m_ps.rcPaint.right, dc.m_ps.rcPaint.bottom };
+
+    if (!d2dMode_ || !InitializeD2D()) {
+        if (!services_ ) {
+            return 0;
+        }
+        HRESULT hr = services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, dc, nullptr, reinterpret_cast<LPCRECTL>(&rc), nullptr, nullptr, nullptr, 0, 0);
+        if (FAILED(hr)) {
+            LOG(ERROR) << _com_error(hr).ErrorMessage();
+        }
+        
+        return 0;
+    }
+   
+    if (!services2_) {
         return 0;
     }
 
-    RECT clientRect;
-    GetClientRect(&clientRect);
+    HRESULT hr = renderTarget_->BindDC(dc, &rc);
+    if (FAILED(hr)) {
+        return 0;
+    }
+    renderTarget_->BeginDraw();
+    /*
+     // --- Создаем формат текста с Segoe UI Emoji ---
+    CComPtr<IDWriteTextFormat> textFormat;
+    dwriteFactory_->CreateTextFormat(
+        L"Segoe UI Emoji", // ⚠️ важен для цветных emoji
+        nullptr,
+        DWRITE_FONT_WEIGHT_NORMAL,
+        DWRITE_FONT_STYLE_NORMAL,
+        DWRITE_FONT_STRETCH_NORMAL,
+        32.0f,
+        L"en-us",
+        &textFormat);
 
-    RECTL rc = { clientRect.left, clientRect.top, clientRect.right, clientRect.bottom };
-    RECTL rcPaint = { dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top, dc.m_ps.rcPaint.right, dc.m_ps.rcPaint.bottom };
-    HRESULT hr = services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, dc, nullptr, &rc, nullptr, nullptr/* &dc.m_ps.rcPaint*/, nullptr, 0, 0);
+    // Создаем цветную кисть
+    CComPtr<ID2D1SolidColorBrush> brush;
+    renderTarget_->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &brush);
+
+    // Строка с emoji
+    const wchar_t* text = L"\u0048\u0065\u006C\u006C\u006F\u0020\U0001F30D\u0020\U0001F604";
+    D2D1_RECT_F layoutRect = D2D1::RectF(0, 0, (FLOAT)(clientRect.right - clientRect.left), (FLOAT)(clientRect.bottom - clientRect.top));
+
+    // Рисуем текст
+    renderTarget_->DrawTextW(
+        text,
+        (UINT32)wcslen(text),
+        textFormat,
+        &layoutRect,
+        brush,
+        D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT*D2D1_DRAW_TEXT_OPTIONS_NONE, // ⚠️ ключ для цветных emoji
+        DWRITE_MEASURING_MODE_NATURAL);*/
+    hr = services2_->TxDrawD2D(renderTarget_, reinterpret_cast<LPCRECTL>(&rc), nullptr, 0);
+
+
     if (FAILED(hr)) {
         LOG(ERROR) << _com_error(hr).ErrorMessage();
     }
+    HRESULT endHr = renderTarget_->EndDraw();
+
     return 0;
 }
 
 LRESULT InputBoxControl::OnSetFocus(UINT, WPARAM wParam, LPARAM, BOOL&) {
-
     DWORD oldMask = charFormat_.dwMask;
     charFormat_.dwMask = 0;
         services_->OnTxInPlaceActivate(nullptr);
@@ -573,6 +928,40 @@ LRESULT InputBoxControl::OnSetCursor(UINT, WPARAM, LPARAM, BOOL& bHandled) {
     return 0;
 }
 
+bool InputBoxControl::InitializeD2D() {
+    if (d2dFactory_)
+        return true;
+
+    HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2dFactory_);
+    if (FAILED(hr))
+        return false;
+
+
+    if (!dwriteFactory_) {
+        DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown**)&dwriteFactory_);
+    }
+
+    D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(
+        D2D1_RENDER_TARGET_TYPE_DEFAULT,
+        D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
+
+    hr = d2dFactory_->CreateDCRenderTarget(&props, &renderTarget_);
+
+    if (SUCCEEDED(hr)) {
+
+        CComPtr<ID2D1DeviceContext> deviceContext;
+        HRESULT hr = renderTarget_->QueryInterface(__uuidof(ID2D1DeviceContext),
+            reinterpret_cast<void**>(&deviceContext));
+
+        HookDrawTextW(deviceContext);
+        HookDrawTextLayout(deviceContext);
+
+
+        HookAllTextMethods(renderTarget_);
+    }
+    return SUCCEEDED(hr);
+}
+
 // IUnknown
 STDMETHODIMP InputBoxControl::QueryInterface(REFIID riid, void** ppv) {
     if (!ppv)
@@ -717,7 +1106,7 @@ HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
     return S_OK;
 }
 HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
-    DWORD bits = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_WORDWRAP | TXTBIT_USECURRENTBKG | TXTBIT_CLIENTRECTCHANGE;
+    DWORD bits = TXTBIT_RICHTEXT | TXTBIT_MULTILINE | TXTBIT_WORDWRAP | TXTBIT_USECURRENTBKG | TXTBIT_CLIENTRECTCHANGE | TXTBIT_D2DDWRITE | TXTBIT_D2DSUBPIXELLINES;
     *pdwBits = bits & dwMask;
     return S_OK;
 }

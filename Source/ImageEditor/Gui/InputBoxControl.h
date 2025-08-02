@@ -11,6 +11,10 @@
 #include <Richedit.h>
 #include <RichOle.h>
 #include <TextServ.h>
+#include <d2d1.h>
+#include <d2d1helper.h>
+#include <dwrite.h>
+
 //#include <Msftedit.h>
 
 namespace ImageEditor {
@@ -37,6 +41,7 @@ public:
     // InputBox
     void show(bool show) override;
     void resize(int x, int y, int w, int h, std::vector<MovableElement::Grip> grips) override;
+    bool CreateD2DBitmapFromGdiplus(Gdiplus::Bitmap* gdipBitmap, Gdiplus::Rect sourceRect, ID2D1Bitmap** d2dBitmap);
     void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) override;
     bool isVisible() override;
     void invalidate() override;
@@ -237,10 +242,15 @@ private:
     // Состояние
     Canvas* canvas_ {};
     CComPtr<ITextServices> services_;
+    CComPtr<ITextServices2> services2_;
     CComPtr<IUnknown> servicesUnk_;
+    CComPtr<ID2D1Factory> d2dFactory_;
+    CComPtr<ID2D1DCRenderTarget> renderTarget_;
+    CComPtr<IDWriteFactory> dwriteFactory_;
+    //CComPtr<ID2D1HwndRenderTarget> renderTarget_;
     RECT clientRect_ {};
     DWORD maxLength_ { INFINITE };
-    CHARFORMAT charFormat_ {};
+    CHARFORMAT2 charFormat_ {};
     PARAFORMAT paraFormat_ {};
     LOGFONT logFont_ {};
     COLORREF textColor_ { RGB(0, 0, 0) };
@@ -249,6 +259,8 @@ private:
     bool contextMenuOpened_ { false };
     std::vector<MovableElement::Grip> grips_;
     HCURSOR cursor_;
+    bool InitializeD2D();
+    bool d2dMode_;
 };
 
 }

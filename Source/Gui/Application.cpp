@@ -30,6 +30,7 @@ crash_rpt::CrashRpt g_crashRpt(
 
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
+#include <MinHook.h>
 
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/WizardDlg.h"
@@ -178,6 +179,9 @@ public:
 
         serviceLocator->setLogWindow(&logWindow_);
         serviceLocator->setLogger(logger_);
+        if (MH_Initialize() != MH_OK) {
+
+        }
     }
 
     void initServices() {
