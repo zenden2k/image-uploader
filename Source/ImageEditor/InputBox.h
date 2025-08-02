@@ -21,7 +21,6 @@ class InputBox {
         virtual std::string getRawText() = 0;
         virtual bool isEmpty() = 0;
         boost::signals2::signal<void(LPCTSTR)> onTextChanged;
-        boost::signals2::signal<void(int, int)> onSizeChanged;
         boost::signals2::signal<void()> onEditCanceled;
         boost::signals2::signal<void()> onEditFinished;
         boost::signals2::signal<void(int,int)> onResized;

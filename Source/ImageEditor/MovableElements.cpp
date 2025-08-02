@@ -273,7 +273,9 @@ void TextElement::onEditFinished()
 
 void TextElement::onControlResized(int w, int h)
 {
-    resize(w+6, h+6);
+    MovableElement::resize(w + 6, h + 6);
+    //canvas_->updateView();
+    //resize(w+6, h+6);
 }
 
 void TextElement::setTextColor()
@@ -371,6 +373,22 @@ void TextElement::setFillBackground(bool fill) {
 
 bool TextElement::getFillBackground() const {
     return fillBackground_;
+}
+
+
+void TextElement::setPos(int x, int y) {
+    MovableElement::setPos(x, y);
+    if (inputBox_) {
+        inputBox_->resize(x + 3, y + 3, -1, -1, grips_);
+    }
+}
+
+bool TextElement::move(int offsetX, int offsetY, bool checkBounds /*= true*/) {
+    bool res = MovableElement::move(offsetX, offsetY, checkBounds);
+    if (inputBox_) {
+        inputBox_->resize(getX() + 3, getY() + 3, -1, -1, grips_);
+    }
+    return res;
 }
 
 Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY):MovableElement(canvas)  {

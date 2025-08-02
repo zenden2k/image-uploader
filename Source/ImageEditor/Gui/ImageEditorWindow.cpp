@@ -205,7 +205,7 @@ CString ImageEditorWindow::saveToTempFile() {
     } catch (const std::exception& ex) {
         LOG(ERROR) << ex.what();
     }
-    return CString();
+    return {};
 }
 
 void ImageEditorWindow::updateToolbarDrawingTool(DrawingToolType dt)
@@ -476,7 +476,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 
     //RECT rc;
     GetClientRect(&rc);
-    /*HWND m_hWndClient = */m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0);
+    /*HWND m_hWndClient = */ m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0);
 
     canvas_ = std::make_unique<ImageEditor::Canvas>(m_view);
     canvas_->setSize(currentDoc_->getWidth(), currentDoc_->getHeight());

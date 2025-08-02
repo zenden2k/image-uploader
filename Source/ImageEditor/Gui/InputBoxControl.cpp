@@ -112,7 +112,7 @@ void InputBoxControl::ApplyDefaults() {
     services_->TxSendMessage(EM_SETEVENTMASK, 0, mask, nullptr);
 
     // Многострочность, автоскролл, не скрывать выделение
-    LONG style = ES_MULTILINE | ES_AUTOVSCROLL /* | ES_NOHIDESEL*/|  ES_WANTRETURN;
+    LONG style = ES_MULTILINE | ES_AUTOVSCROLL  | ES_NOHIDESEL |  ES_WANTRETURN;
     services_->TxSendMessage(EM_SETOPTIONS, ECOOP_OR, style, nullptr);
 
     // Плейнтекст режим — при необходимости можно убрать, если нужен RTF ввод по умолчанию
@@ -123,6 +123,11 @@ void InputBoxControl::ApplyDefaults() {
 // InputBox
 void InputBoxControl::show(bool show) {
     visible_ = show;
+    if (!show) {
+        if (services_) {
+            services_->TxSendMessage(EM_SETSEL, 0, 0, nullptr);
+        }
+    }
     ShowWindow(show ? SW_SHOWNA : SW_HIDE);
     if (!show)
         ::SetFocus(GetParent());
@@ -134,26 +139,73 @@ void InputBoxControl::resize(int x, int y, int w, int h, std::vector<MovableElem
     if (canvas_)
         scrollOffset = canvas_->GetScrollOffset();
 
-    ::SetWindowPos(m_hWnd, 0, x - scrollOffset.x, y - scrollOffset.y, w, h, SWP_NOZORDER | SWP_NOACTIVATE);
+    UINT flags = SWP_NOZORDER | SWP_NOACTIVATE;
+    if (w < 0 || h < 0) {
+        flags |= SWP_NOSIZE;
+    }
+    ::SetWindowPos(m_hWnd, 0, x - scrollOffset.x, y - scrollOffset.y, w, h, flags);
     ::GetClientRect(m_hWnd, &clientRect_);
-    
 }
 
 void InputBoxControl::render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) {
     if (!services_)
         return;
 
-    /*if (background) {
-        graphics->DrawImage(background, layoutArea);
-    } else {
-        Gdiplus::SolidBrush brush(Gdiplus::Color(0, 0, 0, 0));
-        graphics->FillRectangle(&brush, layoutArea);
-    }*/
-
-    HDC hdc = graphics->GetHDC();
+   /*HDC hdc = graphics->GetHDC();
     RECTL rc = { layoutArea.X, layoutArea.Y, layoutArea.GetRight(), layoutArea.GetBottom() };
-    services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, hdc, nullptr, &rc, nullptr, nullptr, nullptr, 0,0);
-    graphics->ReleaseHDC(hdc);
+    services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, hdc, nullptr, &rc, nullptr, nullptr, nullptr, 0, 0);
+    graphics->ReleaseHDC(hdc);*/
+
+
+        HDC mainHdc = graphics->GetHDC();
+
+    // Создаем memory DC и bitmap
+    HDC memHdc = ::CreateCompatibleDC(mainHdc);
+
+    // Создаем DIB section для лучшего контроля
+    BITMAPINFO bmi = {};
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = layoutArea.Width;
+    bmi.bmiHeader.biHeight = -layoutArea.Height; // Отрицательное значение для top-down bitmap
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    void* bits = nullptr;
+    HBITMAP textBitmap = ::CreateDIBSection(memHdc, &bmi, DIB_RGB_COLORS, &bits, nullptr, 0);
+    HBITMAP oldBitmap = (HBITMAP)::SelectObject(memHdc, textBitmap);
+
+    // Копируем фон с основного graphics
+    if (background) {
+        Gdiplus::Graphics bgGraphics(memHdc);
+        bgGraphics.DrawImage(background,
+            Gdiplus::Rect(0, 0, layoutArea.Width, layoutArea.Height),
+            layoutArea.X, layoutArea.Y, layoutArea.Width, layoutArea.Height,
+            Gdiplus::UnitPixel);
+    } else {
+        // Заливаем нужным цветом
+        RECT fillRect = { 0, 0, layoutArea.Width, layoutArea.Height };
+        HBRUSH brush = ::CreateSolidBrush(RGB(255, 255, 255)); // Или нужный вам цвет
+        ::FillRect(memHdc, &fillRect, brush);
+        ::DeleteObject(brush);
+    }
+
+    // Настройки рендеринга
+    ::SetBkMode(memHdc, TRANSPARENT);
+
+    // Рендерим текст
+    RECTL rc = { 0, 0, layoutArea.Width, layoutArea.Height };
+    services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, memHdc, nullptr, &rc, nullptr, nullptr, nullptr, 0, 0);
+    graphics->ReleaseHDC(mainHdc);
+    // Конвертируем в GDI+ Bitmap и рисуем
+    Gdiplus::Bitmap gdipBitmap(textBitmap, nullptr);
+    graphics->DrawImage(&gdipBitmap, layoutArea.X, layoutArea.Y);
+
+    // Очистка
+    ::SelectObject(memHdc, oldBitmap);
+    ::DeleteObject(textBitmap);
+    ::DeleteDC(memHdc);
+  
 }
 
 bool InputBoxControl::isVisible() {
@@ -170,12 +222,12 @@ void InputBoxControl::setTextColor(Gdiplus::Color color) {
     charFormat_.crTextColor = textColor_;
     charFormat_.dwMask |= CFM_COLOR;
     if (services_) {
-        services_->TxSendMessage(EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&charFormat_, nullptr);
+        services_->TxSendMessage(EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&charFormat_, nullptr);
     }
 }
 
 void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
-    return;
+    LOG(WARNING) << "setFont mask=" << std::hex << changeMask;
     logFont_ = font;
     charFormat_.cbSize = sizeof(charFormat_);
     // Расширенная маска для всех стилей
@@ -188,28 +240,22 @@ void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
         charFormat_.yHeight = pointSize * 20;
     }
 
-    // Копируем имя шрифта
     StringCchCopy(charFormat_.szFaceName,std::size(charFormat_.szFaceName), logFont_.lfFaceName);
 
-    // Обрабатываем стили текста из LOGFONT
-    charFormat_.dwEffects = 0; // Сбрасываем все эффекты
+    charFormat_.dwEffects = 0; 
 
-    // Полужирный (Bold)
     if (logFont_.lfWeight >= FW_BOLD) {
         charFormat_.dwEffects |= CFE_BOLD;
     }
 
-    // Курсив (Italic)
     if (logFont_.lfItalic) {
         charFormat_.dwEffects |= CFE_ITALIC;
     }
 
-    // Подчеркнутый (Underline)
     if (logFont_.lfUnderline) {
         charFormat_.dwEffects |= CFE_UNDERLINE;
     }
 
-    // Перечеркнутый (Strikeout)
     if (logFont_.lfStrikeOut) {
         charFormat_.dwEffects |= CFE_STRIKEOUT;
     }
@@ -223,19 +269,21 @@ void InputBoxControl::setFont(LOGFONT font, DWORD changeMask) {
 
         bool hasSelection = (selection.cpMax > selection.cpMin);
 
-        WPARAM flags;
+        WPARAM flags = 0;
         if (visible_) {
-            if (hasSelection) {
+            flags = SCF_SELECTION;
+            
+                /* if (hasSelection) {
                 flags = SCF_SELECTION | SCF_DEFAULT;
             } else {
                 flags = SCF_DEFAULT;
-            }
+            }*/
         } else {
             flags = SCF_ALL;
         }
-        LOG(ERROR) << "EM_SETCHARFORMAT " << GetTickCount();
-
         services_->TxSendMessage(EM_SETCHARFORMAT, flags, (LPARAM)&charFormat_, nullptr);
+       
+        //Invalidate();
     }
 }
 
@@ -324,7 +372,7 @@ LRESULT InputBoxControl::OnSize(UINT, WPARAM, LPARAM lParam, BOOL&) {
 
 LRESULT InputBoxControl::OnPaint(UINT, WPARAM, LPARAM, BOOL&) {
     CPaintDC dc(m_hWnd);
-    if (!services_ || !visible_) {
+    if (!services_ /* || !visible_*/) {
         return 0;
     }
 
@@ -333,7 +381,7 @@ LRESULT InputBoxControl::OnPaint(UINT, WPARAM, LPARAM, BOOL&) {
 
     RECTL rc = { clientRect.left, clientRect.top, clientRect.right, clientRect.bottom };
     RECTL rcPaint = { dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top, dc.m_ps.rcPaint.right, dc.m_ps.rcPaint.bottom };
-    HRESULT hr = services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, dc, nullptr, &rc, nullptr, /*&dc.m_ps.rcPaint*/nullptr, nullptr, 0, 0);
+    HRESULT hr = services_->TxDraw(DVASPECT_CONTENT, 0, nullptr, nullptr, dc, nullptr, &rc, nullptr, nullptr/* &dc.m_ps.rcPaint*/, nullptr, 0, 0);
     if (FAILED(hr)) {
         LOG(ERROR) << _com_error(hr).ErrorMessage();
     }
@@ -341,20 +389,27 @@ LRESULT InputBoxControl::OnPaint(UINT, WPARAM, LPARAM, BOOL&) {
 }
 
 LRESULT InputBoxControl::OnSetFocus(UINT, WPARAM wParam, LPARAM, BOOL&) {
-   services_->OnTxInPlaceActivate(nullptr);
+
+    DWORD oldMask = charFormat_.dwMask;
+    charFormat_.dwMask = 0;
+        services_->OnTxInPlaceActivate(nullptr);
     if (services_)
         services_->TxSendMessage(WM_SETFOCUS, wParam, 0, nullptr);
+
     return 0;
 }
 LRESULT InputBoxControl::OnKillFocus(UINT, WPARAM wParam, LPARAM, BOOL&) {
     ::HideCaret(m_hWnd);
     ::DestroyCaret();
+    //charFormat_.dwMask = 0;
 
-    services_->OnTxInPlaceDeactivate();
-
+    
     LRESULT result = 0;
     if (services_)
         services_->TxSendMessage(WM_KILLFOCUS, wParam, 0, &result);
+
+    services_->OnTxInPlaceDeactivate();
+
 
     return result;
 }
@@ -586,8 +641,79 @@ HRESULT InputBoxControl::TxGetExtent(LPSIZEL lpExtent) {
 }
 
 HRESULT InputBoxControl::OnTxCharFormatChange(CONST CHARFORMATW* pCF) {
-    if (pCF && (pCF->dwMask & CFM_COLOR))
-        textColor_ = pCF->crTextColor;
+    if (pCF) {
+        DWORD mask = pCF->dwMask;
+
+        // Цвет текста
+        if (mask & CFM_COLOR) {
+            textColor_ = pCF->crTextColor;
+            charFormat_.crTextColor = pCF->crTextColor;
+            charFormat_.dwMask |= CFM_COLOR;
+        }
+
+        // Имя шрифта
+        if (mask & CFM_FACE) {
+            wcsncpy_s(charFormat_.szFaceName, pCF->szFaceName, _TRUNCATE);
+            wcsncpy_s(logFont_.lfFaceName, pCF->szFaceName, _TRUNCATE);
+            charFormat_.dwMask |= CFM_FACE;
+        }
+
+        // Размер шрифта
+        if (mask & CFM_SIZE) {
+            charFormat_.yHeight = pCF->yHeight;
+            charFormat_.dwMask |= CFM_SIZE;
+
+            // Обновляем LOGFONT
+            int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+            int pointSize = pCF->yHeight / 20; // yHeight в twips (1/20 пункта)
+            logFont_.lfHeight = -MulDiv(pointSize, dpi, 72);
+        }
+
+        // Стили текста (жирный, курсив, подчеркнутый, зачеркнутый)
+        if (mask & (CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT)) {
+            charFormat_.dwEffects = pCF->dwEffects;
+            charFormat_.dwMask |= (mask & (CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT));
+
+            // Обновляем LOGFONT
+            logFont_.lfWeight = (pCF->dwEffects & CFE_BOLD) ? FW_BOLD : FW_NORMAL;
+            logFont_.lfItalic = (pCF->dwEffects & CFE_ITALIC) ? TRUE : FALSE;
+            logFont_.lfUnderline = (pCF->dwEffects & CFE_UNDERLINE) ? TRUE : FALSE;
+            logFont_.lfStrikeOut = (pCF->dwEffects & CFE_STRIKEOUT) ? TRUE : FALSE;
+        }
+
+        // Набор символов
+        if (mask & CFM_CHARSET) {
+            charFormat_.bCharSet = pCF->bCharSet;
+            charFormat_.dwMask |= CFM_CHARSET;
+            logFont_.lfCharSet = pCF->bCharSet;
+        }
+
+        // Защищенный текст
+        if (mask & CFM_PROTECTED) {
+            if (pCF->dwEffects & CFE_PROTECTED) {
+                charFormat_.dwEffects |= CFE_PROTECTED;
+            } else {
+                charFormat_.dwEffects &= ~CFE_PROTECTED;
+            }
+            charFormat_.dwMask |= CFM_PROTECTED;
+        }
+
+        // Ссылка
+        if (mask & CFM_LINK) {
+            if (pCF->dwEffects & CFE_LINK) {
+                charFormat_.dwEffects |= CFE_LINK;
+            } else {
+                charFormat_.dwEffects &= ~CFE_LINK;
+            }
+            charFormat_.dwMask |= CFM_LINK;
+        }
+
+        // Смещение (надстрочный/подстрочный текст)
+        if (mask & CFM_OFFSET) {
+            charFormat_.yOffset = pCF->yOffset;
+            charFormat_.dwMask |= CFM_OFFSET;
+        }
+    }
     return S_OK;
 }
 HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
@@ -598,8 +724,8 @@ HRESULT InputBoxControl::TxGetPropertyBits(DWORD dwMask, DWORD* pdwBits) {
 HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
     switch (iNotify) {
     case EN_CHANGE: {
-        CComBSTR str;
-        services_->TxGetText(&str);
+        /* CComBSTR str;
+        services_->TxGetText(&str);*/
         onTextChanged(L"");
         break;
     }
@@ -609,6 +735,7 @@ HRESULT InputBoxControl::TxNotify(DWORD iNotify, void* pv) {
         GetClientRect(&windowRect);
         int w = rr->rc.right - rr->rc.left;
         int h = rr->rc.bottom - rr->rc.top;
+        SetWindowPos(0, 0, 0, windowRect.Width(), h, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
         onResized(windowRect.Width(), h);
         break;
     }

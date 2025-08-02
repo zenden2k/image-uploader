@@ -42,7 +42,10 @@ class TextElement: public MovableElement{
         bool isEmpty() const override;
         void setFillBackground(bool fill);
         bool getFillBackground() const;
-protected:
+        void setPos(int x, int y) override;
+        bool move(int offsetX, int offsetY, bool checkBounds = true) override;
+
+    protected:
     std::shared_ptr<InputBox> inputBox_;
     LOGFONT font_;
     bool isEditing_;

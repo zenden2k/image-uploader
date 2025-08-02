@@ -72,8 +72,8 @@ public:
     STDMETHOD_(ULONG, Release)() override
     {
         ULONG r = (ULONG)InterlockedDecrement(&refCount_);
-        if (!r)
-            delete this;
+        /* if (!r)
+            delete this;*/
         return r;
     }
 
@@ -113,7 +113,7 @@ public:
     }
     HRESULT TxGetCharFormat(const CHARFORMATW** ppCF) override {
         *ppCF = &charFormat_;
-        return S_FALSE;
+        return S_OK;
     }
     HRESULT TxGetParaFormat(const PARAFORMAT** ppPF) override {
         *ppPF = &paraFormat_;
