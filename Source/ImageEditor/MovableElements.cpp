@@ -194,7 +194,7 @@ void TextElement::render(Painter* gr) {
         gr->SetSmoothingMode(prevSmoothingMode);
     }
     if ( inputBox_  && !inputBox_->isVisible()) {
-        inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX()+4,getY()+3,getWidth()-5,getHeight()-6));
+        inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX()+3,getY()+3,getWidth()-5,getHeight()-5));
     }
 }
 

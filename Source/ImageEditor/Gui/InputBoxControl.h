@@ -6,18 +6,24 @@
 
 #pragma once
 
+#include <memory>
+
 #include "atlheaders.h"
 #include "../InputBox.h"
+#include <uiautomationcore.h>
+#include <uiautomationcoreapi.h>
+#include <UIAutomationClient.h>
+
+#include <TextServ.h>
 #include <Richedit.h>
 #include <RichOle.h>
-#include <TextServ.h>
+
 #include <d2d1.h>
 #include <d2d1helper.h>
-#include <dwrite.h>
-
-//#include <Msftedit.h>
 
 namespace ImageEditor {
+
+class WindowlessRichEditUIA;
 
 class InputBoxControlCallback {
 public:
@@ -27,7 +33,8 @@ public:
 
 class InputBoxControl : public CWindowImpl<InputBoxControl, CWindow, CControlWinTraits>,
                         public ITextHost2,
-                        public InputBox {
+                        public InputBox,
+                        public IRawElementProviderWindowlessSite {
 public:
     DECLARE_WND_CLASS_EX(L"WindowlessInputBox", CS_DBLCLKS, COLOR_WINDOW);
     inline static auto CARET_TIMER_ID = 1;
@@ -68,6 +75,7 @@ public:
     MESSAGE_HANDLER(WM_IME_ENDCOMPOSITION, OnIme)
     MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
     MESSAGE_HANDLER(WM_SETCURSOR, OnSetCursor)
+    MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
     END_MSG_MAP()
 
     // Handler prototypes:
@@ -104,15 +112,8 @@ public:
     BOOL TxSetTimer(UINT idTimer, UINT uTimeout) override;
     void TxKillTimer(UINT idTimer) override;
     void TxScrollWindowEx(INT, INT, LPCRECT, LPCRECT, HRGN, LPRECT, UINT) override { }
-    void TxSetCapture(BOOL fCapture) override {
-        if (fCapture)
-            SetCapture();
-        else
-            ReleaseCapture();
-    }
-    void TxSetFocus() override {
-        ::SetFocus(m_hWnd);
-    }
+    void TxSetCapture(BOOL fCapture) override;
+    void TxSetFocus() override;
     void TxSetCursor(HCURSOR hcur, BOOL) override;
     BOOL TxScreenToClient(LPPOINT lppt) override { return ::ScreenToClient(m_hWnd, lppt); }
     BOOL TxClientToScreen(LPPOINT lppt) override { return ::ClientToScreen(m_hWnd, lppt); }
@@ -169,17 +170,10 @@ public:
         *pFlags = 0;
         return S_OK;
     }
-    //HCURSOR TxGetCursor(INT) override { return ::LoadCursor(nullptr, IDC_IBEAM); }
-    //HRESULT TxGetCaretPos(POINT*) override { return S_FALSE; }
-
-    /* BOOL TxGetActiveWindow(HWND* phwnd) override {
-        *phwnd = ::GetActiveWindow();
-        return TRUE;
-    }*/
 
     // ITextHost2
     HRESULT TxShowDropCaret(BOOL fShow, HDC hdc, LPCRECT prc) override { return S_OK; }
-    HRESULT TxDestroyCaret() override { return S_OK; }
+    HRESULT TxDestroyCaret() override;
     HRESULT TxGetHorzExtent(LONG* p) override {
         if (p)
             *p = 0;
@@ -188,29 +182,12 @@ public:
     // NEW (ITextHost2): двойной клик в очереди
     BOOL TxIsDoubleClickPending() override { return FALSE; }
     // NEW (ITextHost2): альтернативная установка курсора
-    HCURSOR TxSetCursor2(HCURSOR hcur, BOOL) override {
-        HCURSOR res = cursor_;
-        cursor_ = hcur;
-        SetCursor(cursor_);
-        return res;
-    }
+    HCURSOR TxSetCursor2(HCURSOR hcur, BOOL) override;
     // NEW (ITextHost2): уведомление об освобождении TextServices
     void TxFreeTextServicesNotification() override { }
     // NEW (ITextHost2): стили редактирования и окна
-    HRESULT TxGetEditStyle(DWORD dwItem, DWORD* pdwData) override {
-        if (!pdwData)
-            return E_POINTER;
-        // dwItem: GETESTYLE_* (см. TextServ.h). Вернём базовые флаги.
-        *pdwData = ES_MULTILINE | ES_AUTOVSCROLL | ES_NOHIDESEL | ES_WANTRETURN;
-        return S_OK;
-    }
-    HRESULT TxGetWindowStyles(DWORD* pdwStyle, DWORD* pdwExStyle) override {
-        if (pdwStyle)
-            *pdwStyle = WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_CLIPSIBLINGS;
-        if (pdwExStyle)
-            *pdwExStyle = 0;
-        return S_OK;
-    }
+    HRESULT TxGetEditStyle(DWORD dwItem, DWORD* pdwData) override;
+    HRESULT TxGetWindowStyles(DWORD* pdwStyle, DWORD* pdwExStyle) override;
 
     // NEW (ITextHost): ширина selection bar
     HRESULT TxGetSelectionBarWidth(LONG* pWidth) override {
@@ -219,11 +196,58 @@ public:
         return S_OK;
     }
 
+     // IRawElementProviderWindowlessSite
+    STDMETHOD(GetAdjacentFragment)(NavigateDirection direction,
+        IRawElementProviderFragment** ppParent) override {
+        if (!ppParent)
+            return E_INVALIDARG;
+        *ppParent = nullptr;
 
+        if (direction == NavigateDirection_Parent && hostWindow_) {
+            IRawElementProviderSimple* pHostProvider = nullptr;
+            HRESULT hr = UiaHostProviderFromHwnd(hostWindow_, &pHostProvider);
+            if (SUCCEEDED(hr) && pHostProvider) {
+                // Пытаемся получить IRawElementProviderFragment
+                hr = pHostProvider->QueryInterface(IID_IRawElementProviderFragment,
+                    (void**)ppParent);
+                pHostProvider->Release();
+                return hr;
+            }
+        }
 
- void setHostWindow(HWND wnd) override;
+        return S_OK;
+    }
+
+    STDMETHOD(GetRuntimeIdPrefix)(SAFEARRAY** ppRuntimeIdPrefix) override {
+        if (!ppRuntimeIdPrefix)
+            return E_INVALIDARG;
+
+        // Создаем уникальный runtime ID для windowless контрола
+        LONG runtimeId[2] = {
+            UiaAppendRuntimeId,
+            static_cast<LONG>(reinterpret_cast<ULONG_PTR>(this))
+        };
+
+        SAFEARRAY* psa = SafeArrayCreateVector(VT_I4, 0, 2);
+        if (!psa)
+            return E_OUTOFMEMORY;
+
+        LONG* pData;
+        HRESULT hr = SafeArrayAccessData(psa, (void**)&pData);
+        if (SUCCEEDED(hr)) {
+            pData[0] = runtimeId[0];
+            pData[1] = runtimeId[1];
+            SafeArrayUnaccessData(psa);
+        }
+
+        *ppRuntimeIdPrefix = psa;
+        return hr;
+    }
+
+    void setHostWindow(HWND wnd) override;
 
 private:
+    HRESULT GetRichEditProvider(IRawElementProviderFragment** ppProvider);
     // Создание движка и дефолтные настройки
     bool CreateTextServices();
     void ApplyDefaults();
@@ -246,6 +270,7 @@ private:
     LRESULT OnContextMenu(UINT, WPARAM, LPARAM, BOOL&);
     LRESULT OnSetCursor(UINT, WPARAM, LPARAM, BOOL&);
     LRESULT OnGetObject(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 private:
     // Состояние
@@ -255,7 +280,6 @@ private:
     CComPtr<IUnknown> servicesUnk_;
     CComPtr<ID2D1Factory> d2dFactory_;
     CComPtr<ID2D1DCRenderTarget> renderTarget_;
-    CComPtr<IDWriteFactory> dwriteFactory_;
     //CComPtr<ID2D1HwndRenderTarget> renderTarget_;
     RECT clientRect_ {};
     DWORD maxLength_ { INFINITE };
@@ -279,6 +303,115 @@ private:
     bool caretBlinkOn_ = true;
     CComPtr<ID2D1Bitmap> d2dCaretBitmap_;
     HWND hostWindow_;
+    std::unique_ptr<WindowlessRichEditUIA> richEditUIA_;
+};
+
+class WindowlessRichEditUIA {
+private:
+    ITextServices* textServices_;
+    CComQIPtr<IRicheditWindowlessAccessibility> accessibility_;
+    CComPtr<IRawElementProviderSimple> uiaProvider_;
+    InputBoxControl* site_;
+
+    HWND parentWindow_;
+    RECT controlBounds_;
+
+public:
+    WindowlessRichEditUIA(InputBoxControl* site)
+        : site_(site) {
+    }
+
+    HRESULT Initialize(ITextServices* services, HWND parent, const RECT& bounds) {
+        textServices_ = services;
+        parentWindow_ = parent;
+        controlBounds_ = bounds;
+        accessibility_ = textServices_;
+
+        // Получаем accessibility интерфейс
+        
+        if (!accessibility_) {
+            LOG(ERROR) << "IRichEditWindowlessAccessibility not supported";
+            return S_FALSE;
+        }
+
+        // Создаем UIA провайдер
+        HRESULT hr = accessibility_->CreateProvider(site_, &uiaProvider_);
+        if (FAILED(hr)) {
+            LOG(ERROR) << "Failed to create UIA provider: " << hr;
+            return hr;
+        }
+
+        LOG(INFO) << "Successfully created UIA provider for windowless RichEdit";
+        return S_OK;
+    }
+
+    IRawElementProviderSimple* GetUiaProvider() const {
+        return uiaProvider_;
+    }
+
+    void UpdateBounds(const RECT& newBounds) {
+        controlBounds_ = newBounds;
+
+        // Уведомляем UIA о изменении расположения
+        if (uiaProvider_) {
+            UiaRaiseStructureChangedEvent(uiaProvider_,
+                StructureChangeType_ChildrenInvalidated,
+                nullptr, 0);
+        }
+    }
+
+    void NotifyTextChanged() {
+        if (uiaProvider_) {
+            // Общее уведомление о изменении свойств
+            VARIANT oldValue, newValue;
+            VariantInit(&oldValue);
+            VariantInit(&newValue);
+            
+            GetCurrentText(&newValue);
+            
+            // Используем базовые свойства
+            UiaRaiseAutomationPropertyChangedEvent(uiaProvider_, 
+                                                 UIA_NamePropertyId,  // Это точно существует
+                                                 oldValue, newValue);
+            
+            VariantClear(&oldValue);
+            VariantClear(&newValue);
+        }
+    }
+
+    void NotifySelectionChanged() {
+        if (uiaProvider_) {
+            // UiaRaiseAutomationEvent(uiaProvider_, UIA_Text_TextSelectionChangedEventId);
+        }
+    }
+
+    void NotifyFocusChanged(bool hasFocus) {
+        if (uiaProvider_ && hasFocus) {
+             //UiaRaiseAutomationEvent(uiaProvider_, UIA_AutomationFocusChangedEventId);
+        }
+    }
+
+private:
+    HRESULT GetCurrentText(VARIANT* pValue) {
+        if (!textServices_ || !pValue)
+            return E_INVALIDARG;
+
+        BSTR text = nullptr;
+        LRESULT textLength = 0;
+
+        HRESULT hr = textServices_->TxSendMessage(WM_GETTEXTLENGTH, 0, 0, &textLength);
+        if (SUCCEEDED(hr) && textLength > 0) {
+            text = SysAllocStringLen(nullptr, static_cast<UINT>(textLength));
+            if (text) {
+                hr = textServices_->TxSendMessage(WM_GETTEXT, textLength + 1,
+                    (LPARAM)text, nullptr);
+            }
+        }
+
+        pValue->vt = VT_BSTR;
+        pValue->bstrVal = text;
+        return hr;
+    }
 };
 
 }
