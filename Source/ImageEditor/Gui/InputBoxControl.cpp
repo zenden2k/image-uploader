@@ -78,6 +78,9 @@ CComPtr<ID2D1Bitmap> CreateD2DBitmapFromHBITMAP(ID2D1RenderTarget* target, HBITM
     BITMAP bmp {};
     GetObject(hBitmap, sizeof(BITMAP), &bmp);
 
+    if (bmp.bmWidth == 0 || bmp.bmHeight == 0) {
+        return {};
+    }
     D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(
         D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
 
@@ -646,8 +649,7 @@ LRESULT InputBoxControl::OnSetFocus(UINT, WPARAM wParam, LPARAM, BOOL&) {
     return 0;
 }
 LRESULT InputBoxControl::OnKillFocus(UINT, WPARAM wParam, LPARAM, BOOL&) {
-    ::HideCaret(m_hWnd);
-    ::DestroyCaret();
+    TxShowCaret(FALSE);
     //charFormat_.dwMask = 0;
 
     LRESULT result = 0;
@@ -662,7 +664,9 @@ LRESULT InputBoxControl::OnKillFocus(UINT, WPARAM wParam, LPARAM, BOOL&) {
 LRESULT InputBoxControl::OnTimer(UINT, WPARAM id, LPARAM lParam, BOOL&) {
     if (id == CARET_TIMER_ID) {
         caretBlinkOn_ = !caretBlinkOn_;
-        Invalidate(TRUE);
+        if (caretVisible_) {
+            Invalidate(TRUE);
+        }
         return 0;
     }
     LRESULT result = 0;
@@ -850,6 +854,7 @@ LRESULT InputBoxControl::OnGetObject(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 }
 
 LRESULT InputBoxControl::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    renderTarget_.Release();
     return 0;
 }
 
@@ -940,11 +945,12 @@ BOOL InputBoxControl::TxShowCaret(BOOL fShow) {
     caretVisible_ = fShow;
     if (d2dMode_) {
         if (fShow) {
+            caretBlinkOn_ = true;
+            TxInvalidateRect(nullptr, FALSE);
             SetTimer(CARET_TIMER_ID, GetCaretBlinkTime(), nullptr);
         } else {
             KillTimer(CARET_TIMER_ID);
         }
-        //return TRUE;
     }
     if (fShow) {
         return ::ShowCaret(m_hWnd);
