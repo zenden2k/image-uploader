@@ -78,7 +78,7 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("openssl/1.1.1w", force=True)
 
         if self.settings.os == "Windows" and self.settings.arch == "armv8":
-            self.requires("minhook/1.3.4")
+            pass
         else:
             self.requires("megaio/9.2.0")
             #self.requires("openssl/3.3.2")

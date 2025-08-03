@@ -18,6 +18,7 @@ class InputBox {
         virtual void setTextColor(Gdiplus::Color color) =0;
         virtual void setFont(LOGFONT font, DWORD changeMask) = 0;
         virtual void setRawText(const std::string& text) = 0;
+        virtual void setHostWindow(HWND wnd) = 0;
         virtual std::string getRawText() = 0;
         virtual bool isEmpty() = 0;
         boost::signals2::signal<void(LPCTSTR)> onTextChanged;

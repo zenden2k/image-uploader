@@ -30,7 +30,7 @@ class InputBoxControl : public CWindowImpl<InputBoxControl, CWindow, CControlWin
                         public InputBox {
 public:
     DECLARE_WND_CLASS_EX(L"WindowlessInputBox", CS_DBLCLKS, COLOR_WINDOW);
-
+    inline static auto CARET_TIMER_ID = 1;
     explicit InputBoxControl(Canvas* canvas);
     ~InputBoxControl() override;
 
@@ -60,6 +60,7 @@ public:
     MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
     MESSAGE_HANDLER(WM_TIMER, OnTimer)
     MESSAGE_HANDLER(WM_PAINT, OnPaint)
+    MESSAGE_HANDLER(WM_GETOBJECT, OnGetObject)
     MESSAGE_RANGE_HANDLER(WM_MOUSEFIRST, WM_MOUSELAST, OnMouse)
     MESSAGE_RANGE_HANDLER(WM_KEYFIRST, WM_KEYLAST, OnKey)
     MESSAGE_HANDLER(WM_IME_STARTCOMPOSITION, OnIme)
@@ -68,6 +69,12 @@ public:
     MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
     MESSAGE_HANDLER(WM_SETCURSOR, OnSetCursor)
     END_MSG_MAP()
+
+    // Handler prototypes:
+    //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+
 
     // IUnknown
     STDMETHOD(QueryInterface)(REFIID riid, void** ppv) override;
@@ -152,10 +159,7 @@ public:
     HRESULT TxNotify(DWORD iNotify, void* pv) override;
     HIMC TxImmGetContext() override { return ::ImmGetContext(m_hWnd); }
     void TxImmReleaseContext(HIMC himc) override { ::ImmReleaseContext(m_hWnd, himc); }
-    HRESULT TxGetWindow(HWND* phwnd) override {
-        *phwnd = m_hWnd;
-        return S_OK;
-    }
+    HRESULT TxGetWindow(HWND* phwnd) override;
     HRESULT TxSetForegroundWindow() override {
         ::SetForegroundWindow(m_hWnd);
         return S_OK;
@@ -215,6 +219,10 @@ public:
         return S_OK;
     }
 
+
+
+ void setHostWindow(HWND wnd) override;
+
 private:
     // Создание движка и дефолтные настройки
     bool CreateTextServices();
@@ -237,6 +245,7 @@ private:
     LRESULT OnIme(UINT, WPARAM, LPARAM, BOOL&);
     LRESULT OnContextMenu(UINT, WPARAM, LPARAM, BOOL&);
     LRESULT OnSetCursor(UINT, WPARAM, LPARAM, BOOL&);
+    LRESULT OnGetObject(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 private:
     // Состояние
@@ -261,6 +270,15 @@ private:
     HCURSOR cursor_;
     bool InitializeD2D();
     bool d2dMode_;
+    POINT caretPos_ {};
+    bool caretVisible_ = false;
+    HBITMAP caretBitmap_ {};
+    int caretWidth_ = 0;
+    int caretHeight_ = 0;
+    bool caretCreated_ = false;
+    bool caretBlinkOn_ = true;
+    CComPtr<ID2D1Bitmap> d2dCaretBitmap_;
+    HWND hostWindow_;
 };
 
 }
