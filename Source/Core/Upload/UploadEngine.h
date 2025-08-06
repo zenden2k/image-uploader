@@ -137,6 +137,7 @@ struct FileFormatGroup {
     int64_t MaxFileSize = 0; // allowed formats
     int64_t MinFileSize = 0; // forbidden formats
     std::unordered_set<std::string> UserTypes;
+    std::set<unsigned int> UserTypeIds;
     std::set<std::string> Extensions;
     int MinUserRank = 0;
     bool acceptsUserType(std::string_view userType) const;
@@ -147,6 +148,7 @@ struct StorageTime {
     int Time = 0; // in days
     bool AfterLastDownload = false;
     std::vector<std::string> UserTypes;
+    std::set<int> UserTypeIds;
     int MinUserRank = 0;
 };
     /**
@@ -208,7 +210,7 @@ class CUploadEngineData
     public:
         enum ServerType { TypeInvalid = 0, TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8, TypeSearchByImageServer = 16, TypeVideoServer = 32};
         enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
-
+        inline static constexpr int MAX_FILE_SIZE_UNLIMITED = -1;
         std::string Name;
         std::string PluginName;
         bool SupportsFolders;
@@ -237,11 +239,12 @@ class CUploadEngineData
         int MaxThreads;
         bool UploadToTempServer;
         int TypeMask;
+        std::vector<std::string> userTypes = {std::string(UserTypes::ANONYMOUS)};
         bool hasType(ServerType type) const;
         bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, std::string_view userType) const;
         std::set<std::string> getSupportedExtensions() const;
         CUploadEngineData();
-
+        int addUserType(const std::string_view& name);
         static ServerType ServerTypeFromString(const std::string& serverType);
 };
 /**

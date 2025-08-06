@@ -37,6 +37,7 @@ public:
     std::string getMaxFileSizeString() const;
     std::string getServerDisplayName() const;
     std::string getStorageTimeString() const;
+    std::string getAcccountStr() const;
     int getStorageTime() const;
 
     bool acceptFilter(const ServerFilter& filter) const;
@@ -54,6 +55,11 @@ private:
 
 class ServerListModel {
 public:
+    enum TableColumn { tcServerName,
+        tcMaxFileSize,
+        tcStorageTime,
+        tcAccount,
+        tcFileFormats };
     ServerListModel(CMyEngineList* engineList);
     ~ServerListModel();
     void updateEngineList();

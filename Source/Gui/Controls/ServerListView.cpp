@@ -27,11 +27,11 @@ BOOL CServerListView::SubclassWindow(HWND hWnd) {
 }
 
 void CServerListView::Init() {
-    AddColumn(TR("Server"), tcServerName);
-    AddColumn(TR("Max. file size"), tcMaxFileSize);
-    AddColumn(TR("Storage time"), tcStorageTime);
-    AddColumn(TR("Account"), tcAccount);
-    AddColumn(TR("File formats"), tcFileFormats);
+    AddColumn(TR("Server"), ServerListModel::tcServerName);
+    AddColumn(TR("Max. file size"), ServerListModel::tcMaxFileSize);
+    AddColumn(TR("Storage time (days)"), ServerListModel::tcStorageTime);
+    AddColumn(TR("Account"), ServerListModel::tcAccount, -1, LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM, LVCFMT_CENTER);
+    AddColumn(TR("File formats"), ServerListModel::tcFileFormats);
 
     setColumnWidths();
     createResources();
@@ -121,11 +121,11 @@ void CServerListView::onRowChanged(size_t index) {
 
 void CServerListView::setColumnWidths() {
     int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
-    SetColumnWidth(tcServerName, MulDiv(140, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(tcMaxFileSize, MulDiv(115, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(tcStorageTime, MulDiv(100, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(tcAccount, MulDiv(50, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(tcFileFormats, MulDiv(200, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(ServerListModel::tcServerName, MulDiv(140, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(ServerListModel::tcMaxFileSize, MulDiv(115, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(ServerListModel::tcStorageTime, MulDiv(100, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(ServerListModel::tcAccount, MulDiv(50, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(ServerListModel::tcFileFormats, MulDiv(200, dpi, USER_DEFAULT_SCREEN_DPI));
 }
 
 void CServerListView::createResources() {

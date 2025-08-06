@@ -46,18 +46,19 @@ void ServerListModel::updateEngineList() {
 
 std::string ServerListModel::getItemText(int row, int column) const {
     const ServerData& serverData = getDataByIndex(row);
-    if (column == 0) {
+    if (column == tcServerName) {
         return serverData.getServerDisplayName();
     }
-    if (column == 1) {
+    if (column == tcMaxFileSize) {
         return serverData.getMaxFileSizeString();
     }
-    if (column == 2) {
+    if (column == tcStorageTime) {
         return serverData.getStorageTimeString();
     }
-    if (column == 3) {
-        return serverData.ued->NeedAuthorization == 2 ? _("yes") : _("no");
-    } else if (column == 4) {
+    if (column == tcAccount) {
+        return serverData.getAcccountStr();
+    }
+    if (column == tcFileFormats) {
         return serverData.getFormats();
     } 
     return {};
@@ -125,13 +126,24 @@ void ServerListModel::notifyCountChanged(size_t row) {
 std::string ServerData::getFormats() const {
     if (!formats.has_value()) {
         std::string result;
-        std::map<int, std::set<std::string>> extensions;
+        std::vector<std::set<std::string>> extensions;
+        extensions.resize(ued->userTypes.size());
 
         for (const auto& formatGroup : ued->SupportedFormatGroups) {
-            extensions[formatGroup.MinUserRank].insert(formatGroup.Extensions.begin(), formatGroup.Extensions.end());   
+            if (!formatGroup.Extensions.empty()) {
+                for (auto userTypeId : formatGroup.UserTypeIds) {
+                    if (userTypeId < extensions.size()) {
+                        extensions[userTypeId].insert(formatGroup.Extensions.begin(), formatGroup.Extensions.end());
+                    }
+                }
+            }
         }
 
-        for (const auto& [k, v] : extensions) {
+        while (!extensions.empty() && extensions.back().empty()) {
+            extensions.pop_back();
+        }
+
+        for (const auto& v : extensions) {
             if (!result.empty()) {
                 result += "/ ";
             }
@@ -154,28 +166,48 @@ int64_t ServerData::getMaxFileSize() const {
 std::string ServerData::getMaxFileSizeString() const {
     if (!maxFileSizeString.has_value()) {
         std::string result;
-        std::map<int, int64_t> fileSizes;
+        std::vector<std::optional<int64_t>> fileSizes;
+        fileSizes.resize(ued->userTypes.size());
 
         for (const auto& formatGroup : ued->SupportedFormatGroups) {
-            if (formatGroup.MaxFileSize > fileSizes[formatGroup.MinUserRank]) {
-                fileSizes[formatGroup.MinUserRank] = formatGroup.MaxFileSize;
+            if (formatGroup.MaxFileSize == 0) {
+                continue;
             }
+            for (auto userTypeId : formatGroup.UserTypeIds) {
+                if (userTypeId >= fileSizes.size()) {
+                    continue;
+                }
+
+                if (!fileSizes[userTypeId].has_value() || formatGroup.MaxFileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED || formatGroup.MaxFileSize > *fileSizes[userTypeId]) {
+                    fileSizes[userTypeId] = formatGroup.MaxFileSize;
+                }
+            }    
         }
 
-        for (const auto [k, fileSize] : fileSizes) {
+        while (!fileSizes.empty() && !fileSizes.back().has_value()) {
+            fileSizes.pop_back();
+        }
+
+        int valueCount = 0;
+
+        for (auto fileSize : fileSizes) {
             if (!result.empty()) {
                 result += "/ ";
             }
-            if (fileSize) {
-                result += IuCoreUtils::FileSizeToString(fileSize);
+            if (fileSize.has_value()) {
+                result += fileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED ? u8"\u221E" : IuCoreUtils::FileSizeToString(*fileSize);
+                valueCount++;
+            } else {
+                result += "-";
             }
             result += " ";
         }
 
-        if (result.empty() && ued->MaxFileSize > 0) {
-            result += IuCoreUtils::FileSizeToString(ued->MaxFileSize);
+        if (result.empty() && ued->MaxFileSize != 0) {
+            result += ued->MaxFileSize == CUploadEngineData::MAX_FILE_SIZE_UNLIMITED ? u8"\u221E" : IuCoreUtils::FileSizeToString(ued->MaxFileSize);
+            valueCount++;
         }
-        maxFileSizeString = result;
+        maxFileSizeString = valueCount ? result : "";
     }
     return *maxFileSizeString;
 }
@@ -195,6 +227,18 @@ std::string ServerData::getStorageTimeString() const {
 }
 
 
+std::string ServerData::getAcccountStr() const {
+    switch (ued->NeedAuthorization) {
+        case CUploadEngineData::naNotAvailable:
+            return "-";
+        case CUploadEngineData::naAvailable:
+            return "+";
+        case CUploadEngineData::naObligatory:
+            return _c("serverlist.account", "required");
+    }
+    return {};
+}
+
 int ServerData::getStorageTime() const {
     cacheStorageTime();
     return *storageTime;
@@ -213,35 +257,53 @@ bool ServerData::acceptFilter(const ServerFilter& filter) const {
 void ServerData::cacheStorageTime() const {
     if (!storageTimeStr.has_value()) {
         std::string daysStr;
-        std::string result;
-        if (ued->StorageTimeInfo.size() == 1) {
-            const auto& item = ued->StorageTimeInfo[0];
-            storageTime = item.Time;
-            result = item.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : str(IuStringUtils::FormatNoExcept(_n("%d day", "%d days", item.Time)) % item.Time);
-            if (item.AfterLastDownload) {
-                result += u8"\u2913";
-            }
-        } else if (!ued->StorageTimeInfo.empty()) {
-            for (const auto& item : ued->StorageTimeInfo) {
-                if (!daysStr.empty()) {
-                    daysStr += "/ ";
+
+        std::vector<std::optional<StorageTime>> storageTimes;
+        storageTimes.resize(ued->userTypes.size());
+
+        for (const auto& item : ued->StorageTimeInfo) {
+            for (auto userTypeId : item.UserTypeIds) {
+                if (userTypeId < storageTimes.size()) {
+                    storageTimes[userTypeId] = item;
                 }
-                if (item.Time) {
-                    daysStr += item.Time == StorageTime::TIME_INFINITE ? u8"\u221E" : std::to_string(item.Time);
-                    if (item.AfterLastDownload) {
+            }
+        }
+
+        while (!storageTimes.empty() && !storageTimes.back().has_value()) {
+            storageTimes.pop_back();
+        }
+
+        int i = 0;
+        int valueCount = 0;
+        for (const auto& item : storageTimes) {
+            if (!daysStr.empty()) {
+                daysStr += "/ ";
+            }
+            if (item.has_value()) {
+                if (item->Time) {
+                    if (!storageTime.has_value() && (i == 0 || i == 1)) {
+                        storageTime = item->Time;
+                    }
+                    daysStr += item->Time == StorageTime::TIME_INFINITE ? u8"\u221E" : std::to_string(item->Time);
+                    if (item->AfterLastDownload) {
                         daysStr += u8"\u2913";
                     }
+                    valueCount++;
                 } else {
                     daysStr += "?";
                 }
-
-                daysStr += " ";
+            } else {
+                daysStr += "-";
             }
-            storageTime = ued->StorageTimeInfo[0].Time;
-            result = daysStr.empty() ? "" : str(IuStringUtils::FormatNoExcept(_("%1%days")) % daysStr);
-        } else {
+
+            daysStr += " ";
+            i++;
+        }
+
+        if (!storageTime.has_value()) {
             storageTime = 0;
         }
-        storageTimeStr = result;
+       
+        storageTimeStr = valueCount ? daysStr : "";
     }
 }

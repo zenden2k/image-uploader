@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <optional>
 
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
@@ -73,6 +74,10 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
         auto uploadEngineData = std::make_unique<CUploadEngineData>();
         CUploadEngineData& UE = *uploadEngineData;
         UE.NeedAuthorization = cur.AttributeInt("Authorize");
+
+        if (UE.NeedAuthorization) {
+            UE.addUserType(UserTypes::REGISTERED);
+        }
         std::string needPassword = cur.Attribute("NeedPassword");
         UE.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::StringToInt64(needPassword) != 0);
         UE.LoginLabel = cur.Attribute("LoginLabel");
@@ -298,16 +303,29 @@ void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, 
     node.each([&](int k, SimpleXmlNode& groupNode) -> bool {
         if (groupNode.Name() == "FormatGroup") {
             FileFormatGroup group;
-            std::string userTypes = groupNode.Attribute("UserTypes");
-            IuStringUtils::SplitTo(userTypes, ",", std::inserter(group.UserTypes, group.UserTypes.end()));
-            if (group.UserTypes.empty() || group.UserTypes.find(std::string(UserTypes::ANONYMOUS)) != group.UserTypes.end()) {
-                group.MinUserRank = 0;
-            } else if (group.UserTypes.find(std::string(UserTypes::REGISTERED)) != group.UserTypes.end()) {
-                group.MinUserRank = 1;
+            std::string userTypesStr = groupNode.Attribute("UserTypes");
+            if (userTypesStr.empty()) {
+                group.UserTypeIds.insert(0);
+                group.UserTypes.insert(std::string(UserTypes::ANONYMOUS));
             } else {
-                // TODO:
-                group.MinUserRank = 2;
+                std::vector<std::string> userTypes;
+
+                IuStringUtils::Split(userTypesStr, ",", userTypes);
+                std::optional<int> minUserRank;
+
+                for (const auto& userType : userTypes) {
+                    int userTypeId = UE.addUserType(userType);
+                    if (!minUserRank.has_value() || userTypeId < minUserRank) {
+                        minUserRank = userTypeId;
+                    }
+                    group.UserTypeIds.insert(userTypeId);
+                    group.UserTypes.insert(userType);
+                }
+                if (minUserRank.has_value()) {
+                    group.MinUserRank = *minUserRank;
+                }
             }
+
             group.MaxFileSize = groupNode.AttributeInt64("MaxFileSize");
             group.MinFileSize = groupNode.AttributeInt64("MinFileSize");
 
@@ -343,16 +361,30 @@ void CUploadEngineList::loadStorageTimeInfo(SimpleXmlNode& node, CUploadEngineDa
     node.each([&](int k, SimpleXmlNode& groupNode) -> bool {
         if (groupNode.Name() == "StorageTime") {
             StorageTime group;
-            std::string userTypes = groupNode.Attribute("UserTypes");
-            IuStringUtils::SplitTo(userTypes, ",", std::inserter(group.UserTypes, group.UserTypes.end()));
-            if (group.UserTypes.empty() || std::find(group.UserTypes.begin(), group.UserTypes.end(), std::string(UserTypes::ANONYMOUS)) != group.UserTypes.end()) {
-                group.MinUserRank = 0;
-            } else if (std::find(group.UserTypes.begin(), group.UserTypes.end(), std::string(UserTypes::REGISTERED)) != group.UserTypes.end()) {
-                group.MinUserRank = 1;
+            std::string userTypesStr = groupNode.Attribute("UserTypes");
+
+            if (userTypesStr.empty()) {
+                group.UserTypeIds.insert(0);
+                group.UserTypes.push_back(std::string(UserTypes::ANONYMOUS));
             } else {
-                // TODO:
-                group.MinUserRank = 2;
+                std::vector<std::string> userTypes;
+
+                IuStringUtils::Split(userTypesStr, ",", userTypes);
+                std::optional<int> minUserRank;
+
+                for (const auto& userType : userTypes) {
+                    int userTypeId = UE.addUserType(userType);
+                    if (!minUserRank.has_value() || userTypeId < minUserRank) {
+                        minUserRank = userTypeId;
+                    }
+                    group.UserTypeIds.insert(userTypeId);
+                    group.UserTypes.push_back(userType);
+                }
+                if (minUserRank.has_value()) {
+                    group.MinUserRank = *minUserRank;
+                }
             }
+
             try {
                 group.Time = std::stoi(groupNode.Text());
             } catch (const std::exception& ex) {

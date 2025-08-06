@@ -11,7 +11,6 @@ class CServerListView :
     public CWindowImpl<CServerListView, CListViewCtrl> {
 public:
     using TParent = CWindowImpl<CServerListView, CListViewCtrl>;
-    enum TableColumn { tcServerName, tcMaxFileSize, tcStorageTime, tcAccount, tcFileFormats };
 
     CServerListView(ServerListModel* model, WinServerIconCache* serverIconCache);
     ~CServerListView();

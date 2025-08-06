@@ -152,6 +152,15 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="yapic.ru" Plugin="yapic" WebsiteUrl="https://yapic.ru">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
@@ -310,7 +319,16 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="prntscr.com" Authorize="0" Type="image" Plugin="prntscr" WebsiteUrl="https://prnt.sc/">
+    <Server Name="prntscr.com" MaxFileSize="5242880" Authorize="0" Type="image" Plugin="prntscr" WebsiteUrl="https://prnt.sc/">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -378,14 +396,21 @@
         <Result DirectUrlTemplate="stub"/>
     </Server>
     <Server Name="vk.com" Authorize="2" Type="image" Plugin="vk" MinVersion="1.3.1.4270" SupportsFolders="1" NeedPassword="0" WebsiteUrl="https://vk.com/">
-        <Info>
+        <Info>  
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="52428800">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
             <StorageTimeInfo>
                 <StorageTime>-1</StorageTime>
             </StorageTimeInfo>
         </Info>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="Google Drive" FileHost="1" Authorize="2" Type="file" Plugin="googledrive" SupportsFolders="1" NeedPassword="0" LoginLabel="Profile name" 
+    <Server Name="Google Drive" MaxFileSize="805306368000" FileHost="1" Authorize="2" Type="file" Plugin="googledrive" SupportsFolders="1" NeedPassword="0" LoginLabel="Profile name" 
         WebsiteUrl="https://drive.google.com/">
         <Info>
             <StorageTimeInfo>
@@ -394,7 +419,7 @@
         </Info>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="OneDrive" FileHost="1" Authorize="2" Type="file" Plugin="onedrive" SupportsFolders="1" NeedPassword="0" MinVersion="1.3.3" 
+    <Server Name="OneDrive" MaxFileSize="268435456000" FileHost="1" Authorize="2" Type="file" Plugin="onedrive" SupportsFolders="1" NeedPassword="0" MinVersion="1.3.3" 
         WebsiteUrl="https://onedrive.live.com">
         <Info>
             <StorageTimeInfo>
@@ -505,7 +530,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub"/>
     </Server>
-    <Server Name="mega.nz" Authorize="2" Engine="MegaNz" FileHost="1" SupportsFolders="1" RegistrationUrl="https://mega.nz/register" 
+    <Server Name="mega.nz" MaxFileSize="-1" Authorize="2" Engine="MegaNz" FileHost="1" SupportsFolders="1" RegistrationUrl="https://mega.nz/register" 
             WebsiteUrl="https://mega.io/" MaxThreads="1" LoginLabel="Email">
         <Info>
             <StorageTimeInfo>
@@ -516,11 +541,11 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="pastenow.ru" Plugin="pastenow" WebsiteUrl="https://pastenow.ru">
+    <!-- <Server Name="pastenow.ru" Plugin="pastenow" WebsiteUrl="https://pastenow.ru">
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
-    </Server>
+    </Server> -->
     <Server Name="imgbb.com" MaxFileSize="33554432" Plugin="imgbb" Authorize="1" PasswordLabel="API key" WebsiteUrl="https://imgbb.com/" 
             RegistrationUrl="https://imgbb.com/signup">
         <Info>
@@ -548,7 +573,7 @@
     <Server Name="abcvg.org" MaxFileSize="10485760" Plugin="abcvg" WebsiteUrl="https://abcvg.org">
         <Info>
             <SupportedFormats>
-                <FormatGroup MaxFileSize="10485760" UserTypes="reg">
+                <FormatGroup MaxFileSize="10485760">
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
                     <Format MimeType="image/gif">*.gif</Format>
@@ -679,6 +704,20 @@
     <Server Name="postimages.org" Authorize="1" Type="image" Plugin="postimages.org" NeedPassword="0" WebsiteUrl="https://postimages.org"
         RegistrationUrl="https://postimages.org/signup">
         <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="33554432" UserTypes="anon,reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="67108864" UserTypes="premium">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
             <StorageTimeInfo>
                 <StorageTime>-1</StorageTime>
             </StorageTimeInfo>
@@ -732,14 +771,24 @@
         <Result DownloadUrlTemplate="stub"/>
     </Server>
     <!-- Blocked by Roskomnadzor -->
-    <Server Name="catbox.moe" Authorize="1" FileHost="1" MaxFileSize="200000000" PasswordLabel="userhash" WebsiteUrl="https://catbox.moe/" 
+    <Server Name="catbox.moe" Authorize="1" FileHost="1" MaxFileSize="209715200" PasswordLabel="userhash" WebsiteUrl="https://catbox.moe/" 
         RegistrationUrl="https://catbox.moe/user/register.php">
         <Actions>
             <Action Type="upload" Url="https://catbox.moe/user/api.php" PostParams="reqtype=fileupload;userhash=$(_PASSWORD);fileToUpload=%filename%;" RegExp="^(.+)$" AssignVars="UploadedUrl:0;"/>
         </Actions>
         <Result ImageUrlTemplate="$(UploadedUrl)" />
     </Server>
-    <Server Name="fileditch.com" FileHost="1" Plugin="fileditch" WebsiteUrl="https://fileditch.com">
+    <Server Name="fileditch.com" MaxFileSize="10737418240" FileHost="1" Plugin="fileditch" WebsiteUrl="https://fileditch.com">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="10737418240" UserTypes="anon,reg">
+                    <Format>*</Format>
+                </FormatGroup>  
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime AfterLastDownload="1">30</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub" />
@@ -763,6 +812,16 @@
         <Result ImageUrlTemplate="$(UploadedUrl)" />
     </Server>-->
     <Server Name="m.freespeech.club" FileHost="1" MaxFileSize="536870912" WebsiteUrl="https://m.freespeech.club">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format>*</Format>
+                </FormatGroup>  
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>31</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
             <Action Type="upload" Url="https://m.freespeech.club" PostParams="file=%filename%" RegExp="(https://m.freespeech.club/.+)" AssignVars="Link:0"/>
         </Actions>
@@ -774,12 +833,34 @@
         <Result ImageUrlTemplate="stub"/>
     </Server>-->
     <Server Name="lostpix.com" MaxFileSize="10485760" WebsiteUrl="https://lostpix.com/">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info> 
         <Actions>
             <Action Type="upload" Url="https://lostpix.com/" PostParams="action=upload;width=$(_FILENAME);local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=$(_THUMBWIDTH);thumb_height=;texttype=dimensions" RegExp="\[img\](.*?)\[([\s\S]*?)\[url=(.*?)\]\[img\](.*?)\[" AssignVars="Image:0;View:2;Thumb:3;"/>
         </Actions>
         <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)" />
     </Server>
     <Server Name="getapic.me" Debug="0" Authorize="1" WebsiteUrl="https://getapic.me" RegistrationUrl="https://getapic.me/signup/">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info> 
         <Actions>
             <Action Type="login" Url="https://getapic.me/login/auth" PostParams="next=;email=$(_LOGIN);password=$(_PASSWORD);" 
                 CustomHeaders="X-Requested-With:XMLHttpRequest" OnlyOnce="1"
@@ -815,11 +896,38 @@
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="dosya.co" Authorize="1" Type="file" Plugin="dosya" WebsiteUrl="https://dosya.co/">
+         <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="2147483648" UserTypes="anon">
+                    <Format>*</Format>
+                </FormatGroup>
+                <FormatGroup MaxFileSize="3221225472" UserTypes="reg">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon" AfterLastDownload="1">45</StorageTime>
+                <StorageTime UserTypes="reg" AfterLastDownload="1">120</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="imghippo.com" Authorize="2" Type="image" Plugin="imghippo" NeedPassword="0">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/heic">*.heic</Format>
+                    <Format MimeType="image/tiff">*.tiff,*.tif</Format>
+                </FormatGroup>	 
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
@@ -906,11 +1014,30 @@
         <Result ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
     <Server Name="linkme.ufanet.ru" Plugin="linkme.ufanet" WebsiteUrl="https://linkme.ufanet.ru/" >
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                </FormatGroup>	  
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
     <Server Name="0x0.st" FileHost="1" MaxFileSize="536870912" UserAgent="curl/7.54.1" WebsiteUrl="https://0x0.st">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format>*</Format>
+                </FormatGroup>  
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>30</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
             <Action Type="upload" Url="https://0x0.st" PostParams="file=%filename%" RegExp="(https://0x0.st/.+)" AssignVars="Link:0"/>
         </Actions>
@@ -926,7 +1053,22 @@
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>-->
-    <Server Name="ranoz.gg" FileHost="1" Plugin="ranoz" WebsiteUrl="https://ranoz.gg">
+    <Server Name="ranoz.gg" FileHost="1" MaxFileSize="5357971701" Plugin="ranoz" WebsiteUrl="https://ranoz.gg">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup>
+                    <Format>*</Format>
+                </FormatGroup>  
+            </SupportedFormats>
+            <ForbiddenFormats>
+                <FormatGroup>
+                    <Format MimeType="video/*">*</Format>
+                </FormatGroup>  
+            </ForbiddenFormats>
+            <StorageTimeInfo>
+                <StorageTime AfterLastDownload="1">30</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
@@ -936,22 +1078,137 @@
         </Actions>
         <Result ImageUrlTemplate="stub"/>
     </Server>
-    <Server Name="webshare.cz" FileHost="1" Authorize="1" Plugin="webshare" WebsiteUrl="https://webshare.cz">
+    <Server Name="webshare.cz" MaxFileSize="214748364800" FileHost="1" Authorize="1" Plugin="webshare" WebsiteUrl="https://webshare.cz">
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="filemail.com" FileHost="1" Authorize="1" Plugin="filemail" WebsiteUrl="https://www.filemail.com/">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup UserTypes="anon,reg" MaxFileSize="5368709120">
+                    <Format>*</Format>
+                </FormatGroup>  
+                <FormatGroup UserTypes="personal" MaxFileSize="5368709120">
+                    <Format>*</Format>
+                </FormatGroup>
+                <FormatGroup UserTypes="pro" MaxFileSize="268435456000">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime UserTypes="anon,reg">7</StorageTime>
+                <StorageTime UserTypes="personal">30</StorageTime>
+                <StorageTime UserTypes="pro">30</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
     <Server Name="lobfile.com" FileHost="1" Authorize="2" Plugin="lobfile" WebsiteUrl="https://lobfile.com" NeedPassword="0" RegistrationUrl="https://lobfile.com/create-account" MaxThreads="1">
+         <Info>
+            <SupportedFormats> 
+                <FormatGroup UserTypes="reg" MaxFileSize="104857600">
+                    <!-- Documents -->
+                    <Format MimeType="application/pdf">*.pdf</Format>
+                    <Format MimeType="application/rtf">*.rtf</Format>
+                    <Format MimeType="application/vnd.oasis.opendocument.text">*.odt</Format>
+                    <Format MimeType="application/vnd.oasis.opendocument.spreadsheet">*.ods</Format>
+                    <Format MimeType="text/plain">*.txt</Format>
+                    <Format MimeType="text/markdown">*.md</Format>
+                    <Format MimeType="text/css">*.css</Format>
+                    
+                    <!-- Data Formats -->
+                    <Format MimeType="application/json">*.json</Format>
+                    <Format MimeType="text/csv">*.csv</Format>
+                    <Format MimeType="application/toml">*.toml</Format>
+                    <Format MimeType="text/yaml">*.yml,*.yaml</Format>
+                    <Format MimeType="text/plain">*.ini,*.cfg,*.conf,*.properties,*.log,*.lang</Format>
+                    
+                    <!-- Archives -->
+                    <Format MimeType="application/zip">*.zip</Format>
+                    <Format MimeType="application/x-7z-compressed">*.7z</Format>
+                    <Format MimeType="application/vnd.rar">*.rar</Format>
+                    <Format MimeType="application/x-tar">*.tar</Format>
+                    <Format MimeType="application/gzip">*.gz</Format>
+                    <Format MimeType="application/x-compressed-tar">*.tgz</Format>
+                    <Format MimeType="application/x-xz">*.xz</Format>
+                    
+                    <!-- Images -->
+                    <Format MimeType="image/png">*.png,*.apng</Format>
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    
+                    <!-- Audio -->
+                    <Format MimeType="audio/mpeg">*.mp3</Format>
+                    <Format MimeType="audio/ogg">*.ogg</Format>
+                    <Format MimeType="audio/wav">*.wav</Format>
+                    <Format MimeType="audio/mp4">*.m4a</Format>
+                    <Format MimeType="audio/flac">*.flac</Format>
+                    <Format MimeType="audio/aiff">*.aiff</Format>
+                    
+                    <!-- Video -->
+                    <Format MimeType="video/mp4">*.mp4,*.m4v</Format>
+                    <Format MimeType="video/webm">*.webm</Format>
+                    <Format MimeType="video/x-matroska">*.mkv</Format>
+                    <Format MimeType="video/3gpp">*.3gp,*.3g2</Format>
+                    <Format MimeType="video/x-msvideo">*.avi</Format>
+                    
+                    <!-- Minecraft -->
+                    <Format MimeType="application/zip">*.mcpack,*.mcaddon</Format>
+                    <Format MimeType="application/json">*.mcmeta</Format>
+                </FormatGroup>  
+                <FormatGroup UserTypes="basic" MaxFileSize="419430400">
+                    <Format>*</Format>
+                </FormatGroup>
+                <FormatGroup UserTypes="advanced" MaxFileSize="2147483648">
+                    <Format>*</Format>
+                </FormatGroup>
+                <FormatGroup UserTypes="power" MaxFileSize="5368709120">
+                    <Format>*</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgpx.com" Authorize="1" Plugin="imgpx" WebsiteUrl="https://imgpx.com/" RegistrationUrl="https://imgpx.com/en/register" MaxThreads="1">
+    <Server Name="imgpx.com" Types="image file" Authorize="1" Plugin="imgpx" WebsiteUrl="https://imgpx.com/" RegistrationUrl="https://imgpx.com/en/register" MaxThreads="1">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="16777216" UserTypes="anon">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                </FormatGroup>	
+                 <FormatGroup MaxFileSize="33554432" UserTypes="anon">
+                    <Format MimeType="application/pdf">*.pdf</Format>
+                    <Format MimeType="text/plain">*.txt</Format>
+                    <Format MimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document">*.docx</Format>
+                    <Format MimeType="application/msword">*.doc</Format>
+                    <Format MimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">*.xlsx</Format>
+                </FormatGroup>	
+                <FormatGroup MaxFileSize="33554432" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>	
+                <FormatGroup MaxFileSize="67108864" UserTypes="reg">
+                    <Format MimeType="application/pdf">*.pdf</Format>
+                    <Format MimeType="text/plain">*.txt</Format>
+                    <Format MimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document">*.docx</Format>
+                    <Format MimeType="application/msword">*.doc</Format>
+                    <Format MimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">*.xlsx</Format>
+                </FormatGroup>  
+            </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
@@ -1016,7 +1273,18 @@
         </Actions>
         <Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
-    <Server Name="anonpic.org" Plugin="anonpic.org" WebsiteUrl="https://anonpic.org/">
+    <Server Name="anonpic.org" Plugin="anonpic.org" MaxFileSize="10485760" WebsiteUrl="https://anonpic.org/">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="10485760">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/vnd.adobe.photoshop">*.psd</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
@@ -1026,7 +1294,17 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgtr.ee" Authorize="1" Plugin="imgtr.ee" WebsiteUrl="https://imgtr.ee/" PasswordLabel="API key">
+    <Server Name="imgtr.ee" Authorize="1" MaxFileSize="8388608" Plugin="imgtr.ee" WebsiteUrl="https://imgtr.ee/" PasswordLabel="API key">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="8388608">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>

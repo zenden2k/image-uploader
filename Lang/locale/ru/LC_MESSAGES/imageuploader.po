@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-01 15:17+0300\n"
+"POT-Creation-Date: 2025-08-06 15:50+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/image-uploader/"
@@ -57,6 +57,18 @@ msgstr ""
 msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
 msgstr "\"%1%\": сервер %2% не поддерживает такой тип файла (%3% %4%)\n"
 
+#: ../Source/Gui/Models/ServerListModel.cpp:253
+msgid "%1%days"
+msgstr ""
+
+#: ../Source/Gui/Models/ServerListModel.cpp:232
+#, c-format
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:217
 #: ../Source/Gui/Dialogs/MainDlg.cpp:910
 #, c-format
@@ -83,6 +95,7 @@ msgstr[1] "%d файла всего"
 msgstr[2] "%d файлов всего"
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:111
+#, c-format
 msgid "%d server selected"
 msgid_plural "%d servers selected"
 msgstr[0] "%d сервер выбран"
@@ -211,7 +224,7 @@ msgstr "Доступ:"
 
 #: ../Source/Gui/Controls/ServerListView.cpp:33
 msgid "Account"
-msgstr "Акк."
+msgstr "Аккаунт"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:720
 msgid "Account is not enabled"
@@ -1216,11 +1229,11 @@ msgstr "Дата от:"
 msgid "Decode response"
 msgstr "Декодировать ответ"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:71
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:66
 msgid "Default server for other file types"
 msgstr "Сервер по-умолчанию для хранения других типов файлов"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:57
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:52
 msgid "Default server for uploading images"
 msgstr "Сервер по-умолчанию для хранения изображений"
 
@@ -1401,9 +1414,9 @@ msgstr "Введите текст:"
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:81
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:157
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:166
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:172
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:152
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:161
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:167
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:218
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:272
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
@@ -1823,6 +1836,7 @@ msgstr "Глобальные"
 msgid "Global hotkey:"
 msgstr "Глобальная комбинация:"
 
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:689
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1068
 msgid "Go to signup page"
 msgstr "Открыть страницу регистрации"
@@ -2406,6 +2420,7 @@ msgid "Open system connection settings"
 msgstr "Открыть системные настройки подключений"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:686
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 msgid "Open the website"
 msgstr "Открыть веб-сайт"
@@ -2645,11 +2660,11 @@ msgstr "Прямоугольник"
 msgid "Redo"
 msgstr "Повторить"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:51
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:46
 msgid "Remember file server's settings in wizard"
 msgstr "Запоминать в мастере настройки сервера для других типов файлов"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:50
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:45
 msgid "Remember image server's settings in wizard"
 msgstr "Запоминать в мастере настройки сервера для картинок"
 
@@ -2962,15 +2977,15 @@ msgstr "Настройки сервера и параметры авториза
 msgid "Server for other file types"
 msgstr "Сервер для хранения других типов файлов"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:81
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:76
 msgid "Server for quick screenshot uploading"
 msgstr "Сервер для быстрой загрузки скриншотов"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:104
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:99
 msgid "Server for temporary images"
 msgstr "Сервер для временного хранения"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:92
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:87
 msgid "Server for uploading from Explorer's context menu"
 msgstr "Сервер для загрузки из контекстного меню проводника"
 
@@ -3201,8 +3216,8 @@ msgid "Stopped"
 msgstr "Остановлено"
 
 #: ../Source/Gui/Controls/ServerListView.cpp:32
-msgid "Storage time"
-msgstr "Время хранения"
+msgid "Storage time (days)"
+msgstr "Время хран. (дней)"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:82
 msgid "Stretch"
@@ -3435,7 +3450,7 @@ msgstr "Ссылка для скачивания будет выглядеть �
 msgid "URL for downloading:"
 msgstr "URL для скачивания:"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:116
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:111
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:86
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1160
 msgid "URL shortening server"
@@ -3759,14 +3774,14 @@ msgstr "Да"
 msgid "You are using the latest %s version."
 msgstr "Вы используете последнюю версию %s."
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:156
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:165
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:151
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:160
 #, c-format
 msgid "You have not selected \"%s\""
 msgstr "Вы не выбрали \"%s\""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:80
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:171
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:166
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:133
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:117
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:141
@@ -3843,14 +3858,15 @@ msgstr "мс"
 msgid "multiple files"
 msgstr "множество файлов"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:59
-msgid "no"
-msgstr "нет"
-
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:110
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:224
 msgid "not selected"
 msgstr "не выбран"
+
+#: ../Source/Gui/Models/ServerListModel.cpp:205
+msgctxt "serverlist.account"
+msgid "required"
+msgstr "нужен"
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:96
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:52
@@ -3874,9 +3890,11 @@ msgstr "translator_name"
 msgid "unknown server"
 msgstr "неизвестный сервер"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:59
-msgid "yes"
-msgstr "да"
+#~ msgid "no"
+#~ msgstr "нет"
+
+#~ msgid "yes"
+#~ msgstr "да"
 
 #~ msgid "Add FTP/SFTP server..."
 #~ msgstr "Добавить FTP/SFTP сервер..."

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-01 15:17+0300\n"
+"POT-Creation-Date: 2025-08-06 15:50+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
@@ -53,6 +53,16 @@ msgstr ""
 #: ../Source/Core/FileTypeCheckTask.cpp:79
 msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
 msgstr ""
+
+#: ../Source/Gui/Models/ServerListModel.cpp:253
+msgid "%1%days"
+msgstr ""
+
+#: ../Source/Gui/Models/ServerListModel.cpp:232
+#, c-format
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] ""
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:217
 #: ../Source/Gui/Dialogs/MainDlg.cpp:910
@@ -1241,11 +1251,11 @@ msgstr ""
 msgid "Decode response"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:71
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:66
 msgid "Default server for other file types"
 msgstr "다른 파일 형식의 기본 서버"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:57
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:52
 msgid "Default server for uploading images"
 msgstr "이미지를 업로드할 기본 서버"
 
@@ -1433,9 +1443,9 @@ msgstr "텍스트 입력:"
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:81
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:157
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:166
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:172
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:152
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:161
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:167
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:218
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:272
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:277
@@ -1859,6 +1869,7 @@ msgstr "글로벌"
 msgid "Global hotkey:"
 msgstr "전역 단축키:"
 
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:689
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1068
 msgid "Go to signup page"
 msgstr "가입 페이지로 이동"
@@ -2465,6 +2476,7 @@ msgid "Open system connection settings"
 msgstr "연결 설정"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:686
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 #, fuzzy
 #| msgid "Open in the editor"
@@ -2705,11 +2717,11 @@ msgstr "사각형"
 msgid "Redo"
 msgstr "다시 실행"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:51
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:46
 msgid "Remember file server's settings in wizard"
 msgstr "마법사에서 파일 서버의 설정 기억"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:50
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:45
 msgid "Remember image server's settings in wizard"
 msgstr "마법사에서 이미지 서버의 설정 기억"
 
@@ -3056,15 +3068,15 @@ msgstr "서버 및 인증 설정"
 msgid "Server for other file types"
 msgstr "다른 파일 형식에 대한 서버"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:81
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:76
 msgid "Server for quick screenshot uploading"
 msgstr "빠른 스크린 샷을 업로드할 서버"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:104
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:99
 msgid "Server for temporary images"
 msgstr "임시 이미지용 서버"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:92
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:87
 msgid "Server for uploading from Explorer's context menu"
 msgstr "탐색기의 컨텍스트 메뉴에서 업로드할 서버"
 
@@ -3301,7 +3313,7 @@ msgid "Stopped"
 msgstr "중지"
 
 #: ../Source/Gui/Controls/ServerListView.cpp:32
-msgid "Storage time"
+msgid "Storage time (days)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:82
@@ -3548,7 +3560,7 @@ msgstr "다운로드 URL은 다음과 같습니다:"
 msgid "URL for downloading:"
 msgstr "다운로드용 URL:"
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:116
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:111
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:86
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1160
 msgid "URL shortening server"
@@ -3890,14 +3902,14 @@ msgstr ""
 msgid "You are using the latest %s version."
 msgstr "최신 Image Uploader 버전을 사용하고 있습니다."
 
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:156
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:165
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:151
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:160
 #, c-format
 msgid "You have not selected \"%s\""
 msgstr "\"%s\"를 선택하지 않았습니다"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:80
-#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:171
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:166
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:133
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:117
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:141
@@ -3984,16 +3996,15 @@ msgstr "밀리초"
 msgid "multiple files"
 msgstr "여러 파일"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:59
-#, fuzzy
-#| msgid "Undo"
-msgid "no"
-msgstr "실행 취소"
-
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:110
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:224
 msgid "not selected"
 msgstr "선택하지 않음"
+
+#: ../Source/Gui/Models/ServerListModel.cpp:205
+msgctxt "serverlist.account"
+msgid "required"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:96
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:52
@@ -4019,9 +4030,10 @@ msgstr "Sung un Kim <riders1@naver.com> https://cafe.naver.com/riderskor"
 msgid "unknown server"
 msgstr ""
 
-#: ../Source/Gui/Models/ServerListModel.cpp:59
-msgid "yes"
-msgstr ""
+#, fuzzy
+#~| msgid "Undo"
+#~ msgid "no"
+#~ msgstr "실행 취소"
 
 #~ msgid "Add local folder..."
 #~ msgstr "로컬 폴더 추가..."
