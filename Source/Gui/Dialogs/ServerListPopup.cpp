@@ -372,6 +372,8 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
                 msg.hwnd = queryEditControl_;
                 queryEditControl_.SetFocus();
             }
+            break;
+            
         case WM_KEYDOWN:
         case WM_KEYUP:
             if (msg.hwnd == queryEditControl_ && (msg.wParam == VK_UP || msg.wParam == VK_DOWN)) {
