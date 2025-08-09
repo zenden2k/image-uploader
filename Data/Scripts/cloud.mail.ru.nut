@@ -1,3 +1,4 @@
+// Cloud.mail.ru Upload API
 if(ServerParams.getParam("folder") == "") {
 	ServerParams.setParam("folder", "Screenshots") ;
 }
@@ -168,6 +169,14 @@ function _HexToBytes(hex) {
     return res;
 }
 
+function _TrimStr(str) {
+    local i = str.len() - 1;
+    while (i >= 0 && str[i] == 0) {
+        i--;
+    }
+    return str.slice(0, i+1);
+}
+
 function _SendMetaRequest(nc, url, remoteFileName, hashUpper, size, create) {
     nc.setUrl(url);
     local vec = "";
@@ -236,7 +245,7 @@ function UploadFile(FileName, options) {
         local len = data[0];
         local str = data.slice(1, len);
         local len2 = data[len+1];
-        local shortLink = data.slice(len+2, len+2+len2);
+        local shortLink = _TrimStr(data.slice(len+2, len+2+len2));
         
         nm.enableResponseCodeChecking(false);
         nm.doGet(uServer + "info/" +  fileHash + "?client_id=cloud-win&token="+token);

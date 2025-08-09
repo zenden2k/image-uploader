@@ -78,14 +78,14 @@ function UploadFile(pathToFile, options) {
     local task = options.getTask().getFileTask();
     
     // Step 1: Upload file to 8upload.com
-    nm.setUrl(BASE_URL + "/upload/sl/");
-    nm.addQueryParamFile("upload", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.setUrl(BASE_URL + "/upload/mt/");
+    nm.addQueryParamFile("upload[]", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
     nm.doUploadMultipartData();
 
     // Parse JSON response even if response code is not 200
     local uploadResponse = ParseJSON(nm.responseBody());
     
-    if (uploadResponse == "") {
+    if (uploadResponse == "" || uploadResponse == null) {
         _PrintError(null, "Failed to get upload path from response");
         return ResultCode.Failure;
     }

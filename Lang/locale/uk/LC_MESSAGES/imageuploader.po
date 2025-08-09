@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-06 15:50+0300\n"
+"POT-Creation-Date: 2025-08-09 15:27+0300\n"
 "PO-Revision-Date: 2025-07-21 12:56+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/image-uploader/"
@@ -54,18 +54,6 @@ msgstr ""
 #: ../Source/Core/FileTypeCheckTask.cpp:79
 msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
 msgstr ""
-
-#: ../Source/Gui/Models/ServerListModel.cpp:253
-msgid "%1%days"
-msgstr ""
-
-#: ../Source/Gui/Models/ServerListModel.cpp:232
-#, c-format
-msgid "%d day"
-msgid_plural "%d days"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:217
 #: ../Source/Gui/Dialogs/MainDlg.cpp:910
@@ -260,7 +248,7 @@ msgstr ""
 msgid "Add"
 msgstr "Додати"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:591
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:593
 #, fuzzy, c-format
 #| msgid "Add FTP server..."
 msgid "Add %s server..."
@@ -307,7 +295,7 @@ msgstr "Додати елемент до контекстного меню пр�
 msgid "Add files..."
 msgstr "Додати файли..."
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:593
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:595
 #, fuzzy
 #| msgid "Add local folder as new server..."
 msgid "Add folder as new server..."
@@ -701,7 +689,7 @@ msgstr ""
 msgid "Cannot load thumbnail for image."
 msgstr "Не вдається завантажити ескіз зображення."
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:634
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:636
 #, fuzzy
 #| msgid "Cannot copy file "
 msgid ""
@@ -1453,7 +1441,7 @@ msgstr "Введіть текст:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:136
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:154
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:637
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:639
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
@@ -1874,7 +1862,7 @@ msgstr "Глобальні"
 msgid "Global hotkey:"
 msgstr "Глобальне сполучення клавіш:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:689
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:691
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1068
 msgid "Go to signup page"
 msgstr "Перейти до сторінки підписки"
@@ -2464,7 +2452,7 @@ msgstr "Відкрити знімок у редакторі"
 msgid "Open screenshots folder"
 msgstr "Відкрити папку зі знімками екрана"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:594
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:596
 #, fuzzy
 #| msgid "Open screenshots folder"
 msgid "Open servers folder"
@@ -2477,7 +2465,7 @@ msgid "Open system connection settings"
 msgstr "Параметри з'єднання"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:686
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:688
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 msgid "Open the website"
 msgstr ""
@@ -3972,7 +3960,7 @@ msgstr "кілька файлів"
 msgid "not selected"
 msgstr "не вибрано"
 
-#: ../Source/Gui/Models/ServerListModel.cpp:205
+#: ../Source/Gui/Models/ServerListModel.cpp:237
 msgctxt "serverlist.account"
 msgid "required"
 msgstr ""

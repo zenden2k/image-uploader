@@ -241,10 +241,10 @@
         </Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000" DefaultForTypes="file"
+    <!--<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000" DefaultForTypes="file"
         WebsiteUrl="https://www.sendspace.com" RegistrationUrl="https://www.sendspace.com/register.html">
         <Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-    </Server>
+    </Server>-->
     <!-- Blocked ?-->
     <Server Name="imagevenue.com" Authorize="1" Plugin="imagevenue" WebsiteUrl="https://www.imagevenue.com" RegistrationUrl="https://www.imagevenue.com/auth/register">
         <Actions>

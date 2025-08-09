@@ -183,6 +183,14 @@ CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std:
     return TypeInvalid;
 }
 
+std::set<unsigned int> CUploadEngineData::getUserTypesIds() const {
+    std::set<unsigned int> res;
+    for (unsigned int i = 0; i < userTypes.size(); i++) {
+        res.insert(i);
+    }
+    return res;
+}
+
 CUploadEngineListBase::CUploadEngineListBase(): mt_(std::random_device()())
 {
 }

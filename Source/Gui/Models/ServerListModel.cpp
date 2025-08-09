@@ -131,7 +131,8 @@ std::string ServerData::getFormats() const {
 
         for (const auto& formatGroup : ued->SupportedFormatGroups) {
             if (!formatGroup.Extensions.empty()) {
-                for (auto userTypeId : formatGroup.UserTypeIds) {
+                const auto& userTypeIds = formatGroup.UserTypeIds.empty() ? ued->getUserTypesIds() : formatGroup.UserTypeIds;
+                for (auto userTypeId : userTypeIds) {
                     if (userTypeId < extensions.size()) {
                         extensions[userTypeId].insert(formatGroup.Extensions.begin(), formatGroup.Extensions.end());
                     }
@@ -173,7 +174,8 @@ std::string ServerData::getMaxFileSizeString() const {
             if (formatGroup.MaxFileSize == 0) {
                 continue;
             }
-            for (auto userTypeId : formatGroup.UserTypeIds) {
+            const auto& userTypeIds = formatGroup.UserTypeIds.empty() ? ued->getUserTypesIds() : formatGroup.UserTypeIds;
+            for (auto userTypeId : userTypeIds) {
                 if (userTypeId >= fileSizes.size()) {
                     continue;
                 }
@@ -262,7 +264,8 @@ void ServerData::cacheStorageTime() const {
         storageTimes.resize(ued->userTypes.size());
 
         for (const auto& item : ued->StorageTimeInfo) {
-            for (auto userTypeId : item.UserTypeIds) {
+            const auto& userTypeIds = item.UserTypeIds.empty() ? ued->getUserTypesIds() : item.UserTypeIds;
+            for (auto userTypeId : userTypeIds) {
                 if (userTypeId < storageTimes.size()) {
                     storageTimes[userTypeId] = item;
                 }

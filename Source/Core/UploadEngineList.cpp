@@ -304,10 +304,7 @@ void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, 
         if (groupNode.Name() == "FormatGroup") {
             FileFormatGroup group;
             std::string userTypesStr = groupNode.Attribute("UserTypes");
-            if (userTypesStr.empty()) {
-                group.UserTypeIds.insert(0);
-                group.UserTypes.insert(std::string(UserTypes::ANONYMOUS));
-            } else {
+            if (!userTypesStr.empty()) {
                 std::vector<std::string> userTypes;
 
                 IuStringUtils::Split(userTypesStr, ",", userTypes);
@@ -363,10 +360,7 @@ void CUploadEngineList::loadStorageTimeInfo(SimpleXmlNode& node, CUploadEngineDa
             StorageTime group;
             std::string userTypesStr = groupNode.Attribute("UserTypes");
 
-            if (userTypesStr.empty()) {
-                group.UserTypeIds.insert(0);
-                group.UserTypes.push_back(std::string(UserTypes::ANONYMOUS));
-            } else {
+            if (!userTypesStr.empty()) {
                 std::vector<std::string> userTypes;
 
                 IuStringUtils::Split(userTypesStr, ",", userTypes);

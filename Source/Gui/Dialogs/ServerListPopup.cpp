@@ -50,6 +50,11 @@ CServerListPopup::CServerListPopup(CMyEngineList* engineList, WinServerIconCache
     , selectedServerType_(selectedServerType)
     , serverIndex_(serverIndex)
 {
+    auto ued = engineList->byIndex(serverIndex);
+    if (ued && ((selectedServerType & ued->TypeMask) == 0)) {
+        // Fix current server type to ensure that current server is visible
+        selectedServerType_ = ued->TypeMask & serverMask;
+    }
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     isChildWindow_ = isChildWindow;
     hMyDlgTemplate_ = nullptr;
@@ -685,11 +690,8 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
 
-        contextMenu.AppendMenu(MF_STRING, ID_OPENWEBSITE, TR("Open the website"));
-        contextMenu.EnableMenuItem(ID_OPENREGISTERURL, data.ued->WebsiteUrl.empty() ? MF_DISABLED : MF_ENABLED);
-
-        contextMenu.AppendMenu(MF_STRING, ID_OPENREGISTERURL, TR("Go to signup page"));
-        contextMenu.EnableMenuItem(ID_OPENREGISTERURL, data.ued->RegistrationUrl.empty() ? MF_DISABLED : MF_ENABLED);
+        contextMenu.AppendMenu(MF_STRING | (data.ued->WebsiteUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENWEBSITE, TR("Open the website"));
+        contextMenu.AppendMenu(MF_STRING | (data.ued->RegistrationUrl.empty() ? MF_DISABLED : MF_ENABLED), ID_OPENREGISTERURL, TR("Go to signup page"));
 
         BOOL res = contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, ScreenPoint.x, ScreenPoint.y, m_hWnd);
         switch (res) {

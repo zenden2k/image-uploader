@@ -148,7 +148,7 @@ struct StorageTime {
     int Time = 0; // in days
     bool AfterLastDownload = false;
     std::vector<std::string> UserTypes;
-    std::set<int> UserTypeIds;
+    std::set<unsigned int> UserTypeIds;
     int MinUserRank = 0;
 };
     /**
@@ -246,6 +246,7 @@ class CUploadEngineData
         CUploadEngineData();
         int addUserType(const std::string_view& name);
         static ServerType ServerTypeFromString(const std::string& serverType);
+        std::set<unsigned int> getUserTypesIds() const;
 };
 /**
 UploadParams class

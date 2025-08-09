@@ -25,7 +25,7 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 {
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
 
-    SetWindowText(TR("Add FTP/SFTP server"));
+    SetWindowText(TR("Add server"));
     TRC(IDC_CONNECTIONNAMELABEL, "Connection  name:");
     TRC(IDC_SERVERSTATIC, "Server [:port]:");
     TRC(IDC_AUTHENTICATIONLABEL, "Authenticaton:");
