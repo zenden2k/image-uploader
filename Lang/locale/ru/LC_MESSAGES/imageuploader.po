@@ -2033,7 +2033,7 @@ msgstr "Интеграция"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:55
 msgid "Integration in menu \"Send to\""
-msgstr "Добавить Image Uploader в меню \"Отправить\""
+msgstr "Добавить пункт в меню \"Отправить\""
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:218
 msgid "Intercept PrintScreen and Alt+PrintScreen hotkeys"
@@ -2572,7 +2572,7 @@ msgid ""
 msgstr ""
 "Профиль \"%s\" не найден.\n"
 "Это может быть вызвано ошибкой конфигурации или использованием нескольких "
-"версий Image Uploader на одном компьютере."
+"версий программы на одном компьютере."
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:334
 msgid "Profile with such name already exists!"
