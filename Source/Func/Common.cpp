@@ -282,3 +282,35 @@ CString HotkeyToString(CString funcName, CString menuItemText) {
     }
     return menuItemText + _T("\t") + hotkeyStr;
 }
+
+void OpenDocumentation(HWND parent, const CString& file, const CString& id /*= {}*/) {
+    CString docsFolder = WinUtils::GetAppFolder() + "Docs\\";
+    CString actualFile;
+
+    if (!file.IsEmpty()) {
+        CString locale = U2W(ServiceLocator::instance()->translator()->getCurrentLocale());
+        CString tryFile = docsFolder + locale + _T("\\") + file + _T(".html");
+        CString tryFile2 = docsFolder + _T("en_US\\") + file + _T(".html");
+
+        if (WinUtils::FileExists(tryFile)) {
+            actualFile = tryFile;
+        } else if (WinUtils::FileExists(tryFile2)) {
+            actualFile = tryFile2;
+        } 
+
+        /*if (!actualFile.IsEmpty()) {
+            actualFile += _T("#");
+            actualFile += id;
+        }*/
+   }
+
+    if (file.IsEmpty()) {
+        actualFile = docsFolder + _T("index.html");
+    }
+
+    try {
+        WinUtils::ShellOpenFileOrUrl(actualFile, parent, {}, true);
+    } catch (const Win32Exception& ex) {
+        GuiTools::LocalizedMessageBox(parent, TR("Cannot open documentation: ") + ex.getMessage(), TR("Error"), MB_ICONERROR); 
+    }
+}

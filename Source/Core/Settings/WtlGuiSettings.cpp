@@ -467,7 +467,6 @@ WtlGuiSettings::WtlGuiSettings() :
     UseDirectLinks = true;
     TrayResult = trJustURL;
     DropVideoFilesToTheList = false;
-    CodeLang = 0;
     ConfirmOnExit = 1;
     EnableToastNotifications = true;
 

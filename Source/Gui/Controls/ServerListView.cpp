@@ -123,8 +123,8 @@ void CServerListView::setColumnWidths() {
     int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     SetColumnWidth(ServerListModel::tcServerName, MulDiv(140, dpi, USER_DEFAULT_SCREEN_DPI));
     SetColumnWidth(ServerListModel::tcMaxFileSize, MulDiv(115, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(ServerListModel::tcStorageTime, MulDiv(100, dpi, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(ServerListModel::tcAccount, MulDiv(50, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(ServerListModel::tcStorageTime, MulDiv(110, dpi, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(ServerListModel::tcAccount, MulDiv(60, dpi, USER_DEFAULT_SCREEN_DPI));
     SetColumnWidth(ServerListModel::tcFileFormats, MulDiv(200, dpi, USER_DEFAULT_SCREEN_DPI));
 }
 

@@ -101,8 +101,8 @@ struct ScreenRecordingStruct {
 
 #ifndef IU_QT
 struct MediaInfoSettingsStruct {
-    int InfoType; // 0 - short summary, 1 - full info
-    bool EnableLocalization;
+    int InfoType = 0; // 0 - short summary, 1 - full info
+    bool EnableLocalization = true;
 };
 
 struct HistorySettingsStruct {
@@ -123,6 +123,7 @@ class CommonGuiSettings : public BasicSettings {
         ServerProfilesMap ServerProfiles;
         VideoSettingsStruct VideoSettings;
         ScreenRecordingStruct ScreenRecordingSettings;
+        ImageUploadParams DefaultImageUploadParams;
 #ifndef IU_QT
         CString Language;
         CString DataFolder;
@@ -136,8 +137,8 @@ class CommonGuiSettings : public BasicSettings {
         MediaInfoSettingsStruct MediaInfoSettings;
         HistorySettingsStruct HistorySettings;
 
-        int CodeLang;
-        int CodeType;
+        int CodeLang = 0;
+        int CodeType = 0;
 
         bool IsPortable = true;
         CString VideoFolder, ImagesFolder;

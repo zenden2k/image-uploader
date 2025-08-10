@@ -261,7 +261,6 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     scriptsManager_(scriptsManager),
     Settings(*settings),
     logger_(std::move(logger)),
-    sessionImageServer_(false),
     enginelist_(enginelist)
 {
     mainThreadId_ = GetCurrentThreadId();
@@ -2766,11 +2765,11 @@ void  CWizardDlg::endAddFiles() {
     MainDlg->ThumbsView.endAdd();
 }
 
-bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer) {
+bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer, ImageUploadParams defaultImageUploadParams) {
     auto* mainDlg = getPage<CMainDlg>(CWizardDlg::wpMainPage);
 
     // Must be kept alive until fileFormatDlg is destroyed
-    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, imageServer, fileServer);
+    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, imageServer, fileServer, std::move(defaultImageUploadParams));
 
     auto dlg = CStatusDlg::create(task);
 

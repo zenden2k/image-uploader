@@ -69,5 +69,6 @@ void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')
 void EncodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
 CString HotkeyToString(CString funcName, CString menuItemText);
 
+void OpenDocumentation(HWND parent, const CString& file, const CString& id = {});
 typedef CAtlArray<CString> CStringList;
 #endif

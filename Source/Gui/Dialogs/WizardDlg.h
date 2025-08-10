@@ -302,7 +302,7 @@ public:
     void beginAddFiles();
     void endAddFiles();
     void showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap, CString imageFilePath);
-    bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer);
+    bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer, ImageUploadParams defaultImageUploadParams);
     void showHelpButtonMenu(HWND control);
     bool isScreenRecorderRunning() const;
     void stopScreenRecording();

@@ -10,12 +10,11 @@
 
 constexpr auto MAX_BAD_ITEMS = std::numeric_limits<size_t>::max();
 
-FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, const ServerProfileGroup& sessionImageServer, const ServerProfileGroup& sessionFileServer)
-    :
-    fileList_(fileList),
-    sessionImageServer_(sessionImageServer),
-    sessionFileServer_(sessionFileServer)
-{
+FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, const ServerProfileGroup& sessionImageServer, const ServerProfileGroup& sessionFileServer, ImageUploadParams defaultImageUploadParams) :
+    fileList_(fileList)
+    , sessionImageServer_(sessionImageServer)
+    , sessionFileServer_(sessionFileServer)
+    , defaultImageUploadParams_(std::move(defaultImageUploadParams)) {
 
 }
 
@@ -51,7 +50,7 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
             
             
             if (item->isImage()) {
-                ImageConverterFilter::supposedOutputFormat(sf, serverProfile);
+                ImageConverterFilter::supposedOutputFormat(sf, serverProfile, defaultImageUploadParams_);
             }
             if (sf.fileSize < 0) {
                 sf.fileSize = size;

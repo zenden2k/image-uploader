@@ -24,12 +24,11 @@ limitations under the License.
 #include "Func/WinUtils.h"
 #endif
 
-CommonGuiSettings::CommonGuiSettings()
-    : BasicSettings()
-    , imageServer(false) {
+CommonGuiSettings::CommonGuiSettings() : BasicSettings() {
     // Default values of settings
     MaxThreads = 3;
     DeveloperMode = false;
+
 #ifndef IU_QT
     HistorySettings.EnableDownloading = true;
     HistorySettings.HistoryConverted = false;
@@ -188,6 +187,7 @@ void CommonGuiSettings::BindToManager() {
     urlShorteningServer.bind(upload["UrlShorteningServer"]);
     temporaryServer.bind(upload["TemporaryServer"]);
     imageSearchServer.bind(upload["ImageSearchServer"]);
+    DefaultImageUploadParams.bind(upload["DefaultImageUploadParams"]);
 
     SettingsNode& video = mgr_["VideoGrabber"];
     video.nm_bind(VideoSettings, NumOfFrames);

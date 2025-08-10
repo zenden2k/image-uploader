@@ -60,6 +60,7 @@ public:
         MESSAGE_HANDLER(WM_ENABLE, OnEnable)
         MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
         MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+        MESSAGE_HANDLER(WM_HELP, OnHelp)
         COMMAND_ID_HANDLER(IDOK, OnOK)
         COMMAND_HANDLER(IDC_ALLTYPESRADIO, BN_CLICKED, OnServerTypeChanged)
         COMMAND_HANDLER(IDC_IMAGERADIO, BN_CLICKED, OnServerTypeChanged)
@@ -70,6 +71,7 @@ public:
         COMMAND_ID_HANDLER_EX(IDM_ADD_FTP_SERVER, OnAddFtpServer)
         COMMAND_ID_HANDLER_EX(IDM_ADD_DIRECTORY_AS_SERVER, OnAddDirectoryAsServer)
         COMMAND_ID_HANDLER_EX(IDM_OPEN_SERVERS_FOLDER, OnOpenServersFolder)
+        COMMAND_ID_HANDLER_EX(IDC_HELPBUTTON, OnHelpButton)
         NOTIFY_HANDLER(IDC_ADDBUTTON, BCN_DROPDOWN, OnBnDropdownAddServerButton)
         NOTIFY_HANDLER(IDC_SERVERLISTCONTROL, NM_DBLCLK, OnListViewDblClick)
         CHAIN_MSG_MAP(CDialogResize<CServerListPopup>)
@@ -110,8 +112,10 @@ public:
     LRESULT OnBnDropdownAddServerButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
+    LRESULT OnHelpButton(WORD wNotifyCode, WORD wID, HWND hWndCtl); 
     LRESULT OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnHelp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void TranslateUI();
     void setTitle(CString title);
     CString getTitle() const;
@@ -148,13 +152,14 @@ private:
     CIcon addServerButtonIcon_;
     int serversMask_, serverIndex_, selectedServerType_;
     int ret_ = 0;
+    CAccelerator hotkeys_;
     void serverChanged();
     void createResources();
     void applyFilter(bool selectItem = true);
     void clearFilter();
     void selectServerByName(const CString& name);
     void showAddServerButtonMenu(HWND control);
-    
+    void openDocumentation();
 };
 
 

@@ -34,6 +34,7 @@
 #include "AddFtpServerDialog.h"
 #include "AddDirectoryServerDialog.h"
 #include "Func/MyEngineList.h"
+#include "Func/Common.h"
 
 namespace {
 
@@ -105,6 +106,13 @@ LRESULT CServerListPopup::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     videoTypeRadioButton_.EnableWindow(serversMask_ & CUploadEngineData::TypeVideoServer);
 
     createResources();
+
+    /*ACCEL accels[] = {
+        { FVIRTKEY, VK_F1, IDC_HELPBUTTON },
+    };
+    
+    hotkeys_.CreateAcceleratorTable(accels, std::size(accels));*/
+
     updateServerList();
 
     applyFilter(false);
@@ -384,6 +392,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
             if (msg.hwnd == queryEditControl_ && (msg.wParam == VK_UP || msg.wParam == VK_DOWN)) {
                 msg.hwnd = listView_;
                 listView_.SetFocus();
+                break;
             }
 
         case WM_DEADCHAR:
@@ -406,7 +415,7 @@ int CServerListPopup::showPopup(HWND parent, const RECT& anchorRect) {
         {
             break;
         }
-        if (!::IsDialogMessage(hwndPopup, &msg))
+        if (!::IsDialogMessage(hwndPopup, &msg) && (!hotkeys_ || !WinUtils::TranslateAcceleratorForWindow(hwndPopup, hotkeys_, &msg)))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -607,6 +616,10 @@ void CServerListPopup::showAddServerButtonMenu(HWND control) {
     popupMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
 }
 
+void CServerListPopup::openDocumentation() {
+    OpenDocumentation(m_hWnd, _T("usage"), "serverlist");
+}
+
 LRESULT CServerListPopup::OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     CAddFtpServerDialog dlg(engineList_);
     if (dlg.DoModal(m_hWnd) == IDOK) {
@@ -628,6 +641,11 @@ LRESULT CServerListPopup::OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWN
         selectServerByName(dlg.createdServerName());
         listView_.SetFocus();
     }
+    return 0;
+}
+
+LRESULT CServerListPopup::OnHelpButton(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    openDocumentation();
     return 0;
 }
 
@@ -703,5 +721,10 @@ LRESULT CServerListPopup::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
             break;
         }
     }
+    return 0;
+}
+
+LRESULT CServerListPopup::OnHelp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    openDocumentation();
     return 0;
 }

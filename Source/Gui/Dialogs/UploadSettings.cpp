@@ -362,7 +362,7 @@ bool CUploadSettings::OnNext()
         }
     }
 
-    ImageUploadParams& imageUploadParams = sessionImageServer.getImageUploadParamsRef();
+    ImageUploadParams imageUploadParams = settings->DefaultImageUploadParams;
     imageUploadParams.ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
     imageUploadParams.CreateThumbs = GuiTools::IsChecked(m_hWnd, IDC_CREATETHUMBNAILS);
     imageUploadParams.UseServerThumbs = GuiTools::IsChecked(m_hWnd, IDC_USESERVERTHUMBNAILS);
@@ -387,8 +387,6 @@ bool CUploadSettings::OnNext()
         thumb.ResizeMode = ThumbCreatingParams::trByWidth;
     }
 
-
-
     int shortenLinks = SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_GETCHECK);
     if (shortenLinks != BST_INDETERMINATE)
     {
@@ -397,7 +395,7 @@ bool CUploadSettings::OnNext()
         sessionFileServer.setShortenLinks(shorten);
     }
 
-    if (settings->CheckFileTypesBeforeUpload && !WizardDlg->checkFileFormats(sessionImageServer_, sessionFileServer_)) {
+    if (settings->CheckFileTypesBeforeUpload && !WizardDlg->checkFileFormats(sessionImageServer_, sessionFileServer_, imageUploadParams)) {
         return false;
     }
 
@@ -409,6 +407,7 @@ bool CUploadSettings::OnNext()
     if ( settings->RememberFileServer ) {
         settings->fileServer = sessionFileServer_;
     }
+    settings->DefaultImageUploadParams = imageUploadParams;
 
     SaveCurrentProfile();
 

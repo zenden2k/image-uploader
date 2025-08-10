@@ -7,8 +7,7 @@
 #include "Core/Settings/CommonGuiSettings.h"
 #endif
 
-ServerProfile::ServerProfile(bool useDefaultSettings) {
-    UseDefaultSettings = useDefaultSettings;
+ServerProfile::ServerProfile() {
     shortenLinks_ = false;
 }
 
@@ -128,9 +127,9 @@ void ServerProfile::bind(SettingsNode& serverNode)
 ImageUploadParams ServerProfile::getImageUploadParams()
 {
 #ifdef _WIN32
-    CommonGuiSettings* Settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
-    if (UseDefaultSettings && Settings && !Settings->imageServer.isEmpty() && &Settings->imageServer.getByIndex(0) != this) {
-        return Settings->imageServer.getByIndex(0).imageUploadParams;
+    auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
+    if (UseDefaultSettings && settings) {
+        return settings->DefaultImageUploadParams;
     }
 #endif
     return imageUploadParams;

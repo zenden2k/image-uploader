@@ -144,9 +144,9 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     RegisterHotkeys();
 
-    auto trayIconGUID = WinUtils::GenerateFakeUUIDv4(MainTrayIconBaseGUID);
+    trayIconGuid_ = WinUtils::GenerateFakeUUIDv4(MainTrayIconBaseGUID);
     //LOG(ERROR) << WinUtils::GUIDToString(*trayIconGUID);
-    if (!InstallIcon(APP_NAME, m_hIconSmall, NULL, trayIconGUID ? &trayIconGUID.value() : nullptr)) {
+    if (!InstallIcon(APP_NAME, m_hIconSmall, NULL, trayIconGuid_ ? &trayIconGuid_.value() : nullptr)) {
         LOG(WARNING) << "Failed to create tray icon!";
     }
     NOTIFYICONDATA nid;
@@ -154,9 +154,9 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
     nid.cbSize = NOTIFYICONDATA_V2_SIZE;
     nid.hWnd = m_hWnd;
     nid.uVersion = NOTIFYICON_VERSION;
-    if (trayIconGUID) {
+    if (trayIconGuid_) {
         nid.uFlags = NIF_GUID;
-        nid.guidItem = *trayIconGUID;
+        nid.guidItem = *trayIconGuid_;
     }
     Shell_NotifyIcon(NIM_SETVERSION, &nid);
 
@@ -808,7 +808,7 @@ LRESULT CFloatingWindow::OnMediaInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
 LRESULT CFloatingWindow::OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    InstallIcon(APP_NAME, m_hIconSmall, 0);
+    InstallIcon(APP_NAME, m_hIconSmall, 0, trayIconGuid_ ? &trayIconGuid_.value() : nullptr);
     return 0;
 }
 

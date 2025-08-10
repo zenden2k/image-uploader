@@ -259,6 +259,7 @@ public:
     protected:
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     CBitmap addFilesBitmap_, screenshotBitmap_, regionScreenshotBitmap_, screenRecordingBitmap_, startRecordingBitmap_, settingsBitmap_;
+    std::optional<GUID> trayIconGuid_;
 };
 
 #endif
