@@ -1134,27 +1134,6 @@ ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(const std::string& name)
     return ServersSettings[name].begin()->second;
 }
 
-void ImageUploadParams::bind(SettingsNode& n){
-    SettingsNode & node = n["ImageUploadParams"];
-    node.n_bind(UseServerThumbs);
-    node.n_bind(CreateThumbs);
-
-    node.n_bind(ProcessImages);
-    node.n_bind(ImageProfileName);
-    node.n_bind(UseDefaultThumbSettings);
-    SettingsNode & thumb = node["Thumb"];
-    thumb.nm_bind(Thumb, TemplateName);
-    thumb.nm_bind(Thumb, Size);
-    thumb.nm_bind(Thumb, Width);
-    thumb.nm_bind(Thumb, Height);
-    thumb["ResizeMode"].bind((int&)Thumb.ResizeMode);
-    thumb.nm_bind(Thumb, AddImageSize);
-    thumb.nm_bind(Thumb, DrawFrame);
-    thumb.nm_bind(Thumb, Quality);
-    thumb.nm_bind(Thumb, Format);
-    thumb.nm_bind(Thumb, Text);
-}
-
 ThumbCreatingParams ImageUploadParams::getThumb()
 {
     WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();

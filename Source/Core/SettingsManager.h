@@ -28,6 +28,7 @@
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
+#include "Core/Settings/StringConvert.h"
 
 #define n_bind(a) operator[]( #a ).bind(a)
 #define nm_bind(b,a) operator[]( #a ).bind(b.a)
@@ -40,11 +41,11 @@ class SettingsNodeBase
         virtual ~SettingsNodeBase() = default;
 };
 
-template<class T> std::string myToString(const T& value)
-{
-        std::stringstream str;
-        str << value;
-        return str.str();
+template <class T>
+std::string myToString(const T& value) {
+    std::stringstream str;
+    str << value;
+    return str.str();
 }
 
 inline std::string myToString(const std::vector<std::string>& value)
@@ -57,6 +58,7 @@ inline void myFromString(const std::string& text, std::vector<std::string>& valu
     IuStringUtils::Split(text, ";", value);
 }
 
+
 template<class T> void myFromString(const std::string& text, T & value)
 {
    std::stringstream str(text);
@@ -68,7 +70,6 @@ template<class T, class T2> void myFromString(const std::string& text, T & value
    std::stringstream str(text);
    str >> value;
 }
-
 
 inline void myFromString(const std::string& text, std::string & value)
 {

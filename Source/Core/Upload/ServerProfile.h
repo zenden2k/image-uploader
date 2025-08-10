@@ -26,9 +26,8 @@ struct ImageUploadParams {
         Thumb.Quality = 85;
         Thumb.Text = "%width%x%height% (%size%)";
     }
-#ifdef _WIN32
+
     void bind(SettingsNode& n);
-#endif
     bool UseServerThumbs;
     bool CreateThumbs;
     bool ProcessImages;
