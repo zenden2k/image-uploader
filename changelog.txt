@@ -1,6 +1,22 @@
-﻿# Image Uploader changelog 
+﻿# Uptooda (formerly Image Uploader) changelog 
 #
-# https://svistunov.dev/imageuploader
+# https://svistunov.dev/uptooda
+
+1.4.4.5388 (2025-08-11)
+[~] Changed program name to Uptooda
+[+] New server selection window with hosting comparison table
+[+] Added image editor settings page
+[+] Added "Close window after copying or searching when taking screenshot" option
+[+] PNG clipboard format support, providing full alpha channel support
+[~] Fixed program focus loss after closing image editor when creating screenshots
+[+] Added support for forbidden formats for servers
+[~] Fixed file format and size validation before upload
+[~] Screen recording: fixed rectangle size for gdigrab
+[+] Enabled IDN support on Windows ARM64
+[~] Improved support for monitors with different DPI
+[~] Reverted curl version to prevent program crashes
+[+] Added savefiles.com hosting
+[~] Fixed uploads to 8upload.com and cloud.mail.ru hostings
 
 1.4.3.5352 (2025-07-02)
 [+] Added screen recording functionality with two methods - DirectX (Desktop Duplication API) and FFmpeg.
