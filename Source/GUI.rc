@@ -652,7 +652,7 @@ BEGIN
     LTEXT           "https://svistunov.dev/uptooda",IDC_SITELINK,95,108,173,8
     CTEXT           "image processing and uploading tool",IDC_STATIC,80,62,149,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,84,221,1
-    LTEXT           "https://github.com/zenden2k/image-uploader",IDC_GOOGLECODELINK,95,124,163,8
+    LTEXT           "https://github.com/zenden2k/uptooda",IDC_GOOGLECODELINK,95,124,163,8
     LTEXT           "Git:",IDC_STATIC,31,124,54,8
     LTEXT           "#Author:",IDC_AUTHORLABEL,31,93,58,8
     LTEXT           "Sergey Svistunov (zenden2k@gmail.com)",IDC_AUTHORNAMELABEL,96,93,172,8
