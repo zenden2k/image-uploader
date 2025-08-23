@@ -1331,15 +1331,28 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
-        <Server Name="8upload.com" Authorize="1" MaxFileSize="50331648" Plugin="8upload" WebsiteUrl="https://8upload.com/" RegistrationUrl="https://8upload.com/myaccount/registration.php">
+    <Server Name="8upload.com" Authorize="1" MaxFileSize="50331648" Plugin="8upload" WebsiteUrl="https://8upload.com/" RegistrationUrl="https://8upload.com/myaccount/registration.php">
         <Info>
             <SupportedFormats>
                 <FormatGroup MaxFileSize="12582912">
                     <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
                     <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
                     <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/bmp">*.bmp</Format>
+                    <Format MimeType="image/vnd.adobe.photoshop">*.psd</Format>
+                    <Format MimeType="image/tiff">*.tif,*.tiff</Format>
+                    <Format MimeType="image/x-xbitmap">*.xmb</Format>
+                    <Format MimeType="image/avif">*.avif</Format>
+                    <Format MimeType="application/x-shockwave-flash">*.swf</Format>
+                    <Format MimeType="image/jp2">*.jpc,*.jp2,*.jpx</Format>
+                    <Format MimeType="image/jb2">*.jb2</Format>
+                    <Format MimeType="image/iff">*.iff</Format>
                 </FormatGroup>
             </SupportedFormats>
+            <StorageTimeInfo>
+                <StorageTime>-1</StorageTime>
+            </StorageTimeInfo>
         </Info>
         <Actions>
         </Actions>
@@ -1366,6 +1379,31 @@
         <Actions>
         </Actions>
         <Result DownloadUrlTemplate="stub"/>
+    </Server>
+    <Server Name="imgchest.com" MaxFileSize="10485760" Authorize="2" PasswordLabel="API token" WebsiteUrl="https://imgchest.com/" RegistrationUrl="https://imgchest.com/register">
+        <Info>
+            <SupportedFormats>
+                <FormatGroup MaxFileSize="10485760" UserTypes="reg">
+                    <Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+                    <Format MimeType="image/png">*.png</Format>
+                    <Format MimeType="image/gif">*.gif</Format>
+                    <Format MimeType="image/webp">*.webp</Format>
+                </FormatGroup>
+            </SupportedFormats>
+        </Info>
+        <Actions>
+            <Action Type="upload" Url="https://api.imgchest.com/v1/post" PostParams="images[]=%filename%;" CustomHeaders="Authorization:Bearer $(_PASSWORD)">
+                <Call Function="json" Arg1="data.id" AssignVars="FileId:0;" Required="1"/>
+                <Call Function="json" Arg1="data.images[0].link" AssignVars="DirectUrl:0;" Required="0"/>
+                <Call Function="json" Arg1="data.delete_url" AssignVars="DeleteUrl:0;" Required="0"/>
+            </Action>
+        </Actions>
+        <Result ImageUrlTemplate="$(DirectUrl)" DownloadUrlTemplate="https://imgchest.com/p/$(FileId)" DeleteUrl="$(DeleteUrl)" />
+    </Server>
+    <Server Name="gofile.io" Type="file" MaxFileSize="-1" Authorize="1" Plugin="gofile" WebsiteUrl="https://gofile.io/" PasswordLabel="API token" SupportsFolders="0">
+        <Actions>
+        </Actions>
+        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DeleteUrl="stub"/>
     </Server>
     <!--<Server Name="imgpile.com" Authorize="1" Plugin="imgpile" WebsiteUrl="https://imgpile.com/" RegistrationUrl="https://imgpile.com/registerr">
         <Actions>

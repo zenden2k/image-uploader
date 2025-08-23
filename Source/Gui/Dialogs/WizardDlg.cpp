@@ -83,6 +83,7 @@
 #include "ScreenCapture/WindowsHider.h"
 #include "Gui/Helpers/DPIHelper.h"
 #include "History/HistoryManagerImpl.h"
+#include "Gui/Helpers/DarkMode.h"
 
 using namespace Gdiplus;
 namespace
@@ -372,7 +373,14 @@ void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
 
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-
+    if (DarkMode::IsAvailable()) {
+        DarkMode::AllowForApp(true);
+        DarkMode::AllowForWindow(m_hWnd, true);
+        DarkMode::AllowForWindow(GetDlgItem(IDCANCEL), true);
+        SetWindowTheme(m_hWnd, L"Explorer", nullptr);
+        SetWindowTheme(GetDlgItem(IDCANCEL), L"Explorer", nullptr);
+        SendMessage(WM_THEMECHANGED, 0, 0);
+    }
     RECT clientRect;
     GetClientRect(&clientRect);
     auto* translator = ServiceLocator::instance()->translator();

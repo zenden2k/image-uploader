@@ -45,6 +45,10 @@ CServerParamsDlg::~CServerParamsDlg()
 
 LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    if (!m_ue) {
+        EndDialog(IDABORT);
+        return 0;
+    }
     CenterWindow(GetParent());
     TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");

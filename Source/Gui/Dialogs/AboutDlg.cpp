@@ -65,7 +65,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_ReportBugLink.SubclassWindow(GetDlgItem(IDC_FOUNDABUG));
     m_ReportBugLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_ReportBugLink.SetLabel(TR("Found a bug? Send a bug report to the author."));
-    m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/image-uploader/issues"));
+    m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/uptooda/issues"));
 
     iconsByIcons8Link.SubclassWindow(GetDlgItem(IDC_ICONSBYLABEL));
     iconsByIcons8Link.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
@@ -74,7 +74,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_CommitHashLink.SubclassWindow(GetDlgItem(IDC_COMMITHASH));
     m_CommitHashLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_CommitHashLink.SetLabel(CString(ver->CommitHashShort.c_str()));
-    m_CommitHashLink.SetHyperLink(CString(("https://github.com/zenden2k/image-uploader/commit/" + ver->CommitHash).c_str()));
+    m_CommitHashLink.SetHyperLink(CString(("https://github.com/zenden2k/uptooda/commit/" + ver->CommitHash).c_str()));
 
     m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
     m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;

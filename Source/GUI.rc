@@ -2297,7 +2297,7 @@ BEGIN
             VALUE "FileVersion", "1.3.3.0"
             VALUE "InternalName", "UptoodaGUI"
             VALUE "LegalCopyright", "© 2007-2025 Sergey Svistunov (https://svistunov.dev)"
-            VALUE "OriginalFilename", "UptoodaGUI.exe"
+            VALUE "OriginalFilename", "uptooda.exe"
             VALUE "ProductName", "Uptooda"
             VALUE "ProductVersion", "1.3.3.0"
         END
