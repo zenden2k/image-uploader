@@ -118,7 +118,6 @@ set(SRC_LIST
     Controls/FileFormatErrorView.cpp
     Controls/ServerListView.cpp
     Helpers/LangHelper.cpp
-    Helpers/DarkMode.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
     ../3rdpart/vkCodes.cpp
@@ -289,7 +288,6 @@ set(HEADER_LIST
     Controls/DialogIndirect.h
     Controls/ServerListView.h
     Helpers/LangHelper.h
-    Helpers/DarkMode.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h
     ../3rdpart/Registry.h
