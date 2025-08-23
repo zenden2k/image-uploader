@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-09 15:27+0300\n"
+"POT-Creation-Date: 2025-08-23 17:38+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Croatian <https://hosted.weblate.org/projects/image-uploader/"
@@ -45,14 +45,19 @@ msgstr ""
 msgid " (speech)"
 msgstr ""
 
-#: ../Source/Core/FileTypeCheckTask.cpp:80
+#: ../Source/Core/FileTypeCheckTask.cpp:79
 msgid ""
 "\"%1%\": server %2% doesn't support this type of file (%3% %4% with '.%5%' "
 "extension)\n"
 msgstr ""
 
-#: ../Source/Core/FileTypeCheckTask.cpp:79
+#: ../Source/Core/FileTypeCheckTask.cpp:78
 msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:681
+msgctxt "upload_settings_wizard_page.server_button"
+msgid "%1% + %2%"
 msgstr ""
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:217
@@ -92,6 +97,16 @@ msgstr[0] "Mapa nije odabrana"
 msgstr[1] "Mapa nije odabrana"
 msgstr[2] "Mapa nije odabrana"
 
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1467
+#, fuzzy, c-format
+#| msgid "No Folder Selected"
+msgctxt "upload_settings_wizard_page.more_servers_link"
+msgid "%d server selected in total..."
+msgid_plural "%d servers selected in total..."
+msgstr[0] "Mapa nije odabrana"
+msgstr[1] "Mapa nije odabrana"
+msgstr[2] "Mapa nije odabrana"
+
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:31
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:33
 #, c-format
@@ -120,7 +135,7 @@ msgstr "Akcija uslikavanja"
 msgid "%s - Quick Setup"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:986
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:976
 #, c-format
 msgid "%s - Updates available"
 msgstr ""
@@ -135,7 +150,7 @@ msgstr ""
 msgid "%s of %s (%d%%) %s"
 msgstr "%s из %s (%d%%) %s"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:64
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:68
 #, c-format
 msgid "%s server settings"
 msgstr "Postavke poslužitelja %s"
@@ -160,14 +175,14 @@ msgstr ""
 " %i - indeks slike,\n"
 "%width% - širina slike,  %height% - visina slike"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:448
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:441
 msgid "&Upload"
 msgstr "&Pošalji"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:354
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:355
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1316
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1317
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1325
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1326
 msgid "(edited)"
 msgstr "(uređen)"
 
@@ -180,12 +195,12 @@ msgstr ""
 msgid "(the link has been copied to the clipboard)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:534
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:524
 msgid "< Back"
 msgstr "< Nazad"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:421
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:867
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:874
 msgid "<no authentication>"
 msgstr ""
 
@@ -199,7 +214,7 @@ msgstr ""
 msgid "About %s"
 msgstr "O programu"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2814
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2804
 msgid "About..."
 msgstr "O programu"
 
@@ -213,7 +228,7 @@ msgstr "Pristup:"
 msgid "Account"
 msgstr "Odredite račun..."
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:720
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:727
 msgid "Account is not enabled"
 msgstr "Račun nije omogućen"
 
@@ -243,15 +258,11 @@ msgstr ""
 msgid "Add"
 msgstr "Dodaj"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:593
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:607
 #, fuzzy, c-format
 #| msgid "Choose server..."
 msgid "Add %s server..."
 msgstr "Odabir poslužitelja..."
-
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:28
-msgid "Add FTP/SFTP server"
-msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:73
 msgid "Add Files"
@@ -278,7 +289,7 @@ msgid "Add Menu Item"
 msgstr ""
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:442
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:885
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:892
 #, fuzzy
 #| msgid "Specify account..."
 msgid "Add account..."
@@ -294,7 +305,7 @@ msgstr ""
 msgid "Add files..."
 msgstr "Dodaj datoteke..."
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:595
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:609
 #, fuzzy
 #| msgid "Add Folder..."
 msgid "Add folder as new server..."
@@ -316,7 +327,8 @@ msgstr "Dodaj datoteke..."
 msgid "Add item to video files' context menu"
 msgstr "Dodaj stavku u izbornik videa"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:72
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:28
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:78
 #, fuzzy
 #| msgid "Choose server"
 msgid "Add server"
@@ -326,7 +338,7 @@ msgstr "Odabir poslužitelja"
 msgid "Add text"
 msgstr "Dodaj tekst"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:206
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:197
 msgid "Add text on thumbnail"
 msgstr "Dodaj tekst na minijaturu"
 
@@ -338,7 +350,7 @@ msgstr "Dodaj tekst slici"
 msgid "Add to Wizard"
 msgstr "Dodaj u čarobnjaka"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:543
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:533
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:974
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:975
 msgid "Add to the list"
@@ -382,7 +394,7 @@ msgstr "Savjet:"
 msgid "Aero only (Windows Vista or later)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:68
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:74
 msgctxt "serverlist.servertype"
 msgid "All"
 msgstr ""
@@ -405,8 +417,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1798
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2083
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1788
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2073
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1565
 msgid "All files"
 msgstr "Sve datoteke"
@@ -457,8 +469,8 @@ msgid ""
 "error log."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1560
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2111
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1550
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2101
 msgid "Any file"
 msgstr "Neka datoteka"
 
@@ -476,7 +488,7 @@ msgstr "Primjeni"
 msgid "Are you sure to place text and logo in the same position on image?"
 msgstr "Postavljanje teksta i logotipa na isto mjesto?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1991
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1981
 msgid "Are you sure to quit?"
 msgstr "Sigurni ste da želite prekinuti rad?"
 
@@ -525,7 +537,7 @@ msgstr ""
 msgid "Audio codec:"
 msgstr "Zvučne datoteke"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2082
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2072
 msgid "Audio files"
 msgstr "Zvučne datoteke"
 
@@ -552,12 +564,12 @@ msgid "Authorization on proxy"
 msgstr "Dozvole proksija"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:255
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:57
 msgid "Authorize"
 msgstr "Dozvoli"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:84
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:246
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:238
 msgid "Auto"
 msgstr "Automatski"
 
@@ -654,7 +666,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:94
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:49
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:82
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:69
 #: ../Source/Gui/Dialogs/TextViewDlg.h:37
@@ -688,7 +700,11 @@ msgstr ""
 msgid "Cannot load thumbnail for image."
 msgstr "Ne mogu učitati minijaturu za sliku."
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:636
+#: ../Source/Func/Common.cpp:314
+msgid "Cannot open documentation: "
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:659
 msgid ""
 "Cannot open folder '%1%'.\n"
 "%2%"
@@ -782,7 +798,7 @@ msgstr ""
 "biti poslana."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:44
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:196
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:187
 msgid "Change width:"
 msgstr "Promjeni širinu:"
 
@@ -792,12 +808,12 @@ msgstr "Promjeni širinu:"
 msgid "Check file types before upload"
 msgstr "Obradi slike prije slanja"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2816
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2806
 msgid "Check for Updates"
 msgstr "Provjera ažuriranja"
 
-#: ../Source/Core/FileTypeCheckTask.cpp:30
-#: ../Source/Core/FileTypeCheckTask.cpp:36
+#: ../Source/Core/FileTypeCheckTask.cpp:29
+#: ../Source/Core/FileTypeCheckTask.cpp:35
 #, fuzzy
 #| msgid "Checking for updates..."
 msgid "Checking file formats..."
@@ -811,20 +827,20 @@ msgstr "Provjera dostupnih ažuriranja..."
 msgid "Choose executable file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2113
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2103
 msgid "Choose files"
 msgstr ""
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:181
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1922
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1912
 msgid "Choose folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:653
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:646
 msgid "Choose folder..."
 msgstr "Odabir mape..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2086
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2076
 msgid "Choose media file"
 msgstr ""
 
@@ -832,12 +848,11 @@ msgstr ""
 msgid "Choose monitor"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:221
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:222
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:227
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:228
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1451
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1463
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:213
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:214
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:219
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:220
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1464
 msgid "Choose more servers..."
 msgstr ""
 
@@ -848,8 +863,8 @@ msgstr ""
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:331
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:67
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:679
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:73
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:675
 msgid "Choose server"
 msgstr "Odabir poslužitelja"
 
@@ -857,7 +872,7 @@ msgstr "Odabir poslužitelja"
 msgid "Choose server for uploading images"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:647
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:640
 msgid "Choose server..."
 msgstr "Odabir poslužitelja..."
 
@@ -866,7 +881,7 @@ msgid "Choose servers"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:352
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1801
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1791
 msgid "Choose video file"
 msgstr ""
 
@@ -922,7 +937,7 @@ msgstr "Obriši prozirne kuteve prozora"
 msgid "Clear window's background"
 msgstr "Očisti pozadinu prozora"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:207
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:198
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr "Kliknite \"Pošalji\" za početak slanja."
 
@@ -1026,7 +1041,7 @@ msgstr ""
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:506
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:496
 msgid "Converting history"
 msgstr ""
 
@@ -1070,7 +1085,7 @@ msgid "Copy e-mail"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:376
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:963
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:970
 msgid "Copy folder's ID"
 msgstr ""
 
@@ -1164,7 +1179,7 @@ msgstr "Could not find links in given text!"
 msgid "Could not read package %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1049
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1039
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 
@@ -1172,7 +1187,7 @@ msgstr ""
 msgid "Could not upload screenshot :("
 msgstr "Ne mogu poslati snimku ekrana:("
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:442
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:432
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1189,9 +1204,9 @@ msgstr ""
 
 #: ../Source/Core/Upload/Filters/ImageConverterFilter.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:214
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:188
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:253
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:262
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:187
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:252
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:261
 msgid "Couldn't load thumbnail preset!"
 msgstr "Ne mogu učitati postavke sličice!"
 
@@ -1216,11 +1231,11 @@ msgid "Create nested folder"
 msgstr "Kreiraj ugniježđenu mapu"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:59
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:202
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:193
 msgid "Create thumbnails"
 msgstr "Kreiraj sličice"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:323
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:322
 msgid "Creating new thumbnail preset"
 msgstr ""
 
@@ -1312,7 +1327,7 @@ msgstr ""
 msgid "Display video file information on resulting picture"
 msgstr "Pokaži info o videu na završnoj slici"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1989
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1979
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:349
 msgid "Do not ask again"
 msgstr ""
@@ -1325,7 +1340,7 @@ msgstr "Ne pokreći novu instancu programa iz statusnog retka"
 msgid "Do nothing"
 msgstr "Ne radi ništa"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2815
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2805
 msgid "Documentation"
 msgstr ""
 
@@ -1334,7 +1349,7 @@ msgstr ""
 msgid "Don't have an account? Sign up on %s right now!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1134
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1141
 msgid "Don't resize"
 msgstr "Ne mijenjaj veličinu"
 
@@ -1370,7 +1385,7 @@ msgstr "Trajanje: "
 msgid "Edit"
 msgstr "Uredi"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:189
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:180
 msgid "Edit Profile"
 msgstr "Uredi profil"
 
@@ -1387,7 +1402,7 @@ msgid "Edit hotkey..."
 msgstr "Uredi prečac..."
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:370
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:804
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:811
 msgid "Edit login credentials..."
 msgstr ""
 
@@ -1412,7 +1427,7 @@ msgstr ""
 msgid "Enter new profile name:"
 msgstr "Unesi ime novog profila:"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:323
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:322
 msgid "Enter new thumbnail preset name:"
 msgstr "Unesite novo ime minijature:"
 
@@ -1429,7 +1444,7 @@ msgstr ""
 msgid "Enter your text:"
 msgstr "Unos proizvoljnog teksta:"
 
-#: ../Source/Core/Upload/UploadTask.cpp:379
+#: ../Source/Core/Upload/UploadTask.cpp:379 ../Source/Func/Common.cpp:314
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:92
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:100
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:121
@@ -1454,7 +1469,7 @@ msgstr "Unos proizvoljnog teksta:"
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:136
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:154
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:639
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:662
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:134
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:174
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:191
@@ -1464,8 +1479,8 @@ msgstr "Unos proizvoljnog teksta:"
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:136
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:142
 #: ../Source/Gui/Dialogs/TextViewDlg.cpp:85
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:331
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:350
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:324
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:343
 msgid "Error"
 msgstr ""
 
@@ -1523,8 +1538,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:278
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:665
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:226
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:529
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1935
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:519
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1925
 msgid "Exit"
 msgstr "Izlaz"
 
@@ -1594,7 +1609,7 @@ msgstr ""
 msgid "File"
 msgstr "Datoteka"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:70
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:76
 #, fuzzy
 #| msgid "File"
 msgctxt "serverlist.servertype"
@@ -1769,7 +1784,7 @@ msgstr "Popis mapa na poslužitelju %s za račun '%s':"
 msgid "Folder name:"
 msgstr "Naziv mape:"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:58
 msgid "Folder/album:"
 msgstr ""
 
@@ -1791,7 +1806,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:60
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:67
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:194
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:185
 msgid "Format:"
 msgstr "Oblik:"
 
@@ -1867,8 +1882,8 @@ msgstr "Opće"
 msgid "Global hotkey:"
 msgstr "Opći prečac:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:691
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1068
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:712
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
 msgid "Go to signup page"
 msgstr "Idi na stranicu za prijavu"
 
@@ -1907,13 +1922,13 @@ msgstr "Video datoteke"
 msgid "Height:"
 msgstr "Visina:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:421
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:411
 msgid "Help"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:205
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:531
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1937
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:521
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1927
 msgid "Hide"
 msgstr "Sakrij"
 
@@ -1953,7 +1968,7 @@ msgstr "Zanemari"
 msgid "Ignore all"
 msgstr "Zanemari"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:69
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:75
 #, fuzzy
 #| msgid "Images"
 msgctxt "serverlist.servertype"
@@ -1990,7 +2005,7 @@ msgid ""
 "animation will be lost. Do you wish to continue?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1030
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1020
 msgid "Image Settings and Server Selection"
 msgstr "Postavke slika i odabir poslužitelja"
 
@@ -2005,14 +2020,14 @@ msgstr ""
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:254
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:429
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:55
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:199
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:190
 msgid "Image settings"
 msgstr "Postavke slike"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:137
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:123
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1558
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2109
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1548
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2099
 msgid "Images"
 msgstr "Slike"
 
@@ -2046,7 +2061,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:355
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:544 ../Source/Gui/Win7JumpList.cpp:291
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:534 ../Source/Gui/Win7JumpList.cpp:291
 msgid "Import Video File"
 msgstr "Uvezi video datoteku"
 
@@ -2055,7 +2070,7 @@ msgstr "Uvezi video datoteku"
 msgid "In queue"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1923
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1913
 msgid "Including subdirectories"
 msgstr "Ubaci i podmape"
 
@@ -2231,7 +2246,7 @@ msgstr "Pristup:"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:87
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:214
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:259
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:51
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
 msgid "Login:"
 msgstr "Pristup:"
 
@@ -2257,7 +2272,7 @@ msgstr ""
 msgid "Max. file size"
 msgstr "Veličina:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:525
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:515
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -2318,7 +2333,7 @@ msgid "Name:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2821
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2811
 msgid "Network Debugger"
 msgstr ""
 
@@ -2326,7 +2341,7 @@ msgstr ""
 msgid "New Profile Name"
 msgstr "Novi profil ime"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:956
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:963
 msgid "New folder"
 msgstr "Nova mapa"
 
@@ -2335,7 +2350,7 @@ msgid "New profile"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:171
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:821
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:811
 msgid "Next >"
 msgstr "Dalje >"
 
@@ -2343,7 +2358,7 @@ msgstr "Dalje >"
 msgid "No"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:732
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:739
 msgid "No Folder Selected"
 msgstr "Mapa nije odabrana"
 
@@ -2402,7 +2417,7 @@ msgstr "Broj kadrova:"
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:39
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:50
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:68
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:45
@@ -2426,7 +2441,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:206
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:364
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:967
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:974
 msgid "Open in Web Browser"
 msgstr "Otvori u Web pretraživaču"
 
@@ -2453,11 +2468,11 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:658
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2818
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2808
 msgid "Open screenshots folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:596
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:610
 #, fuzzy
 #| msgid "Open in folder"
 msgid "Open servers folder"
@@ -2470,8 +2485,8 @@ msgid "Open system connection settings"
 msgstr "Postavke veze"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:125
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:688
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1075
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:711
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1082
 msgid "Open the website"
 msgstr ""
 
@@ -2496,7 +2511,7 @@ msgstr "Opcije"
 msgid "Overall bitrate: "
 msgstr "Ukupna brzina prijenosa: "
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:56
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:60
 msgid "Parameters:"
 msgstr ""
 
@@ -2505,7 +2520,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:89
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:215
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:261
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:52
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:56
 msgid "Password:"
 msgstr "Zaporka:"
 
@@ -2557,12 +2572,12 @@ msgid ""
 "take affect."
 msgstr "Ponovo pokrenite aplikaciju kako bi primjenili novi jezik."
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:359
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:352
 #, c-format
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "Odrediti dozvole za poslužitelj '%s'!"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:506
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:496
 msgid "Please wait while your history is being converted..."
 msgstr ""
 
@@ -2623,7 +2638,7 @@ msgid "Process Status"
 msgstr "Stanje"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:56
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:200
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:191
 msgid "Process images before upload"
 msgstr "Obradi slike prije slanja"
 
@@ -2631,7 +2646,7 @@ msgstr "Obradi slike prije slanja"
 msgid "Processing folder:"
 msgstr "Obrada mape:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:649
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:639
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2639,13 +2654,13 @@ msgid ""
 "the application on the same computer."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:334
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:333
 msgid "Profile with such name already exists!"
 msgstr "Profil s tim imenom već postoji!"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:41
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:57
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:198
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:189
 msgid "Profile:"
 msgstr "Profil:"
 
@@ -2669,7 +2684,7 @@ msgstr "Tip proksija:"
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:61
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:68
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:195
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:186
 msgid "Quality:"
 msgstr "Kvaliteta:"
 
@@ -2931,7 +2946,7 @@ msgid "Screenshot Action"
 msgstr "Akcija uslikavanja"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:1032
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2526
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2516
 #, fuzzy
 #| msgid "Screenshot was saved to clipboard."
 msgid "Screenshot has been copied to clipboard."
@@ -3021,7 +3036,7 @@ msgstr "Snimak odabranog dijela..."
 msgid "Select window..."
 msgstr "Snimi aktivni prozor"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:59
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:63
 msgid "Select..."
 msgstr ""
@@ -3029,12 +3044,6 @@ msgstr ""
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:108
 #, c-format
 msgid "Selected server: %s"
-msgstr ""
-
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1453
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1466
-#, c-format
-msgid "Selected servers: %d"
 msgstr ""
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:24
@@ -3081,16 +3090,16 @@ msgstr ""
 msgid "Server not chosen"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:817
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1055
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:824
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1062
 msgid "Server settings..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:208
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:199
 msgid "Server to host other file formats"
 msgstr "Server za spremanje drugih datoteka"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:203
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:194
 msgid "Server to host your images"
 msgstr "Server za spremanje vaših slika"
 
@@ -3154,7 +3163,7 @@ msgid "Shorten URL"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:374
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1244
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1253
 #, c-format
 msgid "Shorten URL using %s"
 msgstr ""
@@ -3188,7 +3197,7 @@ msgstr "Snimak odabranog dijela..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2827
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2817
 msgid "Show Error Log"
 msgstr "Pokaži zapis pogreške"
 
@@ -3236,7 +3245,7 @@ msgid "Skip all"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:60
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:209
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:200
 msgid "Skip animated"
 msgstr ""
 
@@ -3256,7 +3265,7 @@ msgstr ""
 msgid "Source code"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:718
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:725
 msgid "Specify account..."
 msgstr "Odredite račun..."
 
@@ -3424,11 +3433,11 @@ msgstr ""
 msgid "These files cannot be uploaded to chosen servers:"
 msgstr "Datoteka \"%s\" je slana na poslužitelj %s.."
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:210
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:201
 msgid "This means that the thumbnail will be created by site, not the program."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1092
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1099
 msgid "This server doesn't have any settings."
 msgstr ""
 
@@ -3466,11 +3475,11 @@ msgstr "Tekst sličice:"
 msgid "Thumbnail width:"
 msgstr "Širina sličice:"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:205
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:196
 msgid "Thumbnail's size:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:201
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:192
 msgid "Thumbnails"
 msgstr "Sličice"
 
@@ -3547,7 +3556,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:111
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:86
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1160
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1167
 msgid "URL shortening server"
 msgstr ""
 
@@ -3560,7 +3569,7 @@ msgstr ""
 msgid "Unable to load picture"
 msgstr "Ne mogu poslati sliku"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2492
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2482
 msgid "Unable to make screenshot!"
 msgstr ""
 
@@ -3655,7 +3664,7 @@ msgstr ""
 msgid "Upload to Web"
 msgstr "Pošalji na internet"
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:341
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:334
 #, c-format
 msgid ""
 "Upload to server '%s' is impossible without account.\n"
@@ -3675,7 +3684,7 @@ msgctxt "settings.menu"
 msgid "Uploading"
 msgstr "Slanje"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1032
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1022
 msgid "Uploading Files to Server"
 msgstr "Slanje na poslužitelj"
 
@@ -3726,7 +3735,7 @@ msgid "Use provided proxy:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:60
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:204
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:195
 msgid "Use server-side thumbnails"
 msgstr "Koristi sličice na strani poslužitelja"
 
@@ -3751,7 +3760,7 @@ msgstr ""
 msgid "Vertical interval:"
 msgstr "Okomiti razmak:"
 
-#: ../Source/Gui/Dialogs/ServerListPopup.cpp:71
+#: ../Source/Gui/Dialogs/ServerListPopup.cpp:77
 #, fuzzy
 #| msgid "Video files"
 msgctxt "serverlist.servertype"
@@ -3777,9 +3786,9 @@ msgid "Video codec:"
 msgstr "Obrada mape:"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1797
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2081
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2110
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1787
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2071
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2100
 msgid "Video files"
 msgstr "Video datoteke"
 
@@ -3865,7 +3874,7 @@ msgstr ""
 msgid "Windows Explorer integration"
 msgstr "Udruživanje sa 'Windows Explorer'-om"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2704
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2694
 msgid "Work in progress"
 msgstr ""
 
@@ -3893,11 +3902,11 @@ msgstr ""
 msgid "You have not selected account for server \"%s\""
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:350
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:343
 msgid "You have not selected an file server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:331
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:324
 msgid "You have not selected an image server"
 msgstr ""
 
@@ -3919,7 +3928,7 @@ msgid "a tool for advanced users"
 msgstr "alati za napredne korisnike"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:48
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:197
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:188
 msgid "and/or height:"
 msgstr "i/ili visinu:"
 
@@ -3929,7 +3938,7 @@ msgstr "i/ili visinu:"
 msgid "extracting frames from video"
 msgstr "Izdvajanje kadrova iz videa"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:456
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:455
 #, fuzzy
 #| msgid "Filesize: "
 msgid "file size"
@@ -3945,13 +3954,13 @@ msgstr ""
 msgid "high quality (100)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:455
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:454
 #, fuzzy
 #| msgid "Highlight"
 msgid "image height"
 msgstr "Marker"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:454
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:453
 #, fuzzy
 #| msgid "Change width:"
 msgid "image width"
@@ -3972,12 +3981,12 @@ msgstr "msek"
 msgid "multiple files"
 msgstr "Više datoteka"
 
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:110
-#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:224
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:114
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:228
 msgid "not selected"
 msgstr ""
 
-#: ../Source/Gui/Models/ServerListModel.cpp:237
+#: ../Source/Gui/Models/ServerListModel.cpp:239
 msgctxt "serverlist.account"
 msgid "required"
 msgstr ""

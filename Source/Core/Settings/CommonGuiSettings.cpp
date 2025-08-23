@@ -20,11 +20,14 @@ limitations under the License.
 
 #include "CommonGuiSettings.h"
 
+#include "Core/ServiceLocator.h"
+
 #ifndef IU_QT
 #include "Func/WinUtils.h"
 #endif
 
-CommonGuiSettings::CommonGuiSettings() : BasicSettings() {
+CommonGuiSettings::CommonGuiSettings()
+    : DefaultImageUploadParams(false) {
     // Default values of settings
     MaxThreads = 3;
     DeveloperMode = false;
@@ -248,4 +251,16 @@ void DXGISettingsStruct::bind(SettingsNode& node) {
     node.n_bind(AudioSources);
     node.n_bind(AudioCodecId);
     node.n_bind(AudioBitrate);
+}
+
+ThumbCreatingParams ImageUploadParams::getThumb() const {
+    auto settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
+    if (UseDefaultThumbSettings) {
+        return settings->DefaultImageUploadParams.Thumb;
+    }
+    return Thumb;
+}
+
+void ImageUploadParams::setThumb(const ThumbCreatingParams& tcp) {
+    Thumb = tcp;
 }

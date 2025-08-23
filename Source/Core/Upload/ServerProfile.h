@@ -10,11 +10,11 @@ class ServerSettingsStruct;
 class SettingsNode;
 
 struct ImageUploadParams {
-    ImageUploadParams() {
+    ImageUploadParams(bool useDefaultThumbSettings = true) {
         UseServerThumbs = false;
         CreateThumbs = false;
         ProcessImages = false;
-        UseDefaultThumbSettings = true;
+        UseDefaultThumbSettings = useDefaultThumbSettings;
         ThumbAddImageSize = true;
         ImageProfileName = "Default";
         Thumb.Size = ThumbCreatingParams::DEFAULT_THUMB_WIDTH;
@@ -36,7 +36,7 @@ struct ImageUploadParams {
     std::string ImageProfileName;
 
     bool UseDefaultThumbSettings;
-    ThumbCreatingParams getThumb();
+    ThumbCreatingParams getThumb() const;
     ThumbCreatingParams& getThumbRef();
     void setThumb(const ThumbCreatingParams& tcp);
 protected:

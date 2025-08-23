@@ -563,9 +563,6 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     CommonGuiSettings::PostLoadSettings(xml);
     SimpleXmlNode settingsNode = xml.getRoot(rootName_).GetChild("Settings");
 
-    if (!imageServer.isEmpty()) {
-        imageServer.getByIndex(0).getImageUploadParamsRef().UseDefaultThumbSettings = false;
-    }
     if (Language == L"T\u00FCrk\u00E7e") {  //fixes
         Language = _T("Turkish");
     } else if (Language == L"\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430") {
@@ -1133,23 +1130,3 @@ ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(const std::string& name)
 {
     return ServersSettings[name].begin()->second;
 }
-
-ThumbCreatingParams ImageUploadParams::getThumb()
-{
-    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    if (UseDefaultThumbSettings && !Settings->imageServer.isEmpty() &&  &Settings->imageServer.getByIndex(0).imageUploadParams != this) {
-        return Settings->imageServer.getByIndex(0).imageUploadParams.Thumb;
-    }
-    return Thumb;
-}
-
-ThumbCreatingParams& ImageUploadParams::getThumbRef()
-{
-    return Thumb;
-}
-
-void ImageUploadParams::setThumb(const ThumbCreatingParams& tcp)
-{
-    Thumb = tcp;
-}
-

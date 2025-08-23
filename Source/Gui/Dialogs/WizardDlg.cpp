@@ -283,15 +283,6 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
     auto* settings = dynamic_cast<CommonGuiSettings*>(settingsBase);
-    if (settings) {
-        if (!settings->imageServer.isEmpty()) {
-            const std::string templateName = settings->imageServer.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName;
-            if (sessionImageServer_.isEmpty()) {
-                sessionImageServer_.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
-            }
-
-        }
-    }
 
     enginelist_->setNumOfRetries(settings->FileRetryLimit, settings->ActionRetryLimit);
 

@@ -38,7 +38,7 @@
 CThumbSettingsPage::CThumbSettingsPage()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    params_ = settings->imageServer.getByIndex(0).getImageUploadParams().getThumb();
+    params_ = settings->DefaultImageUploadParams.getThumb();
     m_CatchFormChanges = false;
 }
 
@@ -138,9 +138,8 @@ bool CThumbSettingsPage::apply()
 
     params_.Size = 0;
     params_.BackgroundColor = ThumbBackground.GetColor();
-    ImageUploadParams iup = settings->imageServer.getByIndex(0).getImageUploadParamsRef();
-    iup.setThumb(params_);
-    settings->imageServer.getByIndex(0).setImageUploadParams(iup);
+    settings->DefaultImageUploadParams.setThumb(params_);
+
 
     for (const auto& it: thumb_cache_) {
         it.second->saveToFile();

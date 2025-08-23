@@ -200,8 +200,7 @@ protected:
     ServerProfileGroup sessionImageServer_, sessionFileServer_;
     ServerProfile& getSessionImageServerItem();
     ServerProfile& getSessionFileServerItem();
-    void updateMoreImageServersLink();
-    void updateMoreFileServersLink();
+    void updateMoreServersLink(bool isImageServer);
     bool menuOpenedIsImageServer_;
     std::vector<CString> menuOpenedUserNames_;
     void selectServer(ServerProfile& sp, int serverIndex);

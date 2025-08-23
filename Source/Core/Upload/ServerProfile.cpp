@@ -170,3 +170,7 @@ void ImageUploadParams::bind(SettingsNode& n) {
     thumb.nm_bind(Thumb, Format);
     thumb.nm_bind(Thumb, Text);
 }
+
+ThumbCreatingParams& ImageUploadParams::getThumbRef() {
+    return Thumb;
+}

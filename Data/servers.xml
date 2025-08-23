@@ -49,7 +49,7 @@
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-    <Server Name="imgur.com" Type="image" Types="image file video" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
+    <!--<Server Name="imgur.com" Type="image" Types="image file video" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
         RegistrationUrl="https://imgur.com/register" MaxThreads="1">
         <Info>
             <SupportedFormats>
@@ -63,17 +63,10 @@
                     <Format MimeType="video/mp4">*.mp4</Format>
                     <Format MimeType="video/webm">*.webm</Format>
                     <Format MimeType="video/mpeg">*.mpeg,*.vob,*.mpg</Format>
-                    <!--<Format MimeType="video/x-msvideo">*.avi</Format>-->
-                    <!--<Format MimeType="video/quicktime">*.mov</Format>-->
                     <Format MimeType="video/x-matroska,application/x-matroska">*.mkv</Format>
-                    <!--<Format MimeType="video/x-flv">*.flv</Format>-->
+
                     <Format MimeType="video/x-ms-wmv,application/vnd.ms-asf">*.wmv</Format>
                 </FormatGroup>
-                <!-- 
-                <FormatGroup UserTypes="reg">
-                    <Format MimeType="video/quicktime">*.mov</Format>
-                </FormatGroup>	
-                -->	 
             </SupportedFormats>
             <StorageTimeInfo>
                 <StorageTime UserTypes="anon">0</StorageTime>
@@ -83,7 +76,7 @@
         <Actions>
         </Actions>
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-    </Server>
+    </Server>-->
     <Server Name="Imageshack.us" Authorize="2" MaxFileSize="26214400" Debug="0" Plugin="imageshack" SupportsFolders="1" WebsiteUrl="https://imageshack.com"
         RegistrationUrl="https://imageshack.com/signup">
         <Actions>

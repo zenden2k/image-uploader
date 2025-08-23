@@ -20,12 +20,7 @@ limitations under the License.
 
 #include "CliSettings.h"
 
-ThumbCreatingParams ImageUploadParams::getThumb()
-{
-    return Thumb;
-}
-
-ThumbCreatingParams& ImageUploadParams::getThumbRef()
+ThumbCreatingParams ImageUploadParams::getThumb() const
 {
     return Thumb;
 }
