@@ -2,6 +2,14 @@
 #
 # https://svistunov.dev/uptooda
 
+1.4.5.5392 (2025-08-24)
+[+] Added imgchest.com, gofile.io hosting services
+[~] Fixed bug with image conversion settings and selected thumbnail template not being saved
+[~] Upload wizard settings page: changed additional servers link text, added count of
+additional selected servers to server selection button
+[~] Fixed program crash in server settings dialog
+[~] Updated Ukrainian and Korean translations (thanks to Maxim Gorpinich and Jaehyung Lee)
+
 1.4.4.5388 (2025-08-11)
 [~] Changed program name to Uptooda
 [+] New server selection window with hosting comparison table
