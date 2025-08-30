@@ -20,7 +20,7 @@
 AppId={{44F06965-E6A9-4147-A44A-E78403428560}
 ; Old AppId: {24F211C6-2732-4564-B602-CDA2DE2A13FC}
 AppName={#MyAppName}
-AppVersion={#MyAppVersion}
+AppVersion={#IU_APP_VER_CLEAN}.{#IU_BUILD_NUMBER}
 AppVerName={#MyAppName} {#MyAppVersion} Build {#IU_BUILD_NUMBER}
 UninstallDisplayName={#MyAppName} {#MyAppVersion}
 UninstallDisplayIcon="{app}\{#MyAppExeName}"
