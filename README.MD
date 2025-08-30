@@ -10,6 +10,11 @@ Official website: https://uptooda.com
 
 [![Download Uptooda](./Pics/download_btn.png)](https://svistunov.dev/uptooda_downloads)
 
+Also available via WinGet:
+
+```
+winget install Uptooda
+```
 Supported operating systems: Windows 7/8/8.1/10/11 or newer
 
 [Version 1.3.2](https://github.com/zenden2k/uptooda/releases/tag/1.3.2-release) was the last supported release for Windows XP and Windows Vista.
