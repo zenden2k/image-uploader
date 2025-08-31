@@ -1,0 +1,2545 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: imageuploader\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-08-23 17:47+0300\n"
+"Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/image-uploader/image-uploader/ru/>\n"
+"Language: bg\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=0; plural=(n == 1) ? 0 : 1;\n"
+"X-Generator: Poedit 3.6\n"
+
+msgid " (highest)"
+msgstr "(най-висок)"
+
+msgid " (lowest)"
+msgstr "(най-ниска)"
+
+msgid " (music, high)"
+msgstr "(музика, висока)"
+
+msgid " (music, low)"
+msgstr "(музика, тиха)"
+
+msgid " (music, standard)"
+msgstr "(музика, стандарт)"
+
+msgid " (music, very high)"
+msgstr "(музика, много висока)"
+
+msgid " (speech)"
+msgstr "(реч)"
+
+msgid ""
+"\"%1%\": server %2% doesn't support this type of file (%3% %4% with '.%5%' "
+"extension)\n"
+msgstr "\"%1%\": сървърът %2% не поддържа този тип файл (%3% %4% с разширение '.%5%')"
+
+msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
+msgstr "\"%1%\": сървърът %2% не поддържа този тип файл (%3% %4%)"
+
+msgid "%d file"
+msgid_plural "%d files"
+msgstr[0] "%d файл"
+msgstr[1] "%d файла"
+msgstr[2] "%d файлов"
+
+msgid "%d file selected"
+msgid_plural "%d files selected"
+msgstr[0] "%d файл выбран"
+msgstr[1] "%d файла выбрано"
+msgstr[2] "%d файлов выбрано"
+
+msgid "%d file total"
+msgid_plural "%d files total"
+msgstr[0] "%d файл всего"
+msgstr[1] "%d файла всего"
+msgstr[2] "%d файлов всего"
+
+msgid "%d server selected"
+msgid_plural "%d servers selected"
+msgstr[0] "%d сервер выбран"
+msgstr[1] "%d сервера выбрано"
+msgstr[2] "%d серверов выбрано"
+
+msgid "%d%%"
+msgstr "%d%%"
+
+msgid ""
+"%f% - name of videofile without extension, \n"
+"%fe% -  name of videofile, \n"
+"%ext% - extension, \n"
+"%y% - year, %m% - month, %d% - day\n"
+"%h% - hour, %n% - minute, %s% - second\n"
+" %i% - file counter,\n"
+"%cx% - width,  %cy% - height"
+msgstr "%f% - име на видеофайл без разширение, \n%fe% - име на видеофайл, \n%ext% - разширение, \n%y% - година, %m% - месец, %d% - ден\n%h% - час, %n% - минута, %s% - секунда\n%i% - брояч на файлове,\n%cx% - ширина, %cy% - височина"
+
+msgid "%s (screen recording)"
+msgstr "%s (запис на екрана)"
+
+msgid "%s - Quick Setup"
+msgstr "%s - Бърза настройка"
+
+msgid "%s - Updates available"
+msgstr "%s - Налични са актуализации"
+
+msgid "%s Updates"
+msgstr "%s актуализации"
+
+msgid "%s of %s (%d%%) %s"
+msgstr "%s от %s (%d%%) %s"
+
+msgid "%s server settings"
+msgstr "%s настройки на сървъра"
+
+msgid "%u error has not been fixed."
+msgid_plural "%u errors have not been fixed."
+msgstr[0] "%u ошибка не была исправлена."
+msgstr[1] "%u ошибки не были исправлены."
+msgstr[2] "%u ошибок не были исправлены."
+
+msgid ""
+"%y - year, %m - month, %d - day\n"
+"%h - hour, %n - minute, %s - seconds\n"
+" %i - image index,\n"
+"%width% - width of image,  %height% - height of image"
+msgstr "%y - година, %m - месец, %d - ден\n%h - час, %n - минута, %s - секунди\n%i - индекс на изображението,\n%width% - ширина на изображението, %height% - височина на изображението"
+
+msgid "&Upload"
+msgstr "&Качване"
+
+msgid "(edited)"
+msgstr "(редактирано)"
+
+msgid "(the code has been copied to the clipboard)"
+msgstr "(кодът е копиран в клипборда)"
+
+msgid "(the link has been copied to the clipboard)"
+msgstr "(линкът е копиран в клипборда)"
+
+msgid "< Back"
+msgstr "< Назад"
+
+msgid "<no authentication>"
+msgstr "<без удостоверяване>"
+
+msgid "A new version is available:"
+msgstr "Налична е нова версия:"
+
+msgid "About %s"
+msgstr "Относно %s"
+
+msgid "About..."
+msgstr "Относно..."
+
+msgid "Access:"
+msgstr "Достъп:"
+
+msgid "Account"
+msgstr "Профил"
+
+msgid "Account is not enabled"
+msgstr "Профилът не е активиран"
+
+msgid "Account with such name already exists."
+msgstr "Вече съществува акаунт с такова име."
+
+msgid "Account..."
+msgstr "Профил..."
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "Action:"
+msgstr "Действие:"
+
+msgid "Active connection"
+msgstr "Активна връзка"
+
+msgid "Add"
+msgstr "Добавяне"
+
+msgid "Add %s server..."
+msgstr "Добавяне на %s сървър..."
+
+msgid "Add Files"
+msgstr "Добавяне на файлове"
+
+msgid "Add Files..."
+msgstr "Добавяне на файлове..."
+
+msgid "Add Folder..."
+msgstr "Добавяне на папка..."
+
+msgid "Add Images"
+msgstr "Добавяне на изображения"
+
+msgid "Add Item"
+msgstr "Добавяне на елемент"
+
+msgid "Add Menu Item"
+msgstr "Добавяне на елемент от менюто"
+
+msgid "Add account..."
+msgstr "Добавяне на акаунт..."
+
+msgid "Add an item to the context menu of Windows Explorer"
+msgstr "Добавяне на елемент към контекстното меню на Windows Explorer"
+
+msgid "Add files..."
+msgstr "Добавяне на файлове..."
+
+msgid "Add folder as new server..."
+msgstr "Добавяне на папка като нов сървър..."
+
+msgid "Add folder..."
+msgstr "Добавяне на папка..."
+
+msgid "Add images..."
+msgstr "Добавяне на изображения..."
+
+msgid "Add item to video files' context menu"
+msgstr "Добавяне на елемент към контекстното меню на видео файловете"
+
+msgid "Add server"
+msgstr "Добавяне на сървър"
+
+msgid "Add text"
+msgstr "Добавяне на текст"
+
+msgid "Add text on thumbnail"
+msgstr "Добавяне на текст към миниатюрата"
+
+msgid "Add text to image"
+msgstr "Добавяне на текст към изображение"
+
+msgid "Add to Wizard"
+msgstr "Добавяне към съветника"
+
+msgid "Add to the list"
+msgstr "Добави към списъка"
+
+msgid "Add video files to the list after Drag'n'Drop"
+msgstr "Добавяне на видео файлове към списъка след плъзгане и пускане"
+
+msgid "Add watermark"
+msgstr "Добавяне на воден знак"
+
+msgid "Adding directory as server"
+msgstr "Добавяне на директория като сървър"
+
+msgid "Additional options..."
+msgstr "Допълнителни опции..."
+
+msgid "Additional params"
+msgstr "Допълнителни параметри"
+
+msgid "Additional settings"
+msgstr "Допълнителни настройки"
+
+msgid "Address:"
+msgstr "Адрес:"
+
+msgid "Advice:"
+msgstr "Съвет:"
+
+msgid "Aero only (Windows Vista or later)"
+msgstr "Само Aero (Windows Vista или по-нова версия)"
+
+msgid ""
+"All account data will be deleted, including logins, passwords and other "
+"settings. The following server types' settings will also be deleted: %s."
+msgstr "Всички данни за акаунта ще бъдат изтрити, включително данни за вход, пароли и други настройки. Настройките на следните типове сървъри също ще бъдат изтрити: %s."
+
+msgid "All files"
+msgstr "Всички файлове"
+
+msgid "All files have been successfully uploaded."
+msgstr "Всички файлове са успешно качени."
+
+msgid "All monitors"
+msgstr "Всички монитори"
+
+msgid "All the time"
+msgstr "През цялото време"
+
+msgid "Allow Alt+Tab in fullscreen editor"
+msgstr "Разрешаване на Alt+Tab в редактора на цял екран"
+
+msgid "Allow editing images in fullscreen mode"
+msgstr "Разрешаване на редактиране на изображения в режим на цял екран"
+
+msgid "Always copy captured image to clipboard"
+msgstr "Винаги копирай заснетото изображение в клипборда"
+
+msgid "An error occured while extracting video frames."
+msgstr "Възникна грешка при извличане на видеокадри."
+
+msgid "An error occured while loading script."
+msgstr "Възникна грешка при зареждане на скрипта."
+
+msgid "An error occured while receiving update information from server."
+msgstr "Възникна грешка при получаване на информация за актуализация от сървъра."
+
+msgid ""
+"An error occurred during screen recording. For details, please check the "
+"error log."
+msgstr "Възникна грешка по време на запис на екрана. За подробности, моля, проверете дневника на грешките."
+
+msgid "Any file"
+msgstr "Всеки файл"
+
+msgid "Appearance options"
+msgstr "Опции за външен вид"
+
+msgid "Apply"
+msgstr "Приложи"
+
+msgid "Are you sure to place text and logo in the same position on image?"
+msgstr "Сигурни ли сте, че сте поставили текста и логото на едно и също място върху изображението?"
+
+msgid "Are you sure to quit?"
+msgstr "Сигурен/а ли си, че ще се откажеш?"
+
+msgid "Are you sure you want to delete profile '%s'?"
+msgstr "Сигурни ли сте, че искате да изтриете профила „%s“?"
+
+msgid "Are you sure you want to delete the file '%s' from the server?"
+msgstr "Сигурни ли сте, че искате да изтриете файла '%s' от сървъра?"
+
+msgid "Are you sure you want to delete this account from %s's internal list?"
+msgstr "Сигурни ли сте, че искате да изтриете този акаунт от вътрешния списък на %s?"
+
+msgid "Arrow"
+msgstr "Стрелка"
+
+msgid "Ask confirmation on exit"
+msgstr "Искайте потвърждение при излизане"
+
+msgid "At least one mouse command should not be empty"
+msgstr "Поне една команда на мишката не трябва да е празна"
+
+msgid "Attention! Global hotkeys are active only when tray icon is shown."
+msgstr "Внимание! Глобалните бързи клавиши са активни само когато е показана иконата в системния трей."
+
+msgid "Audio"
+msgstr "Аудио"
+
+msgid "Audio codec:"
+msgstr "Аудио кодек:"
+
+msgid "Audio files"
+msgstr "Аудио файлове"
+
+msgid "Audio source:"
+msgstr "Аудио източник:"
+
+msgid "Authenticated succesfully."
+msgstr "Успешно удостоверяване."
+
+msgid "Authenticaton:"
+msgstr "Удостоверяване:"
+
+msgid "Author:"
+msgstr "Автор:"
+
+msgid "Authorization on proxy"
+msgstr "Авторизация на прокси"
+
+msgid "Authorize"
+msgstr "Авторизация"
+
+msgid "Auto"
+msgstr "Автоматично"
+
+msgid "Automatically check for updates"
+msgstr "Автоматична проверка за актуализации"
+
+msgid "Autorization parameters"
+msgstr "Параметри за оторизация"
+
+msgid "Backend:"
+msgstr "Бекенд:"
+
+msgid "Background color:"
+msgstr "Цвят на фона:"
+
+msgid "Begin upload"
+msgstr "Започнете качването"
+
+msgid "Best (slowest)"
+msgstr "Най-добър (най-бавен)"
+
+msgid "Beta-testers:"
+msgstr "Бета тестери:"
+
+msgid "Bitrate:"
+msgstr "Битрейт:"
+
+msgid "Blur radius"
+msgstr "Радиус на размазване"
+
+msgid "Blurring rectangle"
+msgstr "Размазващ се правоъгълник"
+
+msgid "Bottom center"
+msgstr "Долу в центъра"
+
+msgid "Bottom left corner"
+msgstr "Долен ляв ъгъл"
+
+msgid "Bottom right corner"
+msgstr "Долен десен ъгъл"
+
+msgid "Bring window to foreground when selected by mouse"
+msgstr "Извеждане на прозореца на преден план, когато е избран с мишката"
+
+msgid "Browse..."
+msgstr "Разгледайте..."
+
+msgid "Brush"
+msgstr "Четка"
+
+msgid "Cancel"
+msgstr "Отказ"
+
+msgid ""
+"Cannot connect filters (format probably is not supported).\n"
+"Make sure you have the required codecs installed on your system."
+msgstr "Не мога да свържа филтри (форматът вероятно не се поддържа).\nУверете се, че имате инсталирани необходимите кодеци на вашата система."
+
+msgid "Cannot copy file "
+msgstr "Не може да се копира файл"
+
+msgid "Cannot copy file: "
+msgstr "Не може да се копира файл:"
+
+msgid "Cannot create registry key for extension: "
+msgstr "Не може да се създаде ключ в системния регистър за разширение:"
+
+msgid "Cannot load thumbnail for image."
+msgstr "Не може да се зареди миниатюра на изображението."
+
+msgid "Cannot open documentation: "
+msgstr "Не мога да отворя документацията:"
+
+msgid ""
+"Cannot open folder '%1%'.\n"
+"%2%"
+msgstr "Не може да се отвори папка „%1%“.\n%2%"
+
+msgid ""
+"Cannot register global hotkey:\n"
+"%s.\n"
+" Maybe it is being used by another process."
+msgstr "Не може да се регистрира глобална клавишна комбинация:\n%s.\nМоже би се използва от друг процес."
+
+msgid "Capture Last Region"
+msgstr "Заснемане на последния регион"
+
+msgid "Capture Rectangular Region"
+msgstr "Заснемане на правоъгълна област"
+
+msgid "Capture Selected Area"
+msgstr "Заснемане на избраната област"
+
+msgid "Capture Selected Object"
+msgstr "Заснемане на избрания обект"
+
+msgid "Capture Selected Window"
+msgstr "Заснемане на избрания прозорец"
+
+msgid "Capture cursor"
+msgstr "Заснемане на курсора"
+
+msgid "Capture the Active Window"
+msgstr "Заснемане на активния прозорец"
+
+msgid "Capture the Entire Screen"
+msgstr "Заснемане на целия екран"
+
+msgid "Capture with shadow"
+msgstr "Заснемане със сянка"
+
+msgid "Cascaded context menu"
+msgstr "Каскадно контекстно меню"
+
+msgid "Center"
+msgstr "Център"
+
+msgid "Change"
+msgstr "Промяна"
+
+msgid ""
+"Change image processing settings or choose another server, so your image can "
+"be uploaded."
+msgstr "Променете настройките за обработка на изображения или изберете друг сървър, за да може изображението ви да бъде качено."
+
+msgid "Change width:"
+msgstr "Промяна на ширината:"
+
+msgid "Check file types before upload"
+msgstr "Проверете типовете файлове преди качване"
+
+msgid "Check for Updates"
+msgstr "Проверка за актуализации"
+
+msgid "Checking file formats..."
+msgstr "Проверка на файловите формати..."
+
+msgid "Checking for updates..."
+msgstr "Проверка за актуализации..."
+
+msgid "Choose executable file"
+msgstr "Изберете изпълним файл"
+
+msgid "Choose files"
+msgstr "Изберете файлове"
+
+msgid "Choose folder"
+msgstr "Изберете папка"
+
+msgid "Choose folder..."
+msgstr "Изберете папка..."
+
+msgid "Choose media file"
+msgstr "Изберете медиен файл"
+
+msgid "Choose monitor"
+msgstr "Изберете монитор"
+
+msgid "Choose more servers..."
+msgstr "Изберете още сървъри..."
+
+msgid "Choose program"
+msgstr "Изберете програма"
+
+msgid "Choose server"
+msgstr "Изберете сървър"
+
+msgid "Choose server for uploading images"
+msgstr "Изберете сървър за качване на изображения"
+
+msgid "Choose server..."
+msgstr "Изберете сървър..."
+
+msgid "Choose servers"
+msgstr "Изберете сървъри"
+
+msgid "Choose video file"
+msgstr "Изберете видео файл"
+
+msgid "Choose..."
+msgstr "Изберете..."
+
+msgid "Clear"
+msgstr "Изчисти"
+
+msgid "Clear History"
+msgstr "Изчистване на историята"
+
+msgid "Clear History..."
+msgstr "Изчистване на историята..."
+
+msgid "Clear all"
+msgstr "Изчисти всички"
+
+msgid "Clear filters"
+msgstr "Изчистване на филтрите"
+
+msgid "Clear list"
+msgstr "Изчистване на списъка"
+
+msgid "Clear log"
+msgstr "Изчистване на дневника"
+
+msgid "Clear server settings"
+msgstr "Изчистване на настройките на сървъра"
+
+msgid "Clear window transparent corners"
+msgstr "Прозрачни ъгли на прозорците"
+
+msgid "Clear window's background"
+msgstr "Прозрачен фон на прозореца"
+
+msgid "Click button \"Upload\" for starting process of uploading."
+msgstr "Кликнете върху бутона „Качване“, за да започнете процеса на качване."
+
+msgid "Click on this message to view details..."
+msgstr "Кликнете върху това съобщение, за да видите подробности..."
+
+msgid "Clickable thumbnails"
+msgstr "Миниатюри с възможност за кликване"
+
+msgid "Close"
+msgstr "Затвори"
+
+msgid "Close window after copying or searching when taking screenshot"
+msgstr "Затваряне на прозореца след копиране или търсене при правене на екранна снимка"
+
+msgid "Code type:"
+msgstr "Тип код:"
+
+msgid "Collecting files..."
+msgstr "Събиране на файлове..."
+
+msgid "Color chooser"
+msgstr "Избор на цвят"
+
+msgid "Color codes"
+msgstr "Цветови кодове"
+
+msgid "Colors"
+msgstr "Цветове"
+
+msgid "Component name"
+msgstr "Име на компонента"
+
+msgid "Components:"
+msgstr "Компоненти:"
+
+msgid "Concatenation..."
+msgstr "Свързване..."
+
+msgid "Connection  name:"
+msgstr "Име на връзката:"
+
+msgid "Connection name cannot be empty"
+msgstr "Името на връзката не може да бъде празно"
+
+msgid "Connection settings"
+msgstr "Настройки за връзка"
+
+msgid "Context menu custom items:"
+msgstr "Персонализирани елементи от контекстното меню:"
+
+msgid "Continue"
+msgstr "Продължи"
+
+msgid "Contributors:"
+msgstr "Сътрудници:"
+
+msgid "Convert UNC path \"\\\\\" to \"file://\""
+msgstr "Преобразувайте UNC пътя \"\\\\\" във \"file://\""
+
+msgid "Converting history"
+msgstr "История на конвертирането"
+
+msgid "Converting..."
+msgstr "Конвертиране..."
+
+msgid "Copy"
+msgstr "Копиране"
+
+msgid "Copy &as"
+msgstr "Копиране и като"
+
+msgid "Copy URL of %1%->%2%"
+msgstr "Копиране на URL адреса на %1%->%2%"
+
+msgid "Copy automatically results to clipboard"
+msgstr "Автоматично копиране на резултатите в клипборда"
+
+msgid "Copy delete link"
+msgstr "Копиране на връзката за изтриване"
+
+msgid "Copy e-mail"
+msgstr "Копиране на имейл"
+
+msgid "Copy folder's ID"
+msgstr "Копиране на идентификатора на папката"
+
+msgid "Copy full path"
+msgstr "Копиране на пълния път"
+
+msgid "Copy image"
+msgstr "Копиране на изображение"
+
+msgid "Copy in data:URI format"
+msgstr "Копиране във формат данни:URI"
+
+msgid "Copy in data:URI format (html)"
+msgstr "Копиране във формат данни:URI (html)"
+
+msgid "Copy link"
+msgstr "Копиране на връзката"
+
+msgid "Copy link to thumbnail"
+msgstr "Копиране на връзката към миниатюрата"
+
+msgid "Copy link to view page"
+msgstr "Копиране на връзката за преглед на страницата"
+
+msgid "Copy to Clipboard"
+msgstr "Копиране в клипборда"
+
+msgid "Copy to clipboard"
+msgstr "Копиране в клипборда"
+
+msgid "Copy to clipboard (%s)"
+msgstr "Копиране в клипборда (%s)"
+
+msgid "Copy to clipboard and close (%s)"
+msgstr "Копиране в клипборда и затваряне (%s)"
+
+msgid "Copy to the clipboard:"
+msgstr "Копиране в клипборда:"
+
+msgid "Could not add server."
+msgstr "Не можа да се добави сървър."
+
+msgid "Could not authenticate. Please try again."
+msgstr "Неуспешно удостоверяване. Моля, опитайте отново."
+
+msgid "Could not find a video stream."
+msgstr "Не можа да бъде намерен видео поток."
+
+msgid "Could not find ffmpeg executable!"
+msgstr "Не можа да бъде намерен изпълним файл ffmpeg!"
+
+msgid "Could not find links in the given text!"
+msgstr "Не можах да намеря линкове в дадения текст!"
+
+msgid "Could not read package %s"
+msgstr "Не можа да се прочете пакет %s"
+
+msgid "Could not save settings file. See error log for details."
+msgstr "Файлът с настройки не можа да бъде запазен. Вижте дневника на грешките за подробности."
+
+msgid "Could not upload screenshot :("
+msgstr "Не можах да кача екранна снимка :("
+
+msgid ""
+"Couldn't load servers list file \"servers.xml\"!\n"
+"\n"
+"The reason is:  %s\n"
+"\n"
+"Do you wish to continue?"
+msgstr "Не можа да се зареди файлът със списъка със сървъри \"servers.xml\"!\n\nПричината е: %s\n\nИскате ли да продължите?"
+
+msgid "Couldn't load thumbnail preset!"
+msgstr "Не можа да се зареди предварително зададена миниатюра!"
+
+msgid "Create Profile"
+msgstr "Създаване на профил"
+
+msgid "Create a Copy"
+msgstr "Създаване на копие"
+
+msgid "Create folder"
+msgstr "Създаване на папка"
+
+msgid "Create folder (album)"
+msgstr "Създаване на папка (албум)"
+
+msgid "Create nested folder"
+msgstr "Създаване на вложена папка"
+
+msgid "Create thumbnails"
+msgstr "Създаване на миниатюри"
+
+msgid "Creating new thumbnail preset"
+msgstr "Създаване на нов готов миниатюрен файл"
+
+msgid "Crop"
+msgstr "Култура"
+
+msgid "Current monitor"
+msgstr "Текущ монитор"
+
+msgid "Current profile's changes weren't saved. Do you want to continue?"
+msgstr "Промените в текущия профил не бяха запазени. Искате ли да продължите?"
+
+msgid "Cut"
+msgstr "Изрязване"
+
+msgid "Data file path:"
+msgstr "Път към файла с данни:"
+
+msgid "Date from:"
+msgstr "Дата от:"
+
+msgid "Decode response"
+msgstr "Декодиране на отговор"
+
+msgid "Default server for other file types"
+msgstr "Сървър по подразбиране за други типове файлове"
+
+msgid "Default server for uploading images"
+msgstr "Сървър по подразбиране за качване на изображения"
+
+msgid "Default settings"
+msgstr "Настройки по подразбиране"
+
+msgid "Deinterlace"
+msgstr "Деинтерлейсиране"
+
+msgid "Delay when hiding window:"
+msgstr "Забавяне при скриване на прозорец:"
+
+msgid "Delete"
+msgstr "Изтриване"
+
+msgid "Delete Profile"
+msgstr "Изтриване на профил"
+
+msgid "Delete account"
+msgstr "Изтриване на акаунт"
+
+msgid "Delete file from server"
+msgstr "Изтриване на файл от сървъра"
+
+msgid "Deleting the file from the server"
+msgstr "Изтриване на файла от сървъра"
+
+msgid "Developer mode"
+msgstr "Режим за разработчици"
+
+msgid "Directory to save screenshots:"
+msgstr "Директория за запазване на екранни снимки:"
+
+msgid "Disable localization"
+msgstr "Деактивиране на локализацията"
+
+msgid "Display video file information on resulting picture"
+msgstr "Показване на информация за видеофайла върху получената снимка"
+
+msgid "Do not ask again"
+msgstr "Не питай отново"
+
+msgid "Do not launch new program's instance from tray"
+msgstr "Не стартирайте нов екземпляр на програмата от системния трей"
+
+msgid "Do nothing"
+msgstr "Не правете нищо"
+
+msgid "Documentation"
+msgstr "Документация"
+
+msgid "Don't have an account? Sign up on %s right now!"
+msgstr "Нямате акаунт? Регистрирайте се в %s още сега!"
+
+msgid "Don't resize"
+msgstr "Не преоразмерявайте"
+
+msgid "Download URL cannot be empty."
+msgstr "URL адресът за изтегляне не може да бъде празен."
+
+msgid "Downloaded %s of %s (%d %%)"
+msgstr "Изтеглени %s от %s (%d %%)"
+
+msgid "Downloaded: "
+msgstr "Изтеглено:"
+
+msgid "Downloading file "
+msgstr "Изтегляне на файл"
+
+msgid "Draw frame"
+msgstr "Начертайте рамка"
+
+msgid "Duration: "
+msgstr "Продължителност:"
+
+msgid "Edit"
+msgstr "Редактиране"
+
+msgid "Edit Profile"
+msgstr "Редактиране на профил"
+
+msgid "Edit file on server"
+msgstr "Редактиране на файл на сървъра"
+
+msgid "Edit folder"
+msgstr "Редактиране на папка"
+
+msgid "Edit hotkey..."
+msgstr "Редактиране на бърза клавишна комбинация..."
+
+msgid "Edit login credentials..."
+msgstr "Редактиране на данните за вход..."
+
+msgid "Ellipse"
+msgstr "Елипса"
+
+msgid "Enable Toast notifications (Windows 8+)"
+msgstr "Активиране на известия за изскачащи съобщения (Windows 8+)"
+
+msgid "Enter URLs (one http:// or ftp:// link per line)"
+msgstr "Въведете URL адреси (по един http:// или ftp:// линк на ред)"
+
+msgid "Enter account information"
+msgstr "Въведете информация за акаунта"
+
+msgid "Enter new profile name:"
+msgstr "Въведете новото име на профила:"
+
+msgid "Enter new thumbnail preset name:"
+msgstr "Въведете име на нов предварително зададен миниатюрен файл:"
+
+msgid ""
+"Enter the text containing links to images (HTML, BBcode, or just plain text):"
+msgstr "Въведете текста, съдържащ връзки към изображения (HTML, BBcode или просто обикновен текст):"
+
+msgid "Enter your account information"
+msgstr "Въведете информацията за вашия акаунт"
+
+msgid "Enter your text:"
+msgstr "Въведете текста си:"
+
+msgid "Error"
+msgstr "Грешка"
+
+msgid "Error control"
+msgstr "Контрол на грешките"
+
+msgid "Error in the field '%s':\n"
+msgstr "Грешка в полето „%s“:\n"
+
+msgid "Error in the field '%s': value should be between %d and %d."
+msgstr "Грешка в полето '%s': стойността трябва да е между %d и %d."
+
+msgid "Error in the field '%s': value should be greater than zero"
+msgstr "Грешка в полето '%s': стойността трябва да е по-голяма от нула"
+
+msgid "Error log"
+msgstr "Дневник на грешките"
+
+msgid "Error while file format checking"
+msgstr "Грешка при проверка на файловия формат"
+
+msgid "Error while updating component "
+msgstr "Грешка при актуализиране на компонента"
+
+msgid "Error:"
+msgstr "Грешка:"
+
+msgid "Errors: %d"
+msgstr "Грешки: %d"
+
+msgid "Executables"
+msgstr "Изпълними файлове"
+
+msgid "Execute Squirrel script for each task (file)"
+msgstr "Изпълнете скрипта Squirrel за всяка задача (файл)"
+
+msgid "Exit"
+msgstr "Изход"
+
+msgid "Explicit"
+msgstr "Експлицитно"
+
+msgid "Extension"
+msgstr "Разширение"
+
+msgid "Extract frames"
+msgstr "Извличане на рамки"
+
+msgid "Extracting frame "
+msgstr "Извличане на рамка"
+
+msgid "Extracting frames from video"
+msgstr "Извличане на кадри от видео"
+
+msgid "Extracting video frames was finished."
+msgstr "Извличането на видеокадрите беше завършено."
+
+msgid "Extracting video frames was stopped by user."
+msgstr "Извличането на видеокадри беше спряно от потребителя."
+
+msgid "FFmpeg executable path:"
+msgstr "Път за изпълним файл на FFmpeg:"
+
+msgid "FTP"
+msgstr "FTP"
+
+msgid "Failed to create the directory '%s'."
+msgstr "Неуспешно създаване на директорията „%s“."
+
+msgid "Failed to load folder list."
+msgstr "Зареждането на списъка с папки не бе успешно."
+
+msgid "Failed to logout."
+msgstr "Излизането не бе успешно."
+
+msgid "Failed to open video file '%s'."
+msgstr "Неуспешно отваряне на видеофайла „%s“."
+
+msgid "Fetching filesystem..."
+msgstr "Извличане на файлова система..."
+
+msgid "File"
+msgstr "Файл"
+
+msgid "File \"%s\" is beeing uploaded to server %s.."
+msgstr "Файлът \"%s\" се качва на сървъра %s."
+
+msgid "File \"%s\" not found!"
+msgstr "Файлът \"%s\" не е намерен!"
+
+msgid "File %s doesn't exist"
+msgstr "Файл %s не съществува"
+
+msgid ""
+"File doesn't exist:\n"
+"%s"
+msgstr "Файлът не съществува:\n%s"
+
+msgid "File exceeds filesize limit of \"%s\" server (%s)."
+msgstr "Файлът надвишава ограничението за размер на файла на сървъра \"%s\" (%s)."
+
+msgid "File formats"
+msgstr "Файлови формати"
+
+msgid ""
+"File is not an image.\n"
+"Url: %s\n"
+"Mime-Type: %s"
+msgstr "Файлът не е изображение.\nURL адрес: %s\nMIME тип: %s"
+
+msgid "File name cannot contains forbidden characters!"
+msgstr "Името на файла не може да съдържа забранени символи!"
+
+msgid "File size exceeding"
+msgstr "Размерът на файла надвишава"
+
+msgid "File uploading was cancelled by user."
+msgstr "Качването на файла е отменено от потребителя."
+
+msgid "File:"
+msgstr "Файл:"
+
+msgid "File: "
+msgstr "Файл:"
+
+msgid "Filename format:"
+msgstr "Формат на името на файла:"
+
+msgid "Filename:"
+msgstr "Име на файл:"
+
+msgid "Filename: "
+msgstr "Име на файл:"
+
+msgid "Files"
+msgstr "Файлове"
+
+msgid "Files total:"
+msgstr "Общо файлове:"
+
+msgid "Filesize: "
+msgstr "Размер на файла:"
+
+msgid "Fill background"
+msgstr "Запълване на фона"
+
+msgid "Filled ellipse"
+msgstr "Запълнена елипса"
+
+msgid "Filled rectangle"
+msgstr "Запълнен правоъгълник"
+
+msgid "Filters"
+msgstr "Филтри"
+
+msgid "Finish"
+msgstr "Завършек"
+
+msgid "Finish >"
+msgstr "Завършек >"
+
+msgid "Finish Screen Recording"
+msgstr "Завършване на записа на екрана"
+
+msgid "Finished"
+msgstr "Завършено"
+
+msgid "First you have to select an item in the list."
+msgstr "Първо трябва да изберете елемент от списъка."
+
+msgid "Fit"
+msgstr "Подходящ"
+
+msgid "Flip horizontal"
+msgstr "Обърни хоризонтално"
+
+msgid "Flip vertical"
+msgstr "Обърни вертикално"
+
+msgid "Folder %s"
+msgstr "Папка %s"
+
+msgid "Folder for snapshots:"
+msgstr "Папка за снимки:"
+
+msgid "Folder list"
+msgstr "Списък с папки"
+
+msgid "Folder list on server %s for account '%s':"
+msgstr "Списък с папки на сървър %s за акаунт '%s':"
+
+msgid "Folder name:"
+msgstr "Име на папката:"
+
+msgid "Folder/album:"
+msgstr "Папка/албум:"
+
+msgid "Folder:"
+msgstr "Папка:"
+
+msgid "Font size:"
+msgstr "Размер на шрифта:"
+
+msgid "Font..."
+msgstr "Шрифт..."
+
+msgid "Format:"
+msgstr "Формат:"
+
+msgid "Forum code (BBCode)"
+msgstr "Код на форума (BBCode)"
+
+msgid "Found a bug? Send a bug report to the author."
+msgstr "Открихте грешка? Изпратете сигнал за грешка на автора."
+
+msgid "Frame color:"
+msgstr "Цвят на рамката:"
+
+msgid "Frame rate:"
+msgstr "Честота на кадрите:"
+
+msgid "Frames layout"
+msgstr "Оформление на рамки"
+
+msgid "Freehand Capture"
+msgstr "Заснемане на свободна ръка"
+
+msgid "From Clipboard"
+msgstr "От клипборда"
+
+msgid "From Web"
+msgstr "От мрежата"
+
+msgid "Full information"
+msgstr "Пълна информация"
+
+msgid "Full screen"
+msgstr "Цял екран"
+
+msgid "Generating image..."
+msgstr "Генериране на изображение..."
+
+msgid "Get color's code..."
+msgstr "Вземете кода на цвета..."
+
+msgid "Getting info about file..."
+msgstr "Получаване на информация за файла..."
+
+msgid "Global"
+msgstr "Глобално"
+
+msgid "Global hotkey:"
+msgstr "Глобална гореща клавишна комбинация:"
+
+msgid "Go to signup page"
+msgstr "Отидете на страницата за регистрация"
+
+msgid "Good (default)"
+msgstr "Добро (по подразбиране)"
+
+msgid "Grab"
+msgstr "Хванете"
+
+msgid "Gradient color 1:"
+msgstr "Градиентен цвят 1:"
+
+msgid "Gradient color 2:"
+msgstr "Градиентен цвят 2:"
+
+msgid "Group by filename"
+msgstr "Групиране по име на файл"
+
+msgid "HTML code"
+msgstr "HTML код"
+
+msgid "HTML files"
+msgstr "HTML файлове"
+
+msgid "Height:"
+msgstr "Височина:"
+
+msgid "Help"
+msgstr "Помощ"
+
+msgid "Hide"
+msgstr "Скриване"
+
+msgid "Highlight"
+msgstr "Акцент"
+
+msgid "History"
+msgstr "История"
+
+msgid "History has been cleared successfully."
+msgstr "Историята е изчистена успешно."
+
+msgid "Horizontal interval:"
+msgstr "Хоризонтален интервал:"
+
+msgid "I have an account on this server"
+msgstr "Имам акаунт на този сървър"
+
+msgid "Ignore"
+msgstr "Игнорирай"
+
+msgid "Ignore all"
+msgstr "Игнорирайте всичко"
+
+msgid "Image Downloader"
+msgstr "Изтеглятел на изображения"
+
+msgid "Image Editor"
+msgstr "Редактор изображения"
+
+msgid "Image Editor  (%1%x%2%)"
+msgstr "Редактор на изображения (%1%x%2%)"
+
+msgid "Image Editor - %1% (%2%x%3%)"
+msgstr "Редактор на изображения - %1% (%2%x%3%)"
+
+msgid ""
+"Image Editor cannot deal with animated images. If you edit this file, "
+"animation will be lost. Do you wish to continue?"
+msgstr "Редакторът на изображения не може да обработва анимирани изображения. Ако редактирате този файл, анимацията ще бъде загубена. Искате ли да продължите?"
+
+msgid "Image Settings and Server Selection"
+msgstr "Настройки на изображението и избор на сървър"
+
+msgid "Image processing"
+msgstr "Обработка на изображения"
+
+msgid "Image processing settings..."
+msgstr "Настройки за обработка на изображения..."
+
+msgid "Image settings"
+msgstr "Настройки на изображението"
+
+msgid "Images"
+msgstr "Изображения"
+
+msgid "Images editor:"
+msgstr "Редактор на изображения:"
+
+msgid "Images from web"
+msgstr "Изображения от мрежата"
+
+msgid "Images per string:"
+msgstr "Изображения на ред:"
+
+msgid "Immediately begin uploading to the server"
+msgstr "Незабавно започнете качването на сървъра"
+
+msgid "Implicit"
+msgstr "Имплицитно"
+
+msgid "Import Video File"
+msgstr "Импортиране на видео файл"
+
+msgid "In queue"
+msgstr "На опашка"
+
+msgid "Including subdirectories"
+msgstr "Включително поддиректории"
+
+msgid "Info about last video"
+msgstr "Информация за последното видео"
+
+msgid "Information about file"
+msgstr "Информация за файла"
+
+msgid "Information about file \"%s\" :"
+msgstr "Информация за файла \"%s\":"
+
+msgid "Initial value:"
+msgstr "Начална стойност:"
+
+msgid "Integration in menu \"Send to\""
+msgstr "Интеграция в менюто „Изпрати до“"
+
+msgid "Intercept PrintScreen and Alt+PrintScreen hotkeys"
+msgstr "Прехващане на клавишните комбинации PrintScreen и Alt+PrintScreen"
+
+msgid "Interface language:"
+msgstr "Език на интерфейса:"
+
+msgid ""
+"Invalid source URL: '%s'. Absolute URL is needed, including schema "
+"(http,https,etc)"
+msgstr "Невалиден URL адрес на източника: „%s“. Необходим е абсолютен URL адрес, включително схема (http, https и др.)"
+
+msgid "Invert selection"
+msgstr "Инвертиране на селекцията"
+
+msgid "JPEG, PNG, GIF, BMP or any other file"
+msgstr "JPEG, PNG, GIF, BMP или друг файл"
+
+msgid "JSON files"
+msgstr "JSON файлове"
+
+msgid "Just URL"
+msgstr "Само URL адрес"
+
+msgid ""
+"Just drag and drop your files into the program window, and it will process "
+"them."
+msgstr "Просто плъзнете и пуснете файловете си в прозореца на програмата и тя ще ги обработи."
+
+msgid "LAYOUT_DIRECTION"
+msgstr "LAYOUT_DIRECTION"
+
+msgid "Last Region"
+msgstr "Последен регион"
+
+msgid "Last code type selected"
+msgstr "Последно избран тип код"
+
+msgid "Launch program on Windows startup"
+msgstr "Стартиране на програмата при стартиране на Windows"
+
+msgid "Left button double-click:"
+msgstr "Двойно щракване с левия бутон:"
+
+msgid "Left button single click:"
+msgstr "Еднократно щракване с левия бутон:"
+
+msgid "Libraries:"
+msgstr "Библиотеки:"
+
+msgid "Line"
+msgstr "Линия"
+
+msgid "Line thickness"
+msgstr "Дебелина на линията"
+
+msgid "Links"
+msgstr "Връзки"
+
+msgid "Links (%d)"
+msgstr "Връзки (%d)"
+
+msgid "Links (URL)"
+msgstr "Връзки (URL)"
+
+msgid "Links to Images/Files"
+msgstr "Връзки към изображения/файлове"
+
+msgid "List of Images"
+msgstr "Списък с изображения"
+
+msgid "List of URLs"
+msgstr "Списък с URL адреси"
+
+msgid "Loading..."
+msgstr "Зареждане..."
+
+msgid "Local"
+msgstr "Местно"
+
+msgid "Local hotkey:"
+msgstr "Локален бърз клавиш:"
+
+msgid "Log"
+msgstr "Дневник"
+
+msgid "Log Record [%s]"
+msgstr "Запис в дневника [%s]"
+
+msgid "Logging in..."
+msgstr "Влизане..."
+
+msgid "Login"
+msgstr "Вход"
+
+msgid "Login:"
+msgstr "Вход:"
+
+msgid "Logout"
+msgstr "Изход"
+
+msgid "Logout succesfully."
+msgstr "Излизането е успешно."
+
+msgid "MD5 check failed for file "
+msgstr "MD5 проверката за файла е неуспешна"
+
+msgid "MD5 check of the update package failed "
+msgstr "MD5 проверката на пакета за актуализация не беше успешна"
+
+msgid "Max. file size"
+msgstr "Максимален размер на файла"
+
+msgid ""
+"MediaInfo.dll Not found! \n"
+"Getting technical information of media files will not be accessible."
+msgstr "MediaInfo.dll не е намерен! \nПолучаването на техническа информация за медийни файлове няма да бъде достъпно."
+
+msgid "Middle button click:"
+msgstr "Щракване със средния бутон:"
+
+msgid "Mime-type"
+msgstr "MIME тип"
+
+msgid "Monitor"
+msgstr "Монитор"
+
+msgid "Monitor:"
+msgstr "Монитор:"
+
+msgid "More colors..."
+msgstr "Още цветове..."
+
+msgid "Mouse clicks handlers"
+msgstr "Манипулатори за кликвания с мишката"
+
+msgid "Move"
+msgstr "Преместване"
+
+msgid "Move Down"
+msgstr "Премести надолу"
+
+msgid "Move Up"
+msgstr "Премести нагоре"
+
+msgid "N"
+msgstr "Н"
+
+msgid "Name cannot be empty"
+msgstr "Името не може да бъде празно"
+
+msgid "Name:"
+msgstr "Име:"
+
+msgid "Network Debugger"
+msgstr "Мрежов дебъгер"
+
+msgid "New Profile Name"
+msgstr "Ново име на профила"
+
+msgid "New folder"
+msgstr "Нова папка"
+
+msgid "New profile"
+msgstr "Нов профил"
+
+msgid "Next >"
+msgstr "Следващ >"
+
+msgid "No"
+msgstr "Не"
+
+msgid "No Folder Selected"
+msgstr "Няма избрана папка"
+
+msgid "No files were found."
+msgstr "Не бяха намерени файлове."
+
+msgid "No pictures were found."
+msgstr "Не бяха намерени снимки."
+
+msgid "No proxy (direct connection)"
+msgstr "Без прокси (директна връзка)"
+
+msgid "No updates for %s components are available"
+msgstr "Няма налични актуализации за %s компоненти"
+
+msgid "None"
+msgstr "Няма"
+
+msgid "Num of retries per action:"
+msgstr "Брой повторни опити за действие:"
+
+msgid "Num of retries per file:"
+msgstr "Брой повторни опити на файл:"
+
+msgid "Number of columns:"
+msgstr "Брой колони:"
+
+msgid "Number of frames:"
+msgstr "Брой рамки:"
+
+msgid "OK"
+msgstr "Добре"
+
+msgid "Older than 30 days"
+msgstr "По-старо от 30 дни"
+
+msgid "Open containing folder"
+msgstr "Отвори съдържащата папка"
+
+msgid "Open download page"
+msgstr "Отваряне на страницата за изтегляне"
+
+msgid "Open in Web Browser"
+msgstr "Отваряне в уеб браузър"
+
+msgid "Open in Wizard"
+msgstr "Отваряне в съветника"
+
+msgid "Open in external editor"
+msgstr "Отваряне във външен редактор"
+
+msgid "Open in folder"
+msgstr "Отвори в папка"
+
+msgid "Open in the editor"
+msgstr "Отвори в редактора"
+
+msgid "Open screenshot in the editor"
+msgstr "Отворете екранна снимка в редактора"
+
+msgid "Open screenshots folder"
+msgstr "Отваряне на папката със снимки на екрана"
+
+msgid "Open servers folder"
+msgstr "Отваряне на папката на сървърите"
+
+msgid "Open system connection settings"
+msgstr "Отворете настройките за системна връзка"
+
+msgid "Open the website"
+msgstr "Отворете уебсайта"
+
+msgid "Open with..."
+msgstr "Отвори с..."
+
+msgid "Operation was cancelled by user."
+msgstr "Операцията е отменена от потребителя."
+
+msgid "Options"
+msgstr "Опции"
+
+msgid "Overall bitrate: "
+msgstr "Общ битрейт:"
+
+msgid "Parameters:"
+msgstr "Параметри:"
+
+msgid "Password:"
+msgstr "Парола:"
+
+msgid "Paste"
+msgstr "Паста"
+
+msgid "Paste HTML from clipboard"
+msgstr "Поставяне на HTML от клипборда"
+
+msgid "Paste HTML on Ctrl+V"
+msgstr "Поставяне на HTML с Ctrl+V"
+
+msgid "Paste a link to shorten it:"
+msgstr "Поставете линк, за да го съкратите:"
+
+msgid "Pause"
+msgstr "Пауза"
+
+msgid "Pixelation"
+msgstr "Пикселизация"
+
+msgid "Please choose period:"
+msgstr "Моля, изберете период:"
+
+msgid "Please enter an URL"
+msgstr "Моля, въведете URL адрес"
+
+msgid "Please enter the text you see in the image:"
+msgstr "Моля, въведете текста, който виждате на изображението:"
+
+msgid ""
+"Please note that program needs to be restarted for new language settings to "
+"take affect."
+msgstr "Моля, обърнете внимание, че програмата трябва да бъде рестартирана, за да влязат в сила новите езикови настройки."
+
+msgid "Please specify authentication settings for '%s' server!"
+msgstr "Моля, задайте настройки за удостоверяване за сървъра '%s'!"
+
+msgid "Please wait while your history is being converted..."
+msgstr "Моля, изчакайте, докато историята ви се конвертира..."
+
+msgid "Port:"
+msgstr "Порт:"
+
+msgid "Postponed"
+msgstr "Отложено"
+
+msgid "Preparing image..."
+msgstr "Подготовка на изображението..."
+
+msgid "Preserve metadata (for ex. EXIF)"
+msgstr "Запазване на метаданни (например EXIF)"
+
+msgid "Preset:"
+msgstr "Предварително зададено:"
+
+msgid "Pressing this button while holding Shift will close the window."
+msgstr "Натискането на този бутон, докато държите Shift, ще затвори прозореца."
+
+msgid "Pressing this button while holding Shift will not close the window."
+msgstr "Натискането на този бутон, докато държите Shift, няма да затвори прозореца."
+
+msgid "Preview"
+msgstr "Преглед"
+
+msgid "Preview Window"
+msgstr "Прозорец за предварителен преглед"
+
+msgid "Print..."
+msgstr "Печат..."
+
+msgid "Private key file doesn't exist."
+msgstr "Файлът с частен ключ не съществува."
+
+msgid "Private key file:"
+msgstr "Файл с частен ключ:"
+
+msgid "Process Status"
+msgstr "Състояние на процеса"
+
+msgid "Process images before upload"
+msgstr "Обработка на изображения преди качване"
+
+msgid "Processing folder:"
+msgstr "Папка за обработка:"
+
+msgid ""
+"Profile \"%s\" not found.\n"
+"It may be caused by a configuration error or usage of multiple versions of "
+"the application on the same computer."
+msgstr "Профилът „%s“ не е намерен.\nТова може да е причинено от грешка в конфигурацията или използване на множество версии на приложението на един и същ компютър."
+
+msgid "Profile with such name already exists!"
+msgstr "Профил с такова име вече съществува!"
+
+msgid "Profile:"
+msgstr "Профил:"
+
+msgid "Progress:"
+msgstr "Напредък:"
+
+msgid "Properties"
+msgstr "Имоти"
+
+msgid "Proxy type:"
+msgstr "Тип прокси:"
+
+msgid "Quality:"
+msgstr "Качество:"
+
+msgid "Queued"
+msgstr "На опашка"
+
+msgid "Quick upload image from clipboard"
+msgstr "Бързо качване на изображение от клипборда"
+
+msgid "Re-upload images"
+msgstr "Качване на изображения отново"
+
+msgid "Real-time (fastest)"
+msgstr "В реално време (най-бързо)"
+
+msgid "Reason:"
+msgstr "Причина:"
+
+msgid "Record"
+msgstr "Запис"
+
+msgid "Rectangle"
+msgstr "Правоъгълник"
+
+msgid "Redo"
+msgstr "Преработи"
+
+msgid "Remember file server's settings in wizard"
+msgstr "Запомнете настройките на файловия сървър в помощника"
+
+msgid "Remember image server's settings in wizard"
+msgstr "Запомнете настройките на сървъра за изображения в съветника"
+
+msgid "Remote directory:"
+msgstr "Отдалечена директория:"
+
+msgid "Remove"
+msgstr "Премахване"
+
+msgid "Remove Item"
+msgstr "Премахване на елемент"
+
+msgid "Remove all"
+msgstr "Премахни всички"
+
+msgid "Remove from list"
+msgstr "Премахване от списъка"
+
+msgid "Remove this account from the list (not from the remote server)"
+msgstr "Премахване на този акаунт от списъка (не от отдалечения сървър)"
+
+msgid "Resize mode:"
+msgstr "Режим на преоразмеряване:"
+
+msgid "Resume"
+msgstr "Автобиография"
+
+msgid "Retrieve thumbnails from the Internet"
+msgstr "Извличане на миниатюри от интернет"
+
+msgid "Retry"
+msgstr "Опитай отново"
+
+msgid "Reupload"
+msgstr "Повторно качване"
+
+msgid "Reupload images"
+msgstr "Презареждане на изображения"
+
+msgid "Reuploading images in the text with preserving it's original markup"
+msgstr "Повторно качване на изображения в текста със запазване на оригиналната му маркировка"
+
+msgid "Right button click:"
+msgstr "Щракване с десен бутон:"
+
+msgid "Rotate clockwise (90°)"
+msgstr "Завъртане по часовниковата стрелка (90°)"
+
+msgid "Rotate counter clockwise (-90°)"
+msgstr "Завъртете обратно на часовниковата стрелка (-90°)"
+
+msgid "Rotate or flip"
+msgstr "Завъртане или обръщане"
+
+msgid "Rounded rectangle"
+msgstr "Заоблен правоъгълник"
+
+msgid "Rounding radius"
+msgstr "Радиус на закръгляване"
+
+msgid "SFTP"
+msgstr "SFTP"
+
+msgid "Same format as image"
+msgstr "Същият формат като изображението"
+
+msgid "Save"
+msgstr "Запазване"
+
+msgid "Save Profile"
+msgstr "Запазване на профил"
+
+msgid "Save as..."
+msgstr "Запази като..."
+
+msgid "Save as:"
+msgstr "Запази като:"
+
+msgid "Save changes?"
+msgstr "Запазване на промените?"
+
+msgid "Save log file"
+msgstr "Запазване на лог файл"
+
+msgid "Save to file"
+msgstr "Запазване във файл"
+
+msgid "Saving image..."
+msgstr "Запазване на изображението..."
+
+msgid "Saving parameters"
+msgstr "Запазване на параметри"
+
+msgid "Scaling:"
+msgstr "Мащабиране:"
+
+msgid "Screen Capture"
+msgstr "Заснемане на екрана"
+
+msgid "Screen Recoding"
+msgstr "Прекодиране на екрана"
+
+msgid "Screen Recording (cancel)"
+msgstr "Запис на екрана (отказ)"
+
+msgid "Screen Recording (pause)"
+msgstr "Запис на екрана (пауза)"
+
+msgid "Screen Recording (start)"
+msgstr "Запис на екрана (старт)"
+
+msgid "Screen Recording (stop)"
+msgstr "Запис на екрана (спиране)"
+
+msgid "Screen Recording Window"
+msgstr "Прозорец за запис на екрана"
+
+msgid "Screen Recording..."
+msgstr "Запис на екрана..."
+
+msgid "Screen recording backend: %s"
+msgstr "Бекенд за запис на екрана: %s"
+
+msgid "Screenshot"
+msgstr "Скрийншот"
+
+msgid "Screenshot Action"
+msgstr "Действие на екрана"
+
+msgid "Screenshot has been copied to clipboard."
+msgstr "Снимката на екрана е копирана в клипборда."
+
+msgid "Screenshot was uploaded"
+msgstr "Качена е екранна снимка"
+
+msgid "Screenshot..."
+msgstr "Скрийншот..."
+
+msgid "Script: "
+msgstr "Сценарий:"
+
+msgid "Search by image"
+msgstr "Търсене по изображение"
+
+msgid "Search by image (%s)"
+msgstr "Търсене по изображение (%s)"
+
+msgid "Search on %1% (%2%)"
+msgstr "Търсене в %1% (%2%)"
+
+msgid "Search on %1% and close (%2%)"
+msgstr "Търсене в %1% и затваряне (%2%)"
+
+msgid "Search on %s"
+msgstr "Търсене в %s"
+
+msgid "Searching for picture files..."
+msgstr "Търсене на файлове с изображения..."
+
+msgid "Secured connection:"
+msgstr "Сигурна връзка:"
+
+msgid "Select Region..."
+msgstr "Изберете регион..."
+
+msgid "Select action:"
+msgstr "Изберете действие:"
+
+msgid "Select all"
+msgstr "Избери всички"
+
+msgid "Select folder"
+msgstr "Изберете папка"
+
+msgid "Select region"
+msgstr "Изберете регион"
+
+msgid "Select region..."
+msgstr "Изберете регион..."
+
+msgid "Select window..."
+msgstr "Изберете прозорец..."
+
+msgid "Select..."
+msgstr "Изберете..."
+
+msgid "Selected server: %s"
+msgstr "Избран сървър: %s"
+
+msgid "Server"
+msgstr "Сървър"
+
+msgid "Server [:port]:"
+msgstr "Сървър [:порт]:"
+
+msgid "Server and authentication settings"
+msgstr "Настройки на сървъра и удостоверяването"
+
+msgid "Server for other file types"
+msgstr "Сървър за други типове файлове"
+
+msgid "Server for quick screenshot uploading"
+msgstr "Сървър за бързо качване на екранни снимки"
+
+msgid "Server for temporary images"
+msgstr "Сървър за временни изображения"
+
+msgid "Server for uploading from Explorer's context menu"
+msgstr "Сървър за качване от контекстното меню на Explorer"
+
+msgid "Server for uploading images"
+msgstr "Сървър за качване на изображения"
+
+msgid "Server name:"
+msgstr "Име на сървъра:"
+
+msgid "Server not chosen"
+msgstr "Сървърът не е избран"
+
+msgid "Server settings..."
+msgstr "Настройки на сървъра..."
+
+msgid "Server to host other file formats"
+msgstr "Сървър за хостване на други файлови формати"
+
+msgid "Server to host your images"
+msgstr "Сървър за хостване на вашите изображения"
+
+msgid "Server type:"
+msgstr "Тип сървър:"
+
+msgid "Server's name cannot be empty"
+msgstr "Името на сървъра не може да бъде празно"
+
+msgid "Server: "
+msgstr "Сървър:"
+
+msgid "Session total:"
+msgstr "Общо за сесията:"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Settings file path:"
+msgstr "Път към файла с настройки:"
+
+msgid "Settings have been saved."
+msgstr "Настройките са запазени."
+
+msgid "Settings..."
+msgstr "Настройки..."
+
+msgid "Shell context menu integration"
+msgstr "Интеграция на контекстното меню на Shell"
+
+msgid "Short URL"
+msgstr "Кратък URL адрес"
+
+msgid "Shorten"
+msgstr "Съкрати"
+
+msgid "Shorten URL"
+msgstr "Съкратете URL адреса"
+
+msgid "Shorten URL using %s"
+msgstr "Съкратете URL адреса, използвайки %s"
+
+msgid "Shorten URLs"
+msgstr "Съкратете URL адресите"
+
+msgid "Shorten a Link"
+msgstr "Съкратете връзка"
+
+msgid "Shorten a link from the clipboard"
+msgstr "Съкращаване на връзка от клипборда"
+
+msgid "Shortening URL \"%s\" using %s"
+msgstr "Съкращаване на URL адрес „%s“ с помощта на %s"
+
+msgid "Shortening link..."
+msgstr "Съкращаване на линка..."
+
+msgid "Shot of Selected Region..."
+msgstr "Кадър на избран регион..."
+
+msgid "Show Error Log"
+msgstr "Показване на дневника на грешките"
+
+msgid "Show automatically log window in case of error"
+msgstr "Автоматично показване на прозореца за логване в случай на грешка"
+
+msgid "Show in default viewer"
+msgstr "Показване в стандартния визуализатор"
+
+msgid "Show log for this file"
+msgstr "Показване на лог за този файл"
+
+msgid "Show preview for video files in file list"
+msgstr "Показване на предварителен преглед на видео файлове в списъка с файлове"
+
+msgid "Show program window"
+msgstr "Покажи прозореца на програмата"
+
+msgid "Show results of last upload"
+msgstr "Показване на резултатите от последното качване"
+
+msgid "Show tray icon"
+msgstr "Показване на икона в  трея"
+
+msgid "Sign in..."
+msgstr "Вход..."
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Skip all"
+msgstr "Пропускане на всички"
+
+msgid "Skip animated"
+msgstr "Пропускане на анимацията"
+
+msgid "Skip image processing step if the image has right parameters"
+msgstr "Пропускане на стъпката за обработка на изображението, ако изображението има правилните параметри"
+
+msgid "Skip selected"
+msgstr "Пропускане на избраното"
+
+msgid "Source URL (optional):"
+msgstr "URL адрес на източника (по избор):"
+
+msgid "Source code"
+msgstr "Изходен код"
+
+msgid "Specify account..."
+msgstr "Посочете акаунт..."
+
+msgid "Start"
+msgstr "Старт"
+
+msgid "Start Recording"
+msgstr "Стартиране на запис"
+
+msgid "Starting upload"
+msgstr "Стартиране на качването"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Step"
+msgstr "Стъпка"
+
+msgid "Stop"
+msgstr "Спри"
+
+msgid "Stop uploading"
+msgstr "Спиране на качването"
+
+msgid "Stopped"
+msgstr "Спряно"
+
+msgid "Storage time (days)"
+msgstr "Време за съхранение (дни)"
+
+msgid "Stretch"
+msgstr "Разтягане"
+
+msgid "Stroke color:"
+msgstr "Цвят на щриха:"
+
+msgid "Subtitles: "
+msgstr "Субтитри:"
+
+msgid "Success"
+msgstr "Успех"
+
+msgid "Summary"
+msgstr "Обобщение"
+
+msgid "Summary:"
+msgstr "Резюме:"
+
+msgid "Swap colors"
+msgstr "Размяна на цветове"
+
+msgid "Table of clickable thumbnails"
+msgstr "Таблица с кликаеми миниатюри"
+
+msgid "Test connection"
+msgstr "Тестова връзка"
+
+msgid "Test failed"
+msgstr "Тестът не беше успешен"
+
+msgid "Text"
+msgstr "Текст"
+
+msgid "Text Options"
+msgstr "Опции за текст"
+
+msgid "Text Settings:"
+msgstr "Настройки на текста:"
+
+msgid "Text color:"
+msgstr "Цвят на текста:"
+
+msgid "Text contains forbidden characters!"
+msgstr "Текстът съдържа забранени символи!"
+
+msgid "Text files"
+msgstr "Текстови файлове"
+
+msgid "Text on image"
+msgstr "Текст върху изображението"
+
+msgid "Text position:"
+msgstr "Позиция на текста:"
+
+msgid "Text:"
+msgstr "Текст:"
+
+msgid "Thanks to the authors of the following open-source libraries:"
+msgstr "Благодарности на авторите на следните библиотеки с отворен код:"
+
+msgid "Thanks to:"
+msgstr "Благодарение на:"
+
+msgid "The field '%s' cannot be empty."
+msgstr "Полето „%s“ не може да бъде празно."
+
+msgid "The file name cannot be empty."
+msgstr "Името на файла не може да бъде празно."
+
+msgid "The file name contains forbidden characters."
+msgstr "Името на файла съдържа забранени символи."
+
+msgid "The short link has been copied to the clipboard!"
+msgstr "Краткият линк е копиран в клипборда!"
+
+msgid "These files cannot be uploaded to chosen servers:"
+msgstr "Тези файлове не могат да бъдат качени на избрани сървъри:"
+
+msgid "This means that the thumbnail will be created by site, not the program."
+msgstr "Това означава, че миниатюрата ще бъде създадена от сайта, а не от програмата."
+
+msgid "This server doesn't have any settings."
+msgstr "Този сървър няма никакви настройки."
+
+msgid "Thread"
+msgstr "Нишка"
+
+msgid "Threads number:"
+msgstr "Номер на нишките:"
+
+msgid "Thumbnail"
+msgstr "Миниатюра"
+
+msgid "Thumbnail Preset Editor"
+msgstr "Редактор на предварително зададени миниатюри"
+
+msgid "Thumbnail Preset:"
+msgstr "Предварително зададени миниатюри:"
+
+msgid "Thumbnail settings"
+msgstr "Настройки на миниатюрите"
+
+msgid "Thumbnail text:"
+msgstr "Текст на миниатюрата:"
+
+msgid "Thumbnail width:"
+msgstr "Ширина на миниатюрата:"
+
+msgid "Thumbnail's size:"
+msgstr "Размер на миниатюрата:"
+
+msgid "Thumbnails"
+msgstr "Миниатюри"
+
+msgid "Time"
+msgstr "Време"
+
+msgid "Timeout:"
+msgstr "Време за изчакване:"
+
+msgid "To all"
+msgstr "До всички"
+
+msgid "Top center"
+msgstr "Горе в центъра"
+
+msgid "Top left corner"
+msgstr "Горен ляв ъгъл"
+
+msgid "Top right corner"
+msgstr "Горен десен ъгъл"
+
+msgid "Total size:"
+msgstr "Общ размер:"
+
+msgid "Translators:"
+msgstr "Преводачи:"
+
+msgid "Tray icon context menu"
+msgstr "Контекстно меню на иконата в системния трей"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "Type of arrow"
+msgstr "Вид стрелка"
+
+msgid "URL for downloading will look like:"
+msgstr "URL адресът за изтегляне ще изглежда така:"
+
+msgid "URL for downloading:"
+msgstr "URL адрес за изтегляне:"
+
+msgid "URL shortening server"
+msgstr "Сървър за съкращаване на URL адреси"
+
+msgid "URL:"
+msgstr "URL адрес:"
+
+msgid "Unable to load picture"
+msgstr "Не може да се зареди снимката"
+
+msgid "Unable to make screenshot!"
+msgstr "Не е възможно да се направи екранна снимка!"
+
+msgid "Unable to shorten the link..."
+msgstr "Невъзможно е да се съкрати линкът..."
+
+msgid "Unable to unpack archive %s"
+msgstr "Неуспешно разопаковане на архива %s"
+
+msgid "Undo"
+msgstr "Отмяна"
+
+msgid "Unknown status"
+msgstr "Неизвестен статус"
+
+msgid "Update components"
+msgstr "Актуализиране на компоненти"
+
+msgid "Update finished. Updated %d of %d files "
+msgstr "Актуализацията е завършена. Актуализирани са %d от %d файла."
+
+msgid "Upload Buffer Size:"
+msgstr "Размер на буфера за качване:"
+
+msgid "Upload History"
+msgstr "История на качванията"
+
+msgid "Upload Images"
+msgstr "Качване на изображения"
+
+msgid "Upload failed! (retry limit reached)"
+msgstr "Качването не бе успешно! (достигнат е лимитът за повторни опити)"
+
+msgid "Upload failed. Another retry (%d)..."
+msgstr "Качването не бе успешно. Още един опит (%d)..."
+
+msgid "Upload files"
+msgstr "Качване на файлове"
+
+msgid "Upload folder"
+msgstr "Качване на папка"
+
+msgid "Upload images"
+msgstr "Качване на изображения"
+
+msgid "Upload images only"
+msgstr "Качване само на изображения"
+
+msgid "Upload progress"
+msgstr "Напредък на качването"
+
+msgid "Upload results"
+msgstr "Качване на резултати"
+
+msgid "Upload speed limit per thread:"
+msgstr "Ограничение на скоростта на качване на нишка:"
+
+msgid "Upload to %s"
+msgstr "Качване в %s"
+
+msgid "Upload to Web"
+msgstr "Качване в мрежата"
+
+msgid ""
+"Upload to server '%s' is impossible without account.\n"
+"You should sign Up on this server and specify your account details in "
+"program settings."
+msgstr "Качването на сървър „%s“ е невъзможно без акаунт.\nТрябва да се регистрирате на този сървър и да посочите данните за акаунта си в настройките на програмата."
+
+msgid "Uploaded images: "
+msgstr "Качени изображения:"
+
+msgid "Uploading Files to Server"
+msgstr "Качване на файлове на сървъра"
+
+msgid "Uploading errors"
+msgstr "Грешки при качване"
+
+msgid "Uploading has been finished."
+msgstr "Качването е завършено."
+
+msgid "Uploading image..."
+msgstr "Качване на изображение..."
+
+msgid "Uploading initiated from tray"
+msgstr "Качването е започнато от системната лента"
+
+msgid "Uploading module"
+msgstr "Модул за качване"
+
+msgid "Uploading screenshot"
+msgstr "Качване на екранна снимка"
+
+msgid "Url Shortener"
+msgstr "Съкращаване на URL адреси"
+
+msgid "Use default thumbnail settings"
+msgstr "Използване на настройките за миниатюри по подразбиране"
+
+msgid "Use direct links"
+msgstr "Използвайте директни връзки"
+
+msgid "Use old method of rectangular area selection"
+msgstr "Използвайте стария метод за избор на правоъгълна област"
+
+msgid "Use provided proxy:"
+msgstr "Използвайте предоставения прокси сървър:"
+
+msgid "Use server-side thumbnails"
+msgstr "Използвайте миниатюри от страна на сървъра"
+
+msgid "Use system proxy settings"
+msgstr "Използване на настройките на системния прокси сървър"
+
+msgid "Use template"
+msgstr "Използвайте шаблон"
+
+msgid "User name"
+msgstr "Потребителско име"
+
+msgid "VIDEO %s"
+msgstr "ВИДЕО %s"
+
+msgid "Vertical interval:"
+msgstr "Вертикален интервал:"
+
+msgid "Video backend"
+msgstr "Видео бекенд"
+
+msgid "Video codec:"
+msgstr "Видео кодек:"
+
+msgid "Video files"
+msgstr "Видео файлове"
+
+msgid "Video recordings folder:"
+msgstr "Папка с видеозаписи:"
+
+msgid "Video source:"
+msgstr "Източник на видеото:"
+
+msgid "Video: "
+msgstr "Видео:"
+
+msgid "View"
+msgstr "Преглед"
+
+msgid "View BBCode/HTML codes"
+msgstr "Преглед на BBCode/HTML кодове"
+
+msgid "View Media File Information"
+msgstr "Преглед на информацията за медийния файл"
+
+msgid "View log for details."
+msgstr "Вижте дневника за подробности."
+
+msgid "Waiting for child tasks"
+msgstr "Чакане на задачите на децата"
+
+msgid "Waiting..."
+msgstr "Чакане..."
+
+msgid "Watch Clipboard for URLs"
+msgstr "Гледайте клипборда за URL адреси"
+
+msgid "Watermark"
+msgstr "Воден знак"
+
+msgid "Watermark position:"
+msgstr "Позиция на водния знак:"
+
+msgid "WebDAV"
+msgstr "WebDAV"
+
+msgid "Website:"
+msgstr "Уебсайт:"
+
+msgid ""
+"Welcome to the pictures publishing wizard, which will help you upload your "
+"images, photos, and video frames to the Internet!"
+msgstr "Добре дошли в помощника за публикуване на изображения, който ще ви помогне да качвате вашите изображения, снимки и видеокадри в интернет!"
+
+msgid "Width:"
+msgstr "Ширина:"
+
+msgid "Window"
+msgstr "Прозорец"
+
+msgid "Windows Explorer integration"
+msgstr "Интеграция с Windows Explorer"
+
+msgid "Work in progress"
+msgstr "Работа в процес"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "You are using the latest %s version."
+msgstr "Използвате най-новата версия на %s."
+
+msgid "You have not selected \"%s\""
+msgstr "Не сте избрали „%s“"
+
+msgid "You have not selected account for server \"%s\""
+msgstr "Не сте избрали акаунт за сървъра \"%s\""
+
+msgid "You have not selected an file server"
+msgstr "Не сте избрали файлов сървър"
+
+msgid "You have not selected an image server"
+msgstr "Не сте избрали сървър за изображения"
+
+msgid "You have not selected server"
+msgstr "Не сте избрали сървър"
+
+msgid "You have not selected server!"
+msgstr "Не сте избрали сървър!"
+
+msgid "a pic of the whole screen or selected region"
+msgstr "снимка на целия екран или на избрана област"
+
+msgid "a tool for advanced users"
+msgstr "инструмент за напреднали потребители"
+
+msgid "and/or height:"
+msgstr "и/или височина:"
+
+msgid "extracting frames from video"
+msgstr "извличане на кадри от видео"
+
+msgid "file size"
+msgstr "размер на файла"
+
+msgid "folder \"%s\""
+msgstr "папка „%s“"
+
+msgid "high quality (100)"
+msgstr "високо качество (100)"
+
+msgid "image height"
+msgstr "височина на изображението"
+
+msgid "image width"
+msgstr "ширина на изображението"
+
+msgid "low quality (0)"
+msgstr "ниско качество (0)"
+
+msgid "msec"
+msgstr "милисек"
+
+msgid "multiple files"
+msgstr "множество файлове"
+
+msgid "not selected"
+msgstr "не е избрано"
+
+msgid "sec"
+msgstr "сек"
+
+msgctxt "serverlist.account"
+msgid "required"
+msgstr "изисква се"
+
+msgctxt "serverlist.servertype"
+msgid "All"
+msgstr "Всички"
+
+msgctxt "serverlist.servertype"
+msgid "File"
+msgstr "Файл"
+
+msgctxt "serverlist.servertype"
+msgid "Image"
+msgstr "Изображение"
+
+msgctxt "serverlist.servertype"
+msgid "Video"
+msgstr "Видео"
+
+msgctxt "settings.menu"
+msgid "Connection"
+msgstr "Връзка"
+
+msgctxt "settings.menu"
+msgid "General"
+msgstr "Общи"
+
+msgctxt "settings.menu"
+msgid "Hotkeys"
+msgstr "Клавишни комбинации"
+
+msgctxt "settings.menu"
+msgid "Image Editor"
+msgstr "Редактор изображения"
+
+msgctxt "settings.menu"
+msgid "Images"
+msgstr "Изображения"
+
+msgctxt "settings.menu"
+msgid "Integration"
+msgstr "Интеграция"
+
+msgctxt "settings.menu"
+msgid "Screen Capture"
+msgstr "Заснемане на екрана"
+
+msgctxt "settings.menu"
+msgid "Screen Recording"
+msgstr "Запис на екрана"
+
+msgctxt "settings.menu"
+msgid "Servers"
+msgstr "Сървъри"
+
+msgctxt "settings.menu"
+msgid "Thumbnails"
+msgstr "Миниатюри"
+
+msgctxt "settings.menu"
+msgid "Tray icon"
+msgstr "Икона в трея"
+
+msgctxt "settings.menu"
+msgid "Uploading"
+msgstr "Качване"
+
+msgctxt "settings.menu"
+msgid "Video"
+msgstr "Видео"
+
+msgid "single file (mosaic)"
+msgstr "единичен файл (мозайка)"
+
+msgid "to:"
+msgstr "до:"
+
+msgid "translator_name"
+msgstr "име_на_преводач"
+
+msgid "unknown server"
+msgstr "неизвестен сървър"
+
+msgctxt "upload_settings_wizard_page.more_servers_link"
+msgid "%d server selected in total..."
+msgid_plural "%d servers selected in total..."
+msgstr[0] "Всего %d сервер выбран..."
+msgstr[1] "Всего %d сервера выбрано..."
+msgstr[2] "Всего %d серверов выбрано..."
+
+msgctxt "upload_settings_wizard_page.server_button"
+msgid "%1% + %2%"
+msgstr "%1% + %2%"
